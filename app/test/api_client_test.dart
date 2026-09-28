@@ -23,6 +23,22 @@ void main() {
     expect(api.authHeaders['X-App-Key'], clientKey.isEmpty ? isNull : clientKey);
   });
 
+  test("elimina l'account con DELETE /api/me", () async {
+    late http.Request sent;
+    final api = ApiClient(
+      baseUrl: 'https://spesa.example.com',
+      httpClient: MockClient((request) async {
+        sent = request;
+        return http.Response('', 204);
+      }),
+    )..token = 'abc';
+
+    await api.deleteAccount();
+    expect(sent.method, 'DELETE');
+    expect(sent.url.toString(), 'https://spesa.example.com/api/me');
+    expect(sent.headers['Authorization'], 'Bearer abc');
+  });
+
   test('invia il token e converte gli errori di validazione di Laravel', () async {
     late http.Request sent;
     final api = ApiClient(

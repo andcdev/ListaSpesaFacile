@@ -23,8 +23,9 @@ class SetLocale
         $response = $next($request);
 
         // Dopo la richiesta: sulle rotte protette l'utente è ormai autenticato.
+        // "exists": se la richiesta ha eliminato l'account (DELETE /api/me), salvarlo lo ricreerebbe.
         $user = $request->user();
-        if ($fromHeader !== null && $user !== null && $user->locale !== $fromHeader) {
+        if ($fromHeader !== null && $user !== null && $user->exists && $user->locale !== $fromHeader) {
             $user->forceFill(['locale' => $fromHeader])->saveQuietly();
         }
 

@@ -272,6 +272,22 @@ class AppLocalizationsFr extends AppLocalizations {
   String get logout => 'Se déconnecter';
 
   @override
+  String get deleteAccount => 'Supprimer le compte';
+
+  @override
+  String get deleteAccountQuestion => 'Supprimer votre compte ?';
+
+  @override
+  String get deleteAccountMessage =>
+      'La suppression est définitive et irréversible. Vos listes, avec leurs articles, photos et discussions, sont aussi supprimées pour les personnes avec qui vous les partagez, et vous quittez les listes des autres.';
+
+  @override
+  String get deleteAccountConfirm => 'Supprimer définitivement';
+
+  @override
+  String get accountDeleted => 'Compte supprimé.';
+
+  @override
   String get addProfilePhoto => 'Ajouter une photo de profil';
 
   @override

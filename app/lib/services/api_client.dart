@@ -181,6 +181,9 @@ class ApiClient {
 
   Future<void> logout() => _send('POST', '/logout');
 
+  /// Elimina definitivamente l'account e tutti i suoi dati (liste, foto, chat).
+  Future<void> deleteAccount() => _send('DELETE', '/me');
+
   Future<ServerConfig> serverConfig() async {
     final json = await _send('GET', '/config') as Map<String, dynamic>;
     final realtime = json['realtime'] as Map<String, dynamic>;

@@ -133,6 +133,14 @@ class AuthController extends ChangeNotifier {
     await _signOutLocally();
   }
 
+  /// Elimina l'account sul server, poi esce come al logout. Se il server non risponde si resta collegati.
+  Future<void> deleteAccount() async {
+    await api.deleteAccount();
+    // Il token non vale più: uscendo, nessuna chiamata deve usarlo (un 401 farebbe ripartire l'uscita).
+    api.token = null;
+    await _signOutLocally();
+  }
+
   Future<void> _signedIn(String token, AppUser user) async {
     api.token = token;
     this.user = user;

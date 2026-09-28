@@ -33,6 +33,7 @@ Route::middleware('throttle:10,1')->group(function () {
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/me', [AuthController::class, 'me']);
     Route::post('/logout', [AuthController::class, 'logout']);
+    Route::delete('/me', [AuthController::class, 'destroy']);
     Route::post('/me/avatar', [AvatarController::class, 'store']);
     Route::delete('/me/avatar', [AvatarController::class, 'destroy']);
     Route::get('/users/{user}/avatar', [AvatarController::class, 'show']);

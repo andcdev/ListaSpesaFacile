@@ -90,6 +90,27 @@ class AccountDeletionTest extends TestCase
             ->assertJsonValidationErrors('code');
     }
 
+    public function test_app_deletes_the_signed_in_account(): void
+    {
+        Storage::fake();
+        $anna = User::factory()->create();
+        $marco = User::factory()->create();
+        $own = ShoppingList::factory()->for($anna, 'owner')->create();
+        $theirs = ShoppingList::factory()->for($marco, 'owner')->create();
+        $theirs->sharedWith()->attach($anna->id, ['can_edit' => true]);
+        $token = $anna->createToken('telefono')->plainTextToken;
+
+        $this->withToken($token)->deleteJson('/api/me')->assertNoContent();
+
+        $this->assertModelMissing($anna);
+        $this->assertModelMissing($own);
+        $this->assertModelExists($theirs);
+        $this->assertDatabaseCount('personal_access_tokens', 0);
+        $this->app['auth']->forgetGuards();
+        $this->withToken($token)->getJson('/api/me')->assertUnauthorized();
+        $this->deleteJson('/api/me')->assertUnauthorized();
+    }
+
     public function test_wrong_codes_do_not_delete_and_five_mistakes_burn_the_code(): void
     {
         Notification::fake();

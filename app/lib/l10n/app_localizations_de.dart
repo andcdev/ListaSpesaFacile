@@ -271,6 +271,22 @@ class AppLocalizationsDe extends AppLocalizations {
   String get logout => 'Abmelden';
 
   @override
+  String get deleteAccount => 'Konto löschen';
+
+  @override
+  String get deleteAccountQuestion => 'Konto löschen?';
+
+  @override
+  String get deleteAccountMessage =>
+      'Die Löschung ist endgültig und kann nicht rückgängig gemacht werden. Deine Listen mit Artikeln, Fotos und Chats werden auch für die Personen gelöscht, mit denen du sie teilst, und du verlässt die Listen der anderen.';
+
+  @override
+  String get deleteAccountConfirm => 'Endgültig löschen';
+
+  @override
+  String get accountDeleted => 'Konto gelöscht.';
+
+  @override
   String get addProfilePhoto => 'Profilbild hinzufügen';
 
   @override

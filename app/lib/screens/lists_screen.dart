@@ -140,6 +140,27 @@ class _ListsScreenState extends State<ListsScreen> {
     }
   }
 
+  Future<void> _deleteAccount() async {
+    final l = context.l10n;
+    final ok = await confirm(
+      context,
+      title: l.deleteAccountQuestion,
+      message: l.deleteAccountMessage,
+      action: l.deleteAccountConfirm,
+    );
+    if (!ok || !mounted) return;
+    // Il messenger dell'app sopravvive a questa schermata, che uscendo lascia il posto a quella di accesso.
+    final messenger = ScaffoldMessenger.of(context);
+    try {
+      await context.read<AuthController>().deleteAccount();
+      messenger
+        ..hideCurrentSnackBar()
+        ..showSnackBar(SnackBar(content: Text(l.accountDeleted), behavior: SnackBarBehavior.floating));
+    } catch (e) {
+      if (mounted) showError(context, e);
+    }
+  }
+
   static String _themeLabel(AppLocalizations l, ThemeMode mode) => switch (mode) {
     ThemeMode.light => l.themeLight,
     ThemeMode.dark => l.themeDark,
@@ -207,6 +228,7 @@ class _ListsScreenState extends State<ListsScreen> {
                   await confirm(context, title: l.logoutQuestion, action: l.logout)) {
                 await auth.logout();
               }
+              if (value == 'deleteAccount' && context.mounted) await _deleteAccount();
             },
             itemBuilder: (_) => [
               PopupMenuItem(
@@ -231,6 +253,10 @@ class _ListsScreenState extends State<ListsScreen> {
                 child: Text(l.languageValue(languageLabel(context, context.read<LocaleController>()))),
               ),
               PopupMenuItem(value: 'logout', child: Text(l.logout)),
+              PopupMenuItem(
+                value: 'deleteAccount',
+                child: Text(l.deleteAccount, style: TextStyle(color: Theme.of(context).colorScheme.error)),
+              ),
             ],
           ),
           const SizedBox(width: 8),

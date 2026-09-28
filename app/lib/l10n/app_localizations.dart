@@ -578,6 +578,36 @@ abstract class AppLocalizations {
   /// **'Esci'**
   String get logout;
 
+  /// No description provided for @deleteAccount.
+  ///
+  /// In it, this message translates to:
+  /// **'Elimina account'**
+  String get deleteAccount;
+
+  /// No description provided for @deleteAccountQuestion.
+  ///
+  /// In it, this message translates to:
+  /// **'Eliminare l\'account?'**
+  String get deleteAccountQuestion;
+
+  /// No description provided for @deleteAccountMessage.
+  ///
+  /// In it, this message translates to:
+  /// **'L\'eliminazione è definitiva e non si può annullare. Le tue liste, con articoli, foto e chat, vengono cancellate anche per chi le condivide con te, e sparisci dalle liste degli altri.'**
+  String get deleteAccountMessage;
+
+  /// No description provided for @deleteAccountConfirm.
+  ///
+  /// In it, this message translates to:
+  /// **'Elimina definitivamente'**
+  String get deleteAccountConfirm;
+
+  /// No description provided for @accountDeleted.
+  ///
+  /// In it, this message translates to:
+  /// **'Account eliminato.'**
+  String get accountDeleted;
+
   /// No description provided for @addProfilePhoto.
   ///
   /// In it, this message translates to:
