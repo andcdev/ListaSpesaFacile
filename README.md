@@ -252,11 +252,14 @@ Richiede Flutter 3.47 o successivo.
 ```bash
 cd app
 flutter pub get
-flutter run                                              # emulatore Android → backend su http://10.0.2.2
-flutter run --dart-define=API_URL=https://api.listaspesafacile.com --dart-define=CLIENT_KEY=<CLIENT_KEY del server>
-flutter build appbundle --release --dart-define=API_URL=https://api.listaspesafacile.com --dart-define=CLIENT_KEY=<CLIENT_KEY del server>
+flutter run --dart-define=API_URL=http://10.0.2.2        # emulatore Android → backend locale
+flutter run --dart-define-from-file=config/produzione.json            # server di produzione
+flutter build apk --debug --dart-define-from-file=config/produzione.json
+flutter build appbundle --release --dart-define-from-file=config/produzione.json
 ```
 
+Senza `API_URL` l'app usa `https://api.listaspesafacile.com`. `config/produzione.json` non è nel repository:
+si crea da `config/produzione.example.json` con la stessa `CLIENT_KEY` del `.env` del server.
 `CLIENT_KEY` viaggia in `X-App-Key` con ogni richiesta, con le immagini e con l'apertura del WebSocket: senza, il
 server di produzione risponde 404. La chiave si può estrarre dall'APK, quindi tiene lontani bot e curiosi ma non
 sostituisce il login.
