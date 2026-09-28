@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
 use App\Models\User;
+use App\Support\AccountDeleter;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -77,6 +78,18 @@ class AuthController extends Controller
     public function logout(Request $request): JsonResponse
     {
         $request->user()->currentAccessToken()->delete();
+
+        return response()->json(status: 204);
+    }
+
+    /**
+     * Eliminazione dell'account dall'app (Google Play la chiede sia nell'app sia sul sito): stessa pulizia della
+     * pagina listaspesafacile.com/elimina-account. Il token dell'app basta come prova d'identità, e chi è entrato
+     * con Google o Facebook non ha una password da chiedere.
+     */
+    public function destroy(Request $request): JsonResponse
+    {
+        AccountDeleter::delete($request->user());
 
         return response()->json(status: 204);
     }

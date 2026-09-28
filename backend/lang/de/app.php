@@ -22,6 +22,8 @@ return [
         'social_no_email' => 'Dein :provider-Konto gibt deine E-Mail-Adresse nicht frei, die zum Teilen von Listen nötig ist. Erlaube die E-Mail oder registriere dich mit E-Mail und Passwort.',
     ],
     'reset_sent' => 'Wenn die E-Mail registriert ist, erhältst du in Kürze einen Code zum Zurücksetzen des Passworts.',
+    'deletion_sent' => 'Wenn die E-Mail registriert ist, erhältst du in Kürze einen Code, um die Löschung des Kontos zu bestätigen.',
+    'account_deleted' => 'Konto gelöscht.',
     'activity' => [
         'added' => ':actor hat :item hinzugefügt',
         'taken' => ':actor hat :item eingepackt',
@@ -64,6 +66,10 @@ return [
         'reset_intro' => 'du hast das Zurücksetzen deines Lista-Spesa-Facile-Passworts angefordert. Gib diesen Code in der App ein:',
         'reset_validity' => 'Der Code ist :minutes Minuten gültig.',
         'reset_ignore' => 'Wenn du das nicht warst, ignoriere diese E-Mail: dein Passwort bleibt unverändert.',
+        'deletion_subject' => 'Code zum Löschen deines Kontos',
+        'deletion_intro' => 'du hast die Löschung deines Lista-Spesa-Facile-Kontos angefordert. Gib zur Bestätigung diesen Code auf der Löschseite ein:',
+        'deletion_warning' => 'Die Löschung ist endgültig: Deine Listen mit Artikeln, Fotos und Chats werden auch für die Personen gelöscht, mit denen du sie teilst.',
+        'deletion_ignore' => 'Wenn du das nicht warst, ignoriere diese E-Mail: dein Konto bleibt unverändert.',
         'signature' => 'Lista Spesa Facile',
     ],
     'categories' => [

@@ -192,6 +192,24 @@ S = {
     'profile': ('Profilo', 'Profile', 'Profil', 'Profil', 'Perfil'),
     'logoutQuestion': ('Vuoi uscire?', 'Sign out?', 'Se déconnecter ?', 'Abmelden?', '¿Cerrar sesión?'),
     'logout': ('Esci', 'Sign out', 'Se déconnecter', 'Abmelden', 'Cerrar sesión'),
+    'deleteAccount': ('Elimina account', 'Delete account', 'Supprimer le compte', 'Konto löschen', 'Eliminar cuenta'),
+    'deleteAccountQuestion': ("Eliminare l'account?", 'Delete your account?', 'Supprimer votre compte ?',
+                              'Konto löschen?', '¿Eliminar tu cuenta?'),
+    'deleteAccountMessage': (
+        "L'eliminazione è definitiva e non si può annullare. Le tue liste, con articoli, foto e chat, vengono "
+        "cancellate anche per chi le condivide con te, e sparisci dalle liste degli altri.",
+        "Deletion is permanent and can't be undone. Your lists, with their items, photos and chats, are deleted "
+        "for the people you share them with too, and you leave other people's lists.",
+        "La suppression est définitive et irréversible. Vos listes, avec leurs articles, photos et discussions, "
+        "sont aussi supprimées pour les personnes avec qui vous les partagez, et vous quittez les listes des autres.",
+        "Die Löschung ist endgültig und kann nicht rückgängig gemacht werden. Deine Listen mit Artikeln, Fotos und "
+        "Chats werden auch für die Personen gelöscht, mit denen du sie teilst, und du verlässt die Listen der anderen.",
+        "La eliminación es definitiva y no se puede deshacer. Tus listas, con sus artículos, fotos y chats, también "
+        "se borran para las personas con quienes las compartes, y sales de las listas de los demás."),
+    'deleteAccountConfirm': ('Elimina definitivamente', 'Delete permanently', 'Supprimer définitivement',
+                             'Endgültig löschen', 'Eliminar definitivamente'),
+    'accountDeleted': ('Account eliminato.', 'Account deleted.', 'Compte supprimé.', 'Konto gelöscht.',
+                       'Cuenta eliminada.'),
     'addProfilePhoto': ('Aggiungi foto profilo', 'Add profile photo', 'Ajouter une photo de profil',
                         'Profilbild hinzufügen', 'Añadir foto de perfil'),
     'changeProfilePhoto': ('Cambia foto profilo', 'Change profile photo', 'Changer la photo de profil',

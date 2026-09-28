@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\AccountDeletionController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\AvatarController;
 use App\Http\Controllers\Api\ConfigController;
@@ -24,11 +25,15 @@ Route::middleware('throttle:10,1')->group(function () {
     Route::post('/auth/social/exchange', [AuthController::class, 'exchangeSocialCode']);
     Route::post('/forgot-password', [PasswordResetController::class, 'sendCode']);
     Route::post('/reset-password', [PasswordResetController::class, 'reset']);
+    // Eliminazione dell'account dalla pagina listaspesafacile.com/elimina-account (anche senza l'app).
+    Route::post('/account-deletion/code', [AccountDeletionController::class, 'sendCode']);
+    Route::post('/account-deletion/confirm', [AccountDeletionController::class, 'confirm']);
 });
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/me', [AuthController::class, 'me']);
     Route::post('/logout', [AuthController::class, 'logout']);
+    Route::delete('/me', [AuthController::class, 'destroy']);
     Route::post('/me/avatar', [AvatarController::class, 'store']);
     Route::delete('/me/avatar', [AvatarController::class, 'destroy']);
     Route::get('/users/{user}/avatar', [AvatarController::class, 'show']);

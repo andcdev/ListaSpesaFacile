@@ -1,9 +1,10 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-/// Indirizzo del server predefinito: `flutter run --dart-define=API_URL=https://spesa.tuodominio.it`.
-/// 10.0.2.2 è il localhost della macchina host visto dall'emulatore Android.
-const defaultServerUrl = String.fromEnvironment('API_URL', defaultValue: 'http://10.0.2.2');
+/// Indirizzo del server predefinito: il server di produzione.
+/// Per il backend in locale: `flutter run --dart-define=API_URL=http://10.0.2.2` (10.0.2.2 è il localhost della
+/// macchina host visto dall'emulatore Android), oppure la voce "Server" nella schermata di accesso.
+const defaultServerUrl = String.fromEnvironment('API_URL', defaultValue: 'https://api.listaspesafacile.com');
 
 /// Persistenza del token (in modo sicuro) e dell'indirizzo del server.
 class SessionStorage {

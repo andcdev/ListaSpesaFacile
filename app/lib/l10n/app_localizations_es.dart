@@ -271,6 +271,22 @@ class AppLocalizationsEs extends AppLocalizations {
   String get logout => 'Cerrar sesión';
 
   @override
+  String get deleteAccount => 'Eliminar cuenta';
+
+  @override
+  String get deleteAccountQuestion => '¿Eliminar tu cuenta?';
+
+  @override
+  String get deleteAccountMessage =>
+      'La eliminación es definitiva y no se puede deshacer. Tus listas, con sus artículos, fotos y chats, también se borran para las personas con quienes las compartes, y sales de las listas de los demás.';
+
+  @override
+  String get deleteAccountConfirm => 'Eliminar definitivamente';
+
+  @override
+  String get accountDeleted => 'Cuenta eliminada.';
+
+  @override
   String get addProfilePhoto => 'Añadir foto de perfil';
 
   @override

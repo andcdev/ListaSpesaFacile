@@ -143,7 +143,7 @@ class ServerSettingsTile extends StatelessWidget {
             content: TextField(
               controller: controller,
               keyboardType: TextInputType.url,
-              decoration: const InputDecoration(hintText: 'https://spesa.tuodominio.it'),
+              decoration: const InputDecoration(hintText: 'https://api.listaspesafacile.com'),
             ),
             actions: [
               TextButton(onPressed: () => Navigator.pop(context), child: Text(context.l10n.cancel)),

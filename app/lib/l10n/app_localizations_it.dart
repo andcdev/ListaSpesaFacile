@@ -270,6 +270,22 @@ class AppLocalizationsIt extends AppLocalizations {
   String get logout => 'Esci';
 
   @override
+  String get deleteAccount => 'Elimina account';
+
+  @override
+  String get deleteAccountQuestion => 'Eliminare l\'account?';
+
+  @override
+  String get deleteAccountMessage =>
+      'L\'eliminazione è definitiva e non si può annullare. Le tue liste, con articoli, foto e chat, vengono cancellate anche per chi le condivide con te, e sparisci dalle liste degli altri.';
+
+  @override
+  String get deleteAccountConfirm => 'Elimina definitivamente';
+
+  @override
+  String get accountDeleted => 'Account eliminato.';
+
+  @override
   String get addProfilePhoto => 'Aggiungi foto profilo';
 
   @override

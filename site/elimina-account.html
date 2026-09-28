@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Elimina account — Lista Spesa Facile</title>
+  <meta name="description" content="Elimina il tuo account di Lista Spesa Facile e tutti i tuoi dati, direttamente da qui.">
+  <link rel="canonical" href="https://listaspesafacile.com/elimina-account">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/style.css">
+  <script src="/elimina-account.js" defer></script>
+</head>
+<body>
+  <header class="testata">
+    <div class="contenitore">
+      <a class="marchio" href="/"><img src="/favicon.svg" alt="" width="32" height="32">Lista Spesa Facile</a>
+      <nav class="menu" aria-label="Menu">
+        <a href="/supporto">Supporto</a>
+        <a href="/privacy">Privacy</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="pagina">
+    <div class="contenitore testo">
+      <h1>Elimina il tuo account</h1>
+      <p class="aggiornata">Lista Spesa Facile — eliminazione dell'account e di tutti i dati</p>
+
+      <p>Inserisci l'email con cui usi l'app: ti mandiamo un codice per confermare che la casella è tua. Vale anche se
+        entri con Google, Facebook o Amazon: in quel caso usa l'email di quell'account.</p>
+
+      <form id="passo-email" class="modulo" novalidate>
+        <label for="email">Email</label>
+        <input id="email" name="email" type="email" autocomplete="email" required>
+        <button type="submit" class="pulsante">Mandami il codice</button>
+      </form>
+
+      <form id="passo-codice" class="modulo" hidden novalidate>
+        <p>Se <strong id="email-scelta"></strong> è registrata, riceverai a breve un codice di 6 cifre (valido
+          30 minuti). Controlla anche lo spam.</p>
+        <label for="codice">Codice</label>
+        <input id="codice" name="codice" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}"
+          maxlength="6" required>
+        <label class="spunta"><input id="capito" type="checkbox" required> Ho capito che l'eliminazione è definitiva e
+          non si può annullare.</label>
+        <button type="submit" class="pulsante pericolo">Elimina definitivamente il mio account</button>
+        <button type="button" id="rimanda" class="collegamento">Non è arrivato? Cambia email o richiedilo di nuovo</button>
+      </form>
+
+      <div id="fatto" class="riquadro" hidden role="status">
+        <p><strong>Account eliminato.</strong> I tuoi dati sono stati cancellati. Puoi disinstallare l'app: se la
+          riapri ti chiederà di accedere di nuovo.</p>
+      </div>
+
+      <p id="messaggio" class="messaggio" role="alert" hidden></p>
+
+      <h2>Cosa viene eliminato</h2>
+      <ul>
+        <li>l'account: nome, email, password, lingua e foto del profilo;</li>
+        <li>il collegamento con Google, Facebook o Amazon, se lo usavi per accedere;</li>
+        <li>le liste che hai creato, con articoli, foto, promemoria e chat, anche per le persone con cui le avevi
+          condivise;</li>
+        <li>le condivisioni: sparisci dalle liste degli altri a cui partecipavi;</li>
+        <li>i messaggi e le foto che hai scritto nelle chat;</li>
+        <li>le notifiche e i collegamenti dei tuoi telefoni, che vengono disconnessi.</li>
+      </ul>
+
+      <h2>Cosa resta</h2>
+      <p>Gli articoli che hai aggiunto alle liste di altre persone restano nelle loro liste, senza il tuo nome. I dati
+        tecnici degli accessi (indirizzo IP, data e ora) si cancellano da soli, di norma entro 30 giorni, come
+        spiegato nella <a href="/privacy">privacy policy</a>.</p>
+
+      <div class="riquadro">
+        <p><strong>Non riesci a ricevere il codice?</strong> Scrivi a
+          <a href="mailto:supporto@listaspesafacile.com?subject=Elimina%20account">supporto@listaspesafacile.com</a>
+          dall'indirizzo con cui sei registrato, con oggetto «Elimina account»: lo eliminiamo noi entro 30 giorni.</p>
+        <p><strong>Vuoi solo togliere alcuni dati?</strong> Dall'app puoi eliminare una lista, i suoi articoli e le
+          foto, i tuoi messaggi, la foto del profilo e le notifiche, senza chiudere l'account.</p>
+      </div>
+    </div>
+  </main>
+
+  <footer class="piede">
+    <div class="contenitore">
+      <span>© 2026 Lista Spesa Facile</span>
+      <nav aria-label="Informazioni">
+        <a href="/supporto">Supporto</a>
+        <a href="/privacy">Privacy</a>
+        <a href="/elimina-account">Elimina account</a>
+      </nav>
+    </div>
+  </footer>
+</body>
+</html>

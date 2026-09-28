@@ -1,0 +1,143 @@
+/* Sito vetrina di Lista Spesa Facile: HTML statico, nessuna risorsa di terzi (niente font, script o
+   contatori esterni), così la privacy policy può dire che il sito non traccia nessuno. */
+
+:root {
+  --verde: #2f6b3a;
+  --verde-scuro: #173b1f;
+  --verde-chiaro: #e3efe2;
+  --arancio: #e4572e;
+  --arancio-chiaro: #fbe6dd;
+  --testo: #1d2520;
+  --testo-2: #4c5a50;
+  --sfondo: #fbfaf6;
+  --carta: #ffffff;
+  --bordo: #e2e5dd;
+  color-scheme: light dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --verde: #8fcf96;
+    --verde-scuro: #cfeccf;
+    --verde-chiaro: #1f3324;
+    --arancio: #ff8a65;
+    --arancio-chiaro: #3a2219;
+    --testo: #e8ece6;
+    --testo-2: #aab5ab;
+    --sfondo: #121613;
+    --carta: #1a1f1b;
+    --bordo: #2c342e;
+  }
+}
+
+* { box-sizing: border-box; }
+
+/* hidden deve vincere anche su display: grid/flex dei moduli. */
+[hidden] { display: none !important; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--sfondo);
+  color: var(--testo);
+  font: 17px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+a { color: var(--verde); text-underline-offset: 2px; }
+a:hover { text-decoration-thickness: 2px; }
+
+.contenitore { max-width: 960px; margin: 0 auto; padding: 0 20px; }
+.testo { max-width: 720px; }
+
+/* ── Testata ─────────────────────────────────────────────── */
+header.testata { border-bottom: 1px solid var(--bordo); background: var(--carta); }
+header.testata .contenitore {
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  min-height: 64px; flex-wrap: wrap;
+}
+.marchio {
+  display: flex; align-items: center; gap: 10px;
+  font-weight: 700; font-size: 18px; color: var(--testo); text-decoration: none;
+}
+.marchio img { width: 32px; height: 32px; }
+nav.menu { display: flex; gap: 18px; flex-wrap: wrap; font-size: 15px; }
+nav.menu a { color: var(--testo-2); text-decoration: none; }
+nav.menu a:hover, nav.menu a[aria-current="page"] { color: var(--verde); }
+
+/* ── Home ────────────────────────────────────────────────── */
+.eroe { padding: 72px 0 56px; }
+.eroe h1 { font-size: clamp(34px, 6vw, 52px); line-height: 1.1; margin: 0 0 16px; letter-spacing: -0.02em; }
+.eroe h1 span { color: var(--verde); }
+.eroe p.sottotitolo { font-size: 20px; color: var(--testo-2); margin: 0 0 32px; max-width: 620px; }
+
+.pulsante {
+  display: inline-flex; align-items: center; gap: 10px;
+  background: var(--verde); color: #fff; text-decoration: none; font-weight: 600;
+  padding: 14px 24px; border-radius: 999px;
+}
+@media (prefers-color-scheme: dark) { .pulsante { color: #102414; } }
+.pulsante:hover { filter: brightness(1.08); }
+.nota-pulsante { display: block; margin-top: 12px; font-size: 14px; color: var(--testo-2); }
+
+.funzioni {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px;
+  padding: 8px 0 72px; list-style: none; margin: 0;
+}
+.funzioni li {
+  background: var(--carta); border: 1px solid var(--bordo); border-radius: 16px; padding: 22px;
+}
+.funzioni .icona {
+  display: inline-grid; place-items: center; width: 40px; height: 40px; border-radius: 12px;
+  background: var(--verde-chiaro); font-size: 20px; margin-bottom: 10px;
+}
+.funzioni h2 { font-size: 18px; margin: 0 0 6px; }
+.funzioni p { margin: 0; color: var(--testo-2); font-size: 15px; }
+
+/* ── Pagine di testo ─────────────────────────────────────── */
+main.pagina { padding: 48px 0 72px; }
+main.pagina h1 { font-size: clamp(28px, 5vw, 38px); line-height: 1.2; margin: 0 0 8px; }
+main.pagina .aggiornata { color: var(--testo-2); font-size: 14px; margin: 0 0 32px; }
+main.pagina h2 { font-size: 22px; margin: 40px 0 8px; }
+main.pagina h3 { font-size: 18px; margin: 24px 0 4px; }
+main.pagina li { margin: 4px 0; }
+
+.riquadro {
+  background: var(--verde-chiaro); border-radius: 16px; padding: 18px 22px; margin: 24px 0;
+}
+.riquadro p { margin: 0; }
+.riquadro p + p { margin-top: 8px; }
+
+details { border-bottom: 1px solid var(--bordo); padding: 14px 0; }
+details summary { cursor: pointer; font-weight: 600; }
+details p { margin: 10px 0 0; color: var(--testo-2); }
+
+/* Segnaposto ancora da riempire prima della pubblicazione: impossibile non vederli. */
+.da-completare { background: var(--arancio-chiaro); color: var(--arancio); font-weight: 700; padding: 0 4px; border-radius: 4px; }
+
+/* ── Piede ───────────────────────────────────────────────── */
+footer.piede { border-top: 1px solid var(--bordo); padding: 28px 0 40px; font-size: 14px; color: var(--testo-2); }
+footer.piede .contenitore { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+footer.piede nav { display: flex; gap: 18px; flex-wrap: wrap; }
+footer.piede a { color: var(--testo-2); }
+
+/* ── Moduli (elimina account) ────────────────────────────── */
+.modulo { display: grid; gap: 10px; max-width: 460px; margin: 24px 0; }
+.modulo p { margin: 0 0 6px; }
+.modulo label { font-weight: 600; font-size: 15px; }
+.modulo input[type="email"], .modulo input[inputmode="numeric"] {
+  font: inherit; padding: 12px 14px; border-radius: 12px;
+  border: 1px solid var(--bordo); background: var(--carta); color: var(--testo);
+}
+.modulo input[inputmode="numeric"] { letter-spacing: 0.3em; font-size: 22px; max-width: 220px; }
+.modulo input:focus { outline: 2px solid var(--verde); outline-offset: 1px; }
+.modulo .spunta { display: flex; gap: 10px; align-items: flex-start; font-weight: 400; }
+.modulo .spunta input { margin-top: 5px; width: 18px; height: 18px; accent-color: var(--arancio); }
+.modulo .pulsante { justify-self: start; border: 0; font: inherit; font-weight: 600; cursor: pointer; }
+.modulo .pulsante:disabled { opacity: 0.6; cursor: progress; }
+.pulsante.pericolo { background: var(--arancio); }
+.collegamento {
+  justify-self: start; background: none; border: 0; padding: 0; font: inherit; font-size: 15px;
+  color: var(--verde); text-decoration: underline; text-underline-offset: 2px; cursor: pointer;
+}
+.messaggio { color: var(--arancio); font-weight: 600; }

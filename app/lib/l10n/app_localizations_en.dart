@@ -268,6 +268,22 @@ class AppLocalizationsEn extends AppLocalizations {
   String get logout => 'Sign out';
 
   @override
+  String get deleteAccount => 'Delete account';
+
+  @override
+  String get deleteAccountQuestion => 'Delete your account?';
+
+  @override
+  String get deleteAccountMessage =>
+      'Deletion is permanent and can\'t be undone. Your lists, with their items, photos and chats, are deleted for the people you share them with too, and you leave other people\'s lists.';
+
+  @override
+  String get deleteAccountConfirm => 'Delete permanently';
+
+  @override
+  String get accountDeleted => 'Account deleted.';
+
+  @override
   String get addProfilePhoto => 'Add profile photo';
 
   @override

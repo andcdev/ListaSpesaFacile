@@ -1,5 +1,6 @@
-# Backend Lista Spesa Facile: API Laravel + WebSocket Reverb + MySQL, dietro Caddy (HTTPS automatico).
+# Backend Lista Spesa Facile: API Laravel + WebSocket Reverb + MySQL, dietro Caddy, e il sito vetrina (./site).
 # Uso: cp .env.example .env  →  compila i segreti  →  docker compose up -d --build
+# Sul VPS Caddy sta dietro il proxy edge (repository edge_vps): vedi docker-compose.edge.yml.
 
 name: listaspesafacile-be
 
@@ -145,9 +146,14 @@ services:
       - "443:443/udp"
     environment:
       SITE_ADDRESS: ${SITE_ADDRESS:-:80}
+      # Nome del sito vetrina: le richieste per questo nome ricevono ./site, tutte le altre l'API.
+      SITE_HOST: ${SITE_HOST:-sito.localhost}
+      # Chiave che l'app manda in X-App-Key (--dart-define=CLIENT_KEY=…). Vuota = controllo spento.
+      CLIENT_KEY: ${CLIENT_KEY:-}
     volumes:
       - ./backend/docker/Caddyfile:/etc/caddy/Caddyfile:ro
       - ./backend/public:/var/www/html/public:ro
+      - ./site:/srv/sito:ro
       - caddy_data:/data
       - caddy_config:/config
     networks:

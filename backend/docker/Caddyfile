@@ -1,15 +1,53 @@
-# SITE_ADDRESS=":80" in locale; sul VPS il dominio (es. spesa.example.com) → HTTPS automatico con Let's Encrypt.
+# Due nomi, un Caddy:
+#   SITE_HOST (listaspesafacile.com)  → sito vetrina, HTML statico da ./site, indicizzato
+#   tutti gli altri (api.…)           → API Laravel + WebSocket Reverb, solo per l'app
+#
+# Sul VPS il Caddy non ha porte: HTTPS e certificati li gestisce il proxy edge (repository edge_vps),
+# che inoltra qui sulla rete proxy-lsf (vedi docker-compose.edge.yml). In locale SITE_ADDRESS=":80"
+# e il sito si apre su http://sito.localhost.
 {$SITE_ADDRESS::80} {
 	encode gzip
 
-	# WebSocket (protocollo Pusher) verso Reverb: wss://dominio/app/{APP_KEY}
-	handle /app/* {
-		reverse_proxy reverb:8080
+	@sito host {$SITE_HOST:sito.localhost}
+	handle @sito {
+		# La pagina /elimina-account chiede e conferma il codice qui, alla stessa origine: niente CORS e niente
+		# X-App-Key (la pagina è pubblica). Dal sito arriva a Laravel solo questo.
+		handle /api/account-deletion/* {
+			root * /var/www/html/public
+			php_fastcgi app:9000
+		}
+
+		handle {
+			root * /srv/sito
+			try_files {path} {path}.html {path}/index.html
+			file_server
+		}
 	}
 
 	handle {
-		root * /var/www/html/public
-		php_fastcgi app:9000
-		file_server
+		# L'API non deve finire nei motori di ricerca.
+		header X-Robots-Tag "noindex, nofollow"
+
+		route {
+			respond /robots.txt "User-agent: *
+Disallow: /
+" 200
+
+			# Solo l'app: senza X-App-Key giusta un 404 vuoto, e Laravel non viene nemmeno svegliato.
+			# /auth/* resta aperto: il login social lo apre il browser di sistema, che l'header non lo manda.
+			# Con CLIENT_KEY vuota (in locale) il controllo è spento.
+			@senzaChiave {
+				expression `"{$CLIENT_KEY}" != "" && {header.X-App-Key} != "{$CLIENT_KEY}"`
+				not path /auth/*
+			}
+			respond @senzaChiave 404
+
+			# WebSocket (protocollo Pusher) verso Reverb: wss://dominio/app/{APP_KEY}
+			reverse_proxy /app/* reverb:8080
+
+			root * /var/www/html/public
+			php_fastcgi app:9000
+			file_server
+		}
 	}
 }
