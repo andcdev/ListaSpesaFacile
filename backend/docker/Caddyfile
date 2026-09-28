@@ -1,5 +1,5 @@
 # Due nomi, un Caddy:
-#   SITE_HOST (listaspesafacile.com)  → sito vetrina, HTML statico da ./site, indicizzato
+#   SITE_HOST (listaspesafacile.com)  → sito vetrina, HTML statico da ./site (indicizzato solo con SITE_INDEXABLE=si)
 #   tutti gli altri (api.…)           → API Laravel + WebSocket Reverb, solo per l'app
 #
 # Sul VPS il Caddy non ha porte: HTTPS e certificati li gestisce il proxy edge (repository edge_vps),
@@ -10,6 +10,13 @@
 
 	@sito host {$SITE_HOST:sito.localhost}
 	handle @sito {
+		# Motori di ricerca tenuti fuori finché SITE_INDEXABLE non vale "si": header noindex su ogni risposta e
+		# robots.txt che chiude tutto. È la regola che rispettano Google, Bing e gli altri motori seri; i bot che
+		# la ignorano non si fermano con un file, e bloccarli per user agent terrebbe fuori anche i controlli di
+		# Google Play e Facebook sulle pagine di privacy ed eliminazione account.
+		@nonIndicizzare expression `"{$SITE_INDEXABLE:no}" != "si"`
+		header @nonIndicizzare X-Robots-Tag "noindex, nofollow, noarchive"
+
 		# La pagina /elimina-account chiede e conferma il codice qui, alla stessa origine: niente CORS e niente
 		# X-App-Key (la pagina è pubblica). Dal sito arriva a Laravel solo questo.
 		handle /api/account-deletion/* {
@@ -18,6 +25,14 @@
 		}
 
 		handle {
+			@robotsChiuso {
+				path /robots.txt
+				expression `"{$SITE_INDEXABLE:no}" != "si"`
+			}
+			respond @robotsChiuso "User-agent: *
+Disallow: /
+" 200
+
 			root * /srv/sito
 			try_files {path} {path}.html {path}/index.html
 			file_server

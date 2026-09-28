@@ -148,6 +148,8 @@ services:
       SITE_ADDRESS: ${SITE_ADDRESS:-:80}
       # Nome del sito vetrina: le richieste per questo nome ricevono ./site, tutte le altre l'API.
       SITE_HOST: ${SITE_HOST:-sito.localhost}
+      # "si" = il sito vetrina si fa indicizzare; altrimenti noindex e robots.txt con Disallow: /.
+      SITE_INDEXABLE: ${SITE_INDEXABLE:-no}
       # Chiave che l'app manda in X-App-Key (--dart-define=CLIENT_KEY=…). Vuota = controllo spento.
       CLIENT_KEY: ${CLIENT_KEY:-}
     volumes:
