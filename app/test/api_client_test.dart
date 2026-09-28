@@ -7,6 +7,22 @@ import 'package:lista_spesa_facile/models/shopping_list.dart';
 import 'package:lista_spesa_facile/services/api_client.dart';
 
 void main() {
+  // Con --dart-define=CLIENT_KEY=… ogni richiesta porta X-App-Key; senza, l'header non c'è.
+  test('manda la chiave dell\'app in X-App-Key solo se la build ne ha una', () async {
+    late http.Request sent;
+    final api = ApiClient(
+      baseUrl: 'https://spesa.example.com',
+      httpClient: MockClient((request) async {
+        sent = request;
+        return http.Response(jsonEncode({'data': []}), 200);
+      }),
+    );
+
+    await api.lists();
+    expect(sent.headers['X-App-Key'], clientKey.isEmpty ? isNull : clientKey);
+    expect(api.authHeaders['X-App-Key'], clientKey.isEmpty ? isNull : clientKey);
+  });
+
   test('invia il token e converte gli errori di validazione di Laravel', () async {
     late http.Request sent;
     final api = ApiClient(

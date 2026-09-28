@@ -111,25 +111,43 @@ Le migrazioni vengono eseguite automaticamente all'avvio del container `app`.
 
 ### Sul VPS
 
-1. Punta il DNS del dominio (es. `spesa.tuodominio.it`) all'IP del VPS e apri le porte 80 e 443.
+Sul VPS le porte 80 e 443 le tiene il proxy edge (repository `edge_vps`), condiviso con gli altri siti:
+gestisce HTTPS e certificati e inoltra `listaspesafacile.com` e `api.listaspesafacile.com` al Caddy di
+questo stack sulla rete `proxy-lsf`. Il Caddy di qui non pubblica porte.
+
+1. DNS: record A di `listaspesafacile.com`, `www` e `api` verso l'IP del VPS.
 2. Nel `.env`:
    ```
-   SITE_ADDRESS=spesa.tuodominio.it
-   APP_URL=https://spesa.tuodominio.it
-   REVERB_PUBLIC_HOST=spesa.tuodominio.it
+   COMPOSE_FILE=docker-compose.yml:docker-compose.edge.yml
+   SITE_ADDRESS=:80
+   SITE_HOST=listaspesafacile.com
+   APP_URL=https://api.listaspesafacile.com
+   CLIENT_KEY=<openssl rand -hex 24>
+   REVERB_PUBLIC_HOST=api.listaspesafacile.com
    REVERB_PUBLIC_PORT=443
    REVERB_PUBLIC_SCHEME=https
    ```
-3. `docker compose up -d --build`: Caddy ottiene da solo il certificato Let's Encrypt.
+3. La rete `proxy-lsf` deve esistere (`edge_vps/reti.sh`), poi `docker compose up -d --build`.
 
 Aggiornamento dopo un `git pull`: `docker compose up -d --build`.
 Log: `docker compose logs -f app reverb`.
+
+### Chi risponde a cosa
+
+| Nome | Risposta |
+|---|---|
+| `listaspesafacile.com` | Sito vetrina, file statici da `site/` (Home, Privacy, Elimina account, Supporto) |
+| `api.listaspesafacile.com` | API e WebSocket, solo con `X-App-Key` uguale a `CLIENT_KEY`; senza → 404 vuoto |
+| `api.…/auth/*` | Login social, aperto senza chiave (lo apre il browser di sistema) |
+| `api.…/robots.txt` | `Disallow: /`, e `X-Robots-Tag: noindex` su ogni risposta dell'API |
+
+In locale il sito si apre su <http://sito.localhost> e, con `CLIENT_KEY` vuota, l'API non chiede la chiave.
 
 ### Servizi
 
 | Servizio | Ruolo |
 |---|---|
-| `caddy` | Reverse proxy e HTTPS: `/app/*` → Reverb, tutto il resto → PHP-FPM |
+| `caddy` | Reverse proxy: sito vetrina, controllo di `X-App-Key`, `/app/*` → Reverb, tutto il resto → PHP-FPM (HTTPS in locale no, sul VPS lo fa l'edge) |
 | `app` | API Laravel (PHP-FPM), esegue le migrazioni all'avvio |
 | `reverb` | Server WebSocket (`php artisan reverb:start`) |
 | `worker` | Coda (`queue:work`): invia le notifiche push a Firebase senza rallentare le richieste |
@@ -148,7 +166,7 @@ Log: `docker compose logs -f app reverb`.
 Non è esposto su Internet. Dal tuo PC apri un tunnel SSH verso il VPS:
 
 ```bash
-ssh -L 8081:127.0.0.1:8081 utente@spesa.tuodominio.it
+ssh -L 8081:127.0.0.1:8081 utente@89.58.9.88
 ```
 
 poi vai su <http://localhost:8081> ed entra con `DB_USERNAME` / `DB_PASSWORD` (o `root` / `DB_ROOT_PASSWORD`).
@@ -233,9 +251,13 @@ Richiede Flutter 3.47 o successivo.
 cd app
 flutter pub get
 flutter run                                              # emulatore Android → backend su http://10.0.2.2
-flutter run --dart-define=API_URL=https://spesa.tuodominio.it
-flutter build apk --release --dart-define=API_URL=https://spesa.tuodominio.it
+flutter run --dart-define=API_URL=https://api.listaspesafacile.com --dart-define=CLIENT_KEY=<CLIENT_KEY del server>
+flutter build appbundle --release --dart-define=API_URL=https://api.listaspesafacile.com --dart-define=CLIENT_KEY=<CLIENT_KEY del server>
 ```
+
+`CLIENT_KEY` viaggia in `X-App-Key` con ogni richiesta, con le immagini e con l'apertura del WebSocket: senza, il
+server di produzione risponde 404. La chiave si può estrarre dall'APK, quindi tiene lontani bot e curiosi ma non
+sostituisce il login.
 
 L'indirizzo del server si può cambiare anche dalla schermata di accesso (voce **Server**).
 Su un telefono fisico in rete locale usa l'IP del PC, es. `http://192.168.1.20`.

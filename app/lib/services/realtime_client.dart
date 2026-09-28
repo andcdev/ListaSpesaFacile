@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'package:flutter/foundation.dart';
+import 'package:web_socket_channel/io.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 import 'api_client.dart';
@@ -140,7 +141,8 @@ class RealtimeClient {
     );
 
     try {
-      final socket = WebSocketChannel.connect(uri);
+      // IOWebSocketChannel e non WebSocketChannel.connect: serve per mandare X-App-Key con l'apertura.
+      final socket = IOWebSocketChannel.connect(uri, headers: ApiClient.clientHeaders);
       _socket = socket;
       _lastMessage = DateTime.now();
       _socketSub = socket.stream.listen(

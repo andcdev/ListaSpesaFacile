@@ -109,6 +109,10 @@ class GlobalShares {
   final List<AppUser> sharedBy;
 }
 
+/// Chiave dell'app, mandata in X-App-Key con ogni richiesta e con il WebSocket: senza, il server risponde 404.
+/// Si passa alla build: `--dart-define=CLIENT_KEY=…`. Vuota = header non inviato (server locale senza controllo).
+const clientKey = String.fromEnvironment('CLIENT_KEY');
+
 /// Client REST per il backend Laravel (autenticazione con token Sanctum).
 class ApiClient {
   ApiClient({required this.baseUrl, http.Client? httpClient}) : _http = httpClient ?? http.Client();
@@ -436,8 +440,11 @@ class ApiClient {
     return GlobalShares(sharedWith: users('shared_with'), sharedBy: users('shared_by'));
   }
 
+  /// Header che fanno riconoscere l'app al server (X-App-Key), anche all'apertura del WebSocket.
+  static Map<String, String> get clientHeaders => {if (clientKey.isNotEmpty) 'X-App-Key': clientKey};
+
   /// Header di autenticazione, per caricare le immagini protette (es. Image.network).
-  Map<String, String> get authHeaders => {if (token != null) 'Authorization': 'Bearer $token'};
+  Map<String, String> get authHeaders => {...clientHeaders, if (token != null) 'Authorization': 'Bearer $token'};
 
   Map<String, String> get _headers => {'Accept': 'application/json', 'Accept-Language': language, ...authHeaders};
 

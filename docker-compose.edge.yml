@@ -1,0 +1,21 @@
+# Lista Spesa Facile dietro il proxy edge (repository edge_vps), sul VPS.
+#
+# Si accende dal .env con:  COMPOSE_FILE=docker-compose.yml:docker-compose.edge.yml
+# e da quel momento ogni "docker compose" lo legge insieme al file principale.
+#
+# Caddy non pubblica più porte: 80/443 e certificati sono dell'edge, che inoltra qui in HTTP
+# sulla rete proxy-lsf (creata da edge_vps/reti.sh) cercando il nome "lsf-caddy".
+# In locale non serve: senza COMPOSE_FILE Caddy pubblica la porta 80 come sempre.
+#
+# Serve docker compose 2.24.4 o successivo (per "!reset").
+services:
+  caddy:
+    ports: !reset []
+    networks:
+      proxy:
+        aliases: [lsf-caddy]
+
+networks:
+  proxy:
+    name: proxy-lsf
+    external: true
