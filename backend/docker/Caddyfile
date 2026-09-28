@@ -1,0 +1,15 @@
+# SITE_ADDRESS=":80" in locale; sul VPS il dominio (es. spesa.example.com) → HTTPS automatico con Let's Encrypt.
+{$SITE_ADDRESS::80} {
+	encode gzip
+
+	# WebSocket (protocollo Pusher) verso Reverb: wss://dominio/app/{APP_KEY}
+	handle /app/* {
+		reverse_proxy reverb:8080
+	}
+
+	handle {
+		root * /var/www/html/public
+		php_fastcgi app:9000
+		file_server
+	}
+}

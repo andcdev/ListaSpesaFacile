@@ -1,0 +1,3 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Usata solo per nome dal codice Dart (notifiche): non va eliminata dalla build release. -->
+<resources xmlns:tools="http://schemas.android.com/tools" tools:keep="@drawable/ic_notification" />

@@ -1,0 +1,7 @@
+.env
+/secrets/*
+!/secrets/README.md
+
+# Build artifacts
+*.apk
+*.aab

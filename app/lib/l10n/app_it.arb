@@ -1,0 +1,568 @@
+{
+  "@@locale": "it",
+  "cancel": "Annulla",
+  "delete": "Elimina",
+  "save": "Salva",
+  "ok": "OK",
+  "retry": "Riprova",
+  "remove": "Rimuovi",
+  "add": "Aggiungi",
+  "confirm": "Conferma",
+  "edit": "Modifica",
+  "share": "Condividi",
+  "email": "Email",
+  "password": "Password",
+  "name": "Nome",
+  "today": "Oggi",
+  "tomorrow": "Domani",
+  "yesterday": "Ieri",
+  "canEdit": "Può modificare",
+  "readOnly": "Sola lettura",
+  "userCanEdit": "può modificare",
+  "userReadOnly": "sola lettura",
+  "invalidEmail": "Inserisci un'email valida",
+  "enterRegisteredEmail": "Inserisci l'email di un utente registrato",
+  "atLeast8": "Almeno 8 caratteri",
+  "confirmPassword": "Conferma password",
+  "passwordsDontMatch": "Le password non coincidono",
+  "nobody": "Nessuno.",
+  "myLists": "Le mie liste",
+  "other": "Altro",
+  "language": "Lingua",
+  "languageValue": "Lingua: {language}",
+  "@languageValue": {
+    "placeholders": {
+      "language": {
+        "type": "String"
+      }
+    }
+  },
+  "languageSystem": "Come il telefono ({language})",
+  "@languageSystem": {
+    "placeholders": {
+      "language": {
+        "type": "String"
+      }
+    }
+  },
+  "background": "Sfondo",
+  "backgroundValue": "Sfondo: {value}",
+  "@backgroundValue": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "themeLight": "Chiaro",
+  "themeDark": "Scuro",
+  "themeSystem": "Come il telefono",
+  "errTimeout": "Il server non risponde. Riprova più tardi.",
+  "errNetwork": "Impossibile contattare il server. Controlla la connessione.",
+  "errSessionExpired": "Sessione scaduta. Accedi di nuovo.",
+  "errForbidden": "Non hai i permessi per questa operazione.",
+  "errNotFound": "Elemento non trovato (forse è stato eliminato).",
+  "errTooMany": "Troppi tentativi. Attendi un minuto.",
+  "errServer": "Errore del server. Riprova più tardi.",
+  "errUnexpected": "Errore imprevisto ({status}).",
+  "@errUnexpected": {
+    "placeholders": {
+      "status": {
+        "type": "int"
+      }
+    }
+  },
+  "checkYourEmail": "Controlla la tua email.",
+  "enterPassword": "Inserisci la password",
+  "forgotPasswordQuestion": "Password dimenticata?",
+  "signIn": "Accedi",
+  "noAccount": "Non hai un account? Registrati",
+  "server": "Server",
+  "serverAddress": "Indirizzo del server",
+  "socialNotActiveTitle": "Accesso con {provider} non ancora attivo",
+  "@socialNotActiveTitle": {
+    "placeholders": {
+      "provider": {
+        "type": "String"
+      }
+    }
+  },
+  "socialNotActiveBody": "Il server non è ancora collegato a {provider}. Chi gestisce il server deve registrare l'app presso {provider} e inserire ID e secret nel file .env (vedi il README, \"Accesso con Google, Facebook e Amazon\").\n\nNel frattempo puoi registrarti con email e password.",
+  "@socialNotActiveBody": {
+    "placeholders": {
+      "provider": {
+        "type": "String"
+      }
+    }
+  },
+  "or": "oppure",
+  "continueWith": "Continua con {provider}",
+  "@continueWith": {
+    "placeholders": {
+      "provider": {
+        "type": "String"
+      }
+    }
+  },
+  "socialOpenFailed": "Impossibile aprire l'accesso con {provider}.",
+  "@socialOpenFailed": {
+    "placeholders": {
+      "provider": {
+        "type": "String"
+      }
+    }
+  },
+  "socialFailed": "Accesso non riuscito.",
+  "hidePassword": "Nascondi la password",
+  "showPassword": "Mostra la password",
+  "createAccount": "Crea un account",
+  "enterYourName": "Inserisci il tuo nome",
+  "signUp": "Registrati",
+  "forgotPasswordTitle": "Password dimenticata",
+  "resetCodeSentInfo": "Ti abbiamo inviato un codice di 6 cifre (controlla anche lo spam). Inseriscilo e scegli la nuova password.",
+  "resetInfo": "Inserisci l'email del tuo account: ti invieremo un codice per scegliere una nuova password.",
+  "resetCodeLabel": "Codice ricevuto via email",
+  "resetCodeInvalid": "Il codice ha 6 cifre",
+  "newPassword": "Nuova password",
+  "setNewPassword": "Imposta la nuova password",
+  "sendCode": "Invia il codice",
+  "resendCode": "Non è arrivato? Invia di nuovo",
+  "deleteListNamed": "Eliminare \"{name}\"?",
+  "@deleteListNamed": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "deleteListSharedInfo": "La lista sparirà anche per gli utenti con cui è condivisa.",
+  "profilePhotoTitle": "Foto profilo (visibile nella chat)",
+  "profilePhotoUpdated": "Foto profilo aggiornata.",
+  "globalSharing": "Condivisione globale",
+  "profile": "Profilo",
+  "logoutQuestion": "Vuoi uscire?",
+  "logout": "Esci",
+  "addProfilePhoto": "Aggiungi foto profilo",
+  "changeProfilePhoto": "Cambia foto profilo",
+  "newList": "Nuova lista",
+  "noUpcoming": "Nessuna spesa in programma.",
+  "upcomingTab": "In programma",
+  "pastTab": "Passate · {count}",
+  "@pastTab": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "toBuyCount": "{count} da prendere",
+  "@toBuyCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "listCompleteBadge": "Completa",
+  "listEmptyBadge": "Vuota",
+  "viewingNowShort": "qui ora: {names}",
+  "@viewingNowShort": {
+    "placeholders": {
+      "names": {
+        "type": "String"
+      }
+    }
+  },
+  "byOwner": "di {name}",
+  "@byOwner": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "noLists": "Nessuna lista.\nCreane una con il pulsante \"Nuova lista\".",
+  "realtimeOn": "Aggiornamenti in tempo reale attivi",
+  "realtimeOff": "Tempo reale non connesso",
+  "notifications": "Notifiche",
+  "editList": "Modifica lista",
+  "alreadyAdded": "Già aggiunto",
+  "listNameHint": "es. Spesa settimanale",
+  "renameLocked": "Il proprietario non consente di cambiare il nome",
+  "listNameRequired": "Dai un nome alla lista",
+  "notesLabel": "Note (facoltative)",
+  "notesHint": "es. supermercato, promozioni…",
+  "reminder": "Promemoria",
+  "noReminder": "Nessun promemoria",
+  "durationBefore": "{duration} prima",
+  "@durationBefore": {
+    "placeholders": {
+      "duration": {
+        "type": "String"
+      }
+    }
+  },
+  "customReminderOption": "Personalizzato…",
+  "whoToNotify": "Chi avvisare",
+  "reminderOwner": "Solo il creatore",
+  "reminderMembers": "Solo i destinatari",
+  "reminderAll": "Creatore e destinatari",
+  "shareWith": "Condividi con",
+  "userEmail": "Email dell'utente",
+  "userEmailOptional": "Email dell'utente (facoltativo)",
+  "willBeNotified": "Riceverà una notifica quando crei la lista",
+  "permissions": "Permessi",
+  "membersCanRenameTitle": "Chi può modificare può cambiare anche il nome",
+  "membersCanRenameOn": "Gli utenti con permesso di modifica possono rinominare la lista",
+  "membersCanRenameOff": "Solo tu puoi cambiare il nome; gli altri modificano gli articoli",
+  "saveChanges": "Salva modifiche",
+  "createList": "Crea lista",
+  "customReminder": "Promemoria personalizzato",
+  "howEarly": "Quanto prima",
+  "unitMinutes": "minuti",
+  "unitHours": "ore",
+  "unitDays": "giorni",
+  "reminderRange": "Da 1 minuto a 30 giorni",
+  "durationDays": "{count, plural, =1{1 giorno} other{{count} giorni}}",
+  "@durationDays": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "durationHours": "{count, plural, =1{1 ora} other{{count} ore}}",
+  "@durationHours": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "durationMinutes": "{count, plural, =1{1 minuto} other{{count} minuti}}",
+  "@durationMinutes": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "durationMoments": "pochi istanti",
+  "listAnd": "{head} e {last}",
+  "@listAnd": {
+    "placeholders": {
+      "head": {
+        "type": "String"
+      },
+      "last": {
+        "type": "String"
+      }
+    }
+  },
+  "canEditSubtitle": "Aggiunge, spunta ed elimina articoli",
+  "listSharedWith": "Lista condivisa con {email}",
+  "@listSharedWith": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "removeUserQuestion": "Rimuovere {name}?",
+  "@removeUserQuestion": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "removeUserInfo": "Non vedrà più questa lista.",
+  "sharedWith": "Condivisa con",
+  "nobodyYet": "Nessuno, per ora.",
+  "globalShareHint": "Per condividere tutte le tue liste con qualcuno, usa la \"Condivisione globale\" dalla schermata principale.",
+  "allListsSharedWith": "Tutte le tue liste sono ora condivise con {email}",
+  "@allListsSharedWith": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "stopSharingWith": "Smettere di condividere con {name}?",
+  "@stopSharingWith": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "stopReceivingFrom": "Non vedere più le liste di {name}?",
+  "@stopReceivingFrom": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "globalShareInfo": "Le persone indicate qui vedono tutte le tue liste, comprese quelle che creerai in futuro.",
+  "iShareWith": "Condivido tutte le mie liste con",
+  "sharedWithMe": "Condividono tutte le loro liste con me",
+  "stopReceiving": "Non ricevere più",
+  "deleteAllNotificationsQuestion": "Eliminare tutte le notifiche?",
+  "markAllRead": "Segna tutte lette",
+  "deleteAll": "Elimina tutte",
+  "noNotifications": "Nessuna notifica.",
+  "channelName": "Liste della spesa",
+  "channelDescription": "Promemoria, condivisioni e messaggi delle liste",
+  "you": "Tu",
+  "serviceChannelName": "Collegamento in background",
+  "serviceChannelDescription": "Tiene l'app collegata per ricevere liste e messaggi anche quando è chiusa",
+  "serviceNotificationText": "Pronta a ricevere liste e messaggi",
+  "reminderTitle": "Promemoria: {name}",
+  "@reminderTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "reminderBody": "La spesa è tra {duration}.",
+  "@reminderBody": {
+    "placeholders": {
+      "duration": {
+        "type": "String"
+      }
+    }
+  },
+  "sendPhoto": "Invia una foto",
+  "deleteMessageQuestion": "Eliminare il messaggio?",
+  "deleteMessageInfo": "Sparirà per tutti.",
+  "writeMessage": "Scrivi un messaggio",
+  "send": "Invia",
+  "deletedUser": "Utente eliminato",
+  "messageReceived": "Ricevuto",
+  "messageSent": "Inviato",
+  "emptyChat": "Nessun messaggio.\nScrivi, detta con il microfono o invia una foto a chi condivide la lista: \"Sono al banco frigo, manca qualcosa?\"",
+  "pickFromGallery": "Scegli dalla galleria",
+  "takePhoto": "Scatta una foto",
+  "removePhoto": "Rimuovi la foto",
+  "imageUnavailable": "Immagine non disponibile",
+  "voiceUnavailable": "Riconoscimento vocale non disponibile su questo telefono: installa o attiva l'app Google (riconoscimento vocale di Google).",
+  "voiceMicPermission": "Per dettare consenti all'app l'uso del microfono nelle impostazioni del telefono.",
+  "voiceNoMatch": "Non ho sentito nulla: tocca il microfono e parla subito.",
+  "voiceNetwork": "Riconoscimento vocale non raggiungibile: controlla la connessione.",
+  "voiceBusy": "Il microfono è occupato, riprova tra un attimo.",
+  "voiceLanguageUnavailable": "{language} non disponibile per la dettatura: scaricalo nelle impostazioni della voce di Google.",
+  "@voiceLanguageUnavailable": {
+    "placeholders": {
+      "language": {
+        "type": "String"
+      }
+    }
+  },
+  "voiceNotUnderstood": "Non ho capito, riprova.",
+  "stopListening": "Smetti di ascoltare",
+  "dictate": "Detta a voce",
+  "exportNotFound": "non trovato",
+  "exportTaken": "{taken} di {total} presi",
+  "@exportTaken": {
+    "placeholders": {
+      "taken": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "pdfPage": "pagina {page} di {total}",
+  "@pdfPage": {
+    "placeholders": {
+      "page": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "pdfSummary": "Presi: {taken} · Non trovati: {missing} · Da prendere: {todo}",
+  "@pdfSummary": {
+    "placeholders": {
+      "taken": {
+        "type": "int"
+      },
+      "missing": {
+        "type": "int"
+      },
+      "todo": {
+        "type": "int"
+      }
+    }
+  },
+  "numericDatePattern": "dd/MM/y",
+  "listUnavailable": "La lista non è più disponibile.",
+  "deleteListQuestion": "Eliminare la lista?",
+  "deleteListInfo": "Verrà eliminata anche per chi la condivide.",
+  "leaveListQuestion": "Abbandonare la lista?",
+  "leaveListInfo": "Non la vedrai più finché non ti verrà ricondivisa.",
+  "leave": "Abbandona",
+  "listPhotoUpdated": "Foto della lista aggiornata.",
+  "photoOf": "Foto di {name}",
+  "@photoOf": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "deleteItemQuestion": "Eliminare «{name}» dalla lista?",
+  "@deleteItemQuestion": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "deleteItemInfo": "Sparirà dalla lista per tutti. Se l'hai solo messo nel carrello, spuntalo come preso.",
+  "putBackToBuy": "Rimetti da prendere",
+  "takenInCart": "Preso (nel carrello)",
+  "notFound": "Non trovato",
+  "addPhoto": "Aggiungi una foto",
+  "changePhoto": "Cambia foto",
+  "deleteFromList": "Elimina dalla lista",
+  "deleteFromListInfo": "Diverso da \"preso\": l'articolo sparisce per tutti",
+  "sendOrExportList": "Invia o esporta la lista",
+  "exportTextInfo": "Testo con le spunte, scegli tu la chat",
+  "exportPdfInfo": "Da stampare o inviare (anche su WhatsApp o Telegram)",
+  "otherApps": "Altre app",
+  "appNotInstalled": "{app} non è installato su questo telefono.",
+  "@appNotInstalled": {
+    "placeholders": {
+      "app": {
+        "type": "String"
+      }
+    }
+  },
+  "list": "Lista",
+  "closeChat": "Chiudi la chat",
+  "chat": "Chat",
+  "sendOrExport": "Invia o esporta",
+  "clearTaken": "Rimuovi articoli presi",
+  "deleteList": "Elimina lista",
+  "leaveList": "Abbandona lista",
+  "cannotLoadList": "Impossibile caricare la lista.",
+  "reminderBefore": "Promemoria {duration} prima",
+  "@reminderBefore": {
+    "placeholders": {
+      "duration": {
+        "type": "String"
+      }
+    }
+  },
+  "readOnlyAccess": "Hai accesso in sola lettura",
+  "emptyList": "La lista è vuota.\nAggiungi il primo articolo qui sotto.",
+  "inCart": "{checked} di {total} nel carrello",
+  "@inCart": {
+    "placeholders": {
+      "checked": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "notFoundCount": "{count, plural, =1{1 non trovato} other{{count} non trovati}}",
+  "@notFoundCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "takenBy": "preso da {name}",
+  "@takenBy": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "notFoundLower": "non trovato",
+  "notFoundBy": "non trovato ({name})",
+  "@notFoundBy": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "markToBuyAgain": "Segna di nuovo da prendere",
+  "markMissing": "Non preso (non trovato)",
+  "itemMenu": "Modifica, foto o elimina",
+  "onlyYouViewing": "Solo tu stai guardando questa lista",
+  "viewingNow": "Qui ora: {names}",
+  "@viewingNow": {
+    "placeholders": {
+      "names": {
+        "type": "String"
+      }
+    }
+  },
+  "typing": "{count, plural, =1{{names} sta scrivendo…} other{{names} stanno scrivendo…}}",
+  "@typing": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "names": {
+        "type": "String"
+      }
+    }
+  },
+  "productPhoto": "Foto del prodotto",
+  "oftenBought": "Compri spesso:",
+  "timesInList": "{count, plural, =1{Già messo in lista 1 volta} other{Già messo in lista {count} volte}}",
+  "@timesInList": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "addProductHint": "Agg. prodotto...",
+  "quantityAndWeight": "Quantità e peso",
+  "changeQuantityAndWeight": "Cambia quantità e peso",
+  "amountExampleError": "Scrivi un numero, es. 500 oppure 1,5",
+  "quantity": "Quantità",
+  "less": "Meno",
+  "more": "Più",
+  "weightOrVolume": "Peso o volume",
+  "amountHint": "es. 500",
+  "clearMeasure": "Togli",
+  "done": "Fatto",
+  "invalidImageUrl": "Inserisci un link che inizia con https://",
+  "invalidNumber": "Numero non valido",
+  "emojiTooLong": "Al massimo una o due emoji",
+  "addProductPhoto": "Aggiungi una foto del prodotto",
+  "changeOrRemovePhoto": "Cambia o rimuovi la foto",
+  "editItem": "Modifica articolo",
+  "product": "Prodotto",
+  "quantityOptional": "Quantità (facoltativa)",
+  "weightOptional": "Peso o volume (facoltativo)",
+  "department": "Reparto",
+  "departmentHelper": "Riconosciuto dal nome: cambialo se non è giusto",
+  "emojiOptional": "Emoji (facoltativa)",
+  "recognizedEmoji": "Riconosciuta: {emoji}",
+  "@recognizedEmoji": {
+    "placeholders": {
+      "emoji": {
+        "type": "String"
+      }
+    }
+  },
+  "fromName": "dal nome",
+  "useRecognizedEmoji": "Usa quella riconosciuta dal nome",
+  "imageLinkOptional": "Link a un'immagine (facoltativo)"
+}

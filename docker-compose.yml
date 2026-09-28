@@ -1,0 +1,191 @@
+# Backend Lista Spesa Facile: API Laravel + WebSocket Reverb + MySQL, dietro Caddy (HTTPS automatico).
+# Uso: cp .env.example .env  →  compila i segreti  →  docker compose up -d --build
+
+name: listaspesafacile-be
+
+x-laravel-env: &laravel-env
+  APP_NAME: "Lista Spesa Facile"
+  APP_ENV: production
+  APP_DEBUG: "false"
+  APP_KEY: ${APP_KEY:?imposta APP_KEY nel file .env}
+  APP_URL: ${APP_URL:-http://localhost}
+  APP_LOCALE: it
+  LOG_CHANNEL: stderr
+  LOG_LEVEL: ${LOG_LEVEL:-warning}
+  DB_CONNECTION: mysql
+  DB_HOST: mysql
+  DB_PORT: 3306
+  DB_DATABASE: ${DB_DATABASE:-listaspesa}
+  DB_USERNAME: ${DB_USERNAME:-listaspesa}
+  DB_PASSWORD: ${DB_PASSWORD:?imposta DB_PASSWORD nel file .env}
+  CACHE_STORE: database
+  SESSION_DRIVER: database
+  # Coda su database: la usano solo le notifiche push (container "worker").
+  QUEUE_CONNECTION: database
+  BROADCAST_CONNECTION: reverb
+  REVERB_APP_ID: ${REVERB_APP_ID:?imposta REVERB_APP_ID nel file .env}
+  REVERB_APP_KEY: ${REVERB_APP_KEY:?imposta REVERB_APP_KEY nel file .env}
+  REVERB_APP_SECRET: ${REVERB_APP_SECRET:?imposta REVERB_APP_SECRET nel file .env}
+  # Laravel pubblica gli eventi su Reverb all'interno della rete docker.
+  REVERB_HOST: reverb
+  REVERB_PORT: 8080
+  REVERB_SCHEME: http
+  REVERB_SERVER_HOST: 0.0.0.0
+  REVERB_SERVER_PORT: 8080
+  # Indirizzo WebSocket che l'app mobile riceve da GET /api/config.
+  REVERB_PUBLIC_HOST: ${REVERB_PUBLIC_HOST:-localhost}
+  REVERB_PUBLIC_PORT: ${REVERB_PUBLIC_PORT:-80}
+  REVERB_PUBLIC_SCHEME: ${REVERB_PUBLIC_SCHEME:-http}
+  # Login social: il provider compare nell'app solo se ID e secret sono impostati.
+  GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+  GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
+  FACEBOOK_CLIENT_ID: ${FACEBOOK_CLIENT_ID:-}
+  FACEBOOK_CLIENT_SECRET: ${FACEBOOK_CLIENT_SECRET:-}
+  AMAZON_CLIENT_ID: ${AMAZON_CLIENT_ID:-}
+  AMAZON_CLIENT_SECRET: ${AMAZON_CLIENT_SECRET:-}
+  # Email (codice per il recupero della password). Con MAIL_MAILER=log l'email finisce nel log di "app".
+  MAIL_MAILER: ${MAIL_MAILER:-log}
+  MAIL_LOG_CHANNEL: mail
+  MAIL_SCHEME: ${MAIL_SCHEME:-}
+  MAIL_HOST: ${MAIL_HOST:-}
+  MAIL_PORT: ${MAIL_PORT:-587}
+  MAIL_USERNAME: ${MAIL_USERNAME:-}
+  MAIL_PASSWORD: ${MAIL_PASSWORD:-}
+  MAIL_FROM_ADDRESS: ${MAIL_FROM_ADDRESS:-noreply@example.com}
+  MAIL_FROM_NAME: "Lista Spesa Facile"
+  # Notifiche push (Firebase): attive solo se il file esiste in ./secrets.
+  FCM_CREDENTIALS: /var/www/html/secrets/firebase-service-account.json
+
+services:
+  mysql:
+    image: mysql:8.4
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE:-listaspesa}
+      MYSQL_USER: ${DB_USERNAME:-listaspesa}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:?imposta DB_ROOT_PASSWORD nel file .env}
+    # Nessuna porta pubblicata e solo sulla rete interna "database": raggiungibile unicamente da app e phpmyadmin.
+    networks:
+      - database
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -u root -p$$MYSQL_ROOT_PASSWORD --silent"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+
+  app:
+    build: ./backend
+    image: listaspesafacile-be
+    restart: unless-stopped
+    environment: *laravel-env
+    volumes:
+      - ./secrets:/var/www/html/secrets:ro
+      # File caricati (foto delle liste): restano anche ricreando il container.
+      - app_storage:/var/www/html/storage/app
+    networks:
+      - web
+      - database
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  # Esegue i lavori in coda: invio delle notifiche push a Firebase.
+  worker:
+    build: ./backend
+    image: listaspesafacile-be
+    restart: unless-stopped
+    command: ["php", "artisan", "queue:work", "--sleep=1", "--tries=3", "--max-time=3600"]
+    environment: *laravel-env
+    volumes:
+      - ./secrets:/var/www/html/secrets:ro
+    networks:
+      - web        # Internet per raggiungere Firebase
+      - database
+    depends_on:
+      - app
+
+  # Ogni minuto invia i promemoria delle liste (php artisan lists:send-reminders).
+  scheduler:
+    build: ./backend
+    image: listaspesafacile-be
+    restart: unless-stopped
+    command: ["php", "artisan", "schedule:work"]
+    environment: *laravel-env
+    volumes:
+      - ./secrets:/var/www/html/secrets:ro
+    networks:
+      - web        # Reverb (notifiche in tempo reale)
+      - database
+    depends_on:
+      - app
+
+  reverb:
+    build: ./backend
+    image: listaspesafacile-be
+    restart: unless-stopped
+    command: ["php", "artisan", "reverb:start", "--host=0.0.0.0", "--port=8080"]
+    environment:
+      <<: *laravel-env
+      # Reverb non ha accesso al database: la sua cache (segnale di riavvio) resta su file locale.
+      CACHE_STORE: file
+    networks:
+      - web
+    depends_on:
+      - app
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    environment:
+      SITE_ADDRESS: ${SITE_ADDRESS:-:80}
+    volumes:
+      - ./backend/docker/Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./backend/public:/var/www/html/public:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    networks:
+      - web
+    depends_on:
+      - app
+      - reverb
+
+  # Gestione del database via browser. Pubblicato solo su 127.0.0.1 del server:
+  # dal PC si raggiunge con un tunnel SSH →  ssh -L 8081:127.0.0.1:8081 utente@vps  →  http://localhost:8081
+  # Accesso con DB_USERNAME / DB_PASSWORD (o root / DB_ROOT_PASSWORD).
+  phpmyadmin:
+    image: phpmyadmin:5
+    restart: unless-stopped
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+      UPLOAD_LIMIT: 64M
+    ports:
+      - "127.0.0.1:${PHPMYADMIN_PORT:-8081}:80"
+    networks:
+      - database
+      - admin   # rete non interna: serve a Docker per pubblicare la porta
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+networks:
+  # Traffico HTTP/WebSocket tra Caddy, API e Reverb (con accesso a Internet, necessario per il login social).
+  web:
+  # Rete isolata del database: nessun accesso da/verso l'esterno.
+  database:
+    internal: true
+  # Solo per esporre phpMyAdmin su 127.0.0.1.
+  admin:
+
+volumes:
+  mysql_data:
+  app_storage:
+  caddy_data:
+  caddy_config:

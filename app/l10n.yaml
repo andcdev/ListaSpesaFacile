@@ -1,0 +1,6 @@
+# Testi dell'interfaccia: lib/l10n/app_*.arb, generati da tool/l10n_strings.py (italiano = lingua di riferimento).
+arb-dir: lib/l10n
+template-arb-file: app_it.arb
+output-localization-file: app_localizations.dart
+output-class: AppLocalizations
+nullable-getter: false

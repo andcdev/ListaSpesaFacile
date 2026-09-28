@@ -1,0 +1,5 @@
+tags:
+  e2e:
+    skip: "Richiede API e Reverb in esecuzione: flutter test --tags e2e --run-skipped test/e2e"
+  manual:
+    skip: "Richiede di riavviare Reverb durante il test"
