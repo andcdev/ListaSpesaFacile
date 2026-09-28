@@ -126,6 +126,7 @@ questo stack sulla rete `proxy-lsf`. Il Caddy di qui non pubblica porte.
    REVERB_PUBLIC_HOST=api.listaspesafacile.com
    REVERB_PUBLIC_PORT=443
    REVERB_PUBLIC_SCHEME=https
+   PHPMYADMIN_PORT=8082          # la 8081 è del phpMyAdmin di MagoPDF
    ```
 3. La rete `proxy-lsf` deve esistere (`edge_vps/reti.sh`), poi `docker compose up -d --build`.
 
@@ -166,10 +167,10 @@ In locale il sito si apre su <http://sito.localhost> e, con `CLIENT_KEY` vuota, 
 Non è esposto su Internet. Dal tuo PC apri un tunnel SSH verso il VPS:
 
 ```bash
-ssh -L 8081:127.0.0.1:8081 utente@89.58.9.88
+ssh -L 8082:127.0.0.1:8082 utente@89.58.9.88   # sul VPS PHPMYADMIN_PORT=8082
 ```
 
-poi vai su <http://localhost:8081> ed entra con `DB_USERNAME` / `DB_PASSWORD` (o `root` / `DB_ROOT_PASSWORD`).
+poi vai su <http://localhost:8082> ed entra con `DB_USERNAME` / `DB_PASSWORD` (o `root` / `DB_ROOT_PASSWORD`).
 In locale basta aprire direttamente <http://localhost:8081>.
 
 Gli eventi vengono inviati a Reverb in modo sincrono e "best effort": se Reverb non è raggiungibile
