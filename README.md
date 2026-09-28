@@ -138,6 +138,7 @@ Log: `docker compose logs -f app reverb`.
 | Nome | Risposta |
 |---|---|
 | `listaspesafacile.com` | Sito vetrina, file statici da `site/` (Home, Privacy, Elimina account, Supporto) |
+| `listaspesafacile.com/api/account-deletion/*` | Eliminazione dell'account dalla pagina del sito (codice via email), senza chiave |
 | `api.listaspesafacile.com` | API e WebSocket, solo con `X-App-Key` uguale a `CLIENT_KEY`; senza → 404 vuoto |
 | `api.…/auth/*` | Login social, aperto senza chiave (lo apre il browser di sistema) |
 | `api.…/robots.txt` | `Disallow: /`, e `X-Robots-Tag: noindex` su ogni risposta dell'API |

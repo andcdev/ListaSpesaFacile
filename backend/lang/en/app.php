@@ -22,6 +22,8 @@ return [
         'social_no_email' => 'Your :provider account doesn\'t share your email address, which is needed to share lists. Allow the email or sign up with email and password.',
     ],
     'reset_sent' => 'If the email is registered, you\'ll shortly receive a code to reset your password.',
+    'deletion_sent' => 'If the email is registered, you\'ll shortly receive a code to confirm the account deletion.',
+    'account_deleted' => 'Account deleted.',
     'activity' => [
         'added' => ':actor added :item',
         'taken' => ':actor picked up :item',
@@ -64,6 +66,10 @@ return [
         'reset_intro' => 'you asked to reset your Lista Spesa Facile password. Enter this code in the app:',
         'reset_validity' => 'The code is valid for :minutes minutes.',
         'reset_ignore' => 'If it wasn\'t you, ignore this email: your password stays the same.',
+        'deletion_subject' => 'Code to delete your account',
+        'deletion_intro' => 'you asked to delete your Lista Spesa Facile account. To confirm, enter this code on the deletion page:',
+        'deletion_warning' => 'Deletion is permanent: your lists, with their items, photos and chats, will also be deleted for the people you share them with.',
+        'deletion_ignore' => 'If it wasn\'t you, ignore this email: your account stays as it is.',
         'signature' => 'Lista Spesa Facile',
     ],
     'categories' => [

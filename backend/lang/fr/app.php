@@ -22,6 +22,8 @@ return [
         'social_no_email' => 'Votre compte :provider ne partage pas votre adresse e-mail, nécessaire pour partager les listes. Autorisez l\'e-mail ou inscrivez-vous avec e-mail et mot de passe.',
     ],
     'reset_sent' => 'Si l\'e-mail est inscrit, vous recevrez bientôt un code pour réinitialiser votre mot de passe.',
+    'deletion_sent' => 'Si l\'e-mail est inscrit, vous recevrez bientôt un code pour confirmer la suppression du compte.',
+    'account_deleted' => 'Compte supprimé.',
     'activity' => [
         'added' => ':actor a ajouté :item',
         'taken' => ':actor a pris :item',
@@ -64,6 +66,10 @@ return [
         'reset_intro' => 'vous avez demandé à réinitialiser votre mot de passe Lista Spesa Facile. Saisissez ce code dans l\'application :',
         'reset_validity' => 'Le code est valable :minutes minutes.',
         'reset_ignore' => 'Si ce n\'était pas vous, ignorez cet e-mail : votre mot de passe reste inchangé.',
+        'deletion_subject' => 'Code pour supprimer votre compte',
+        'deletion_intro' => 'vous avez demandé la suppression de votre compte Lista Spesa Facile. Pour confirmer, saisissez ce code sur la page de suppression :',
+        'deletion_warning' => 'La suppression est définitive : vos listes, avec leurs articles, photos et discussions, seront aussi supprimées pour les personnes avec qui vous les partagez.',
+        'deletion_ignore' => 'Si ce n\'était pas vous, ignorez cet e-mail : votre compte reste inchangé.',
         'signature' => 'Lista Spesa Facile',
     ],
     'categories' => [

@@ -10,9 +10,18 @@
 
 	@sito host {$SITE_HOST:sito.localhost}
 	handle @sito {
-		root * /srv/sito
-		try_files {path} {path}.html {path}/index.html
-		file_server
+		# La pagina /elimina-account chiede e conferma il codice qui, alla stessa origine: niente CORS e niente
+		# X-App-Key (la pagina è pubblica). Dal sito arriva a Laravel solo questo.
+		handle /api/account-deletion/* {
+			root * /var/www/html/public
+			php_fastcgi app:9000
+		}
+
+		handle {
+			root * /srv/sito
+			try_files {path} {path}.html {path}/index.html
+			file_server
+		}
 	}
 
 	handle {

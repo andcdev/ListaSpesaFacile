@@ -32,6 +32,9 @@
 
 * { box-sizing: border-box; }
 
+/* hidden deve vincere anche su display: grid/flex dei moduli. */
+[hidden] { display: none !important; }
+
 html { -webkit-text-size-adjust: 100%; }
 
 body {
@@ -117,3 +120,24 @@ footer.piede { border-top: 1px solid var(--bordo); padding: 28px 0 40px; font-si
 footer.piede .contenitore { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
 footer.piede nav { display: flex; gap: 18px; flex-wrap: wrap; }
 footer.piede a { color: var(--testo-2); }
+
+/* ── Moduli (elimina account) ────────────────────────────── */
+.modulo { display: grid; gap: 10px; max-width: 460px; margin: 24px 0; }
+.modulo p { margin: 0 0 6px; }
+.modulo label { font-weight: 600; font-size: 15px; }
+.modulo input[type="email"], .modulo input[inputmode="numeric"] {
+  font: inherit; padding: 12px 14px; border-radius: 12px;
+  border: 1px solid var(--bordo); background: var(--carta); color: var(--testo);
+}
+.modulo input[inputmode="numeric"] { letter-spacing: 0.3em; font-size: 22px; max-width: 220px; }
+.modulo input:focus { outline: 2px solid var(--verde); outline-offset: 1px; }
+.modulo .spunta { display: flex; gap: 10px; align-items: flex-start; font-weight: 400; }
+.modulo .spunta input { margin-top: 5px; width: 18px; height: 18px; accent-color: var(--arancio); }
+.modulo .pulsante { justify-self: start; border: 0; font: inherit; font-weight: 600; cursor: pointer; }
+.modulo .pulsante:disabled { opacity: 0.6; cursor: progress; }
+.pulsante.pericolo { background: var(--arancio); }
+.collegamento {
+  justify-self: start; background: none; border: 0; padding: 0; font: inherit; font-size: 15px;
+  color: var(--verde); text-decoration: underline; text-underline-offset: 2px; cursor: pointer;
+}
+.messaggio { color: var(--arancio); font-weight: 600; }

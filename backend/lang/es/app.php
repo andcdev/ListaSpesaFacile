@@ -22,6 +22,8 @@ return [
         'social_no_email' => 'Tu cuenta de :provider no comparte tu dirección de correo, necesaria para compartir listas. Permite el correo o regístrate con correo y contraseña.',
     ],
     'reset_sent' => 'Si el correo está registrado, recibirás en breve un código para restablecer la contraseña.',
+    'deletion_sent' => 'Si el correo está registrado, recibirás en breve un código para confirmar la eliminación de la cuenta.',
+    'account_deleted' => 'Cuenta eliminada.',
     'activity' => [
         'added' => ':actor ha añadido :item',
         'taken' => ':actor ha cogido :item',
@@ -64,6 +66,10 @@ return [
         'reset_intro' => 'has pedido restablecer la contraseña de Lista Spesa Facile. Introduce este código en la app:',
         'reset_validity' => 'El código es válido durante :minutes minutos.',
         'reset_ignore' => 'Si no has sido tú, ignora este correo: tu contraseña no cambia.',
+        'deletion_subject' => 'Código para eliminar tu cuenta',
+        'deletion_intro' => 'has pedido eliminar tu cuenta de Lista Spesa Facile. Para confirmar, introduce este código en la página de eliminación:',
+        'deletion_warning' => 'La eliminación es definitiva: tus listas, con sus artículos, fotos y chats, también se borrarán para las personas con quienes las compartes.',
+        'deletion_ignore' => 'Si no has sido tú, ignora este correo: tu cuenta sigue igual.',
         'signature' => 'Lista Spesa Facile',
     ],
     'categories' => [
