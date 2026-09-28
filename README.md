@@ -133,6 +133,19 @@ questo stack sulla rete `proxy-lsf`. Il Caddy di qui non pubblica porte.
 Aggiornamento dopo un `git pull`: `docker compose up -d --build`.
 Log: `docker compose logs -f app reverb`.
 
+### Aggiornamento automatico
+
+`deploy/aggiorna.sh`, installato come `lsf-aggiorna` con un timer ogni 5 minuti (come `magopdf-aggiorna`): un
+push su `main` arriva sulla VPS, viene ricostruito e riavviato. Se il sito, `/up` o `/api/config` (con la chiave)
+non rispondono entro due minuti, torna all'immagine e al commit di prima. Le migrazioni già eseguite però non si
+annullano: quelle che rinominano o cancellano colonne vanno pubblicate con attenzione.
+
+```bash
+/opt/listaspesafacile/deploy/aggiorna.sh --installa    # una volta sola
+lsf-aggiorna --stato                                   # cosa c'è da prendere
+tail -f /var/log/lsf-aggiorna.log
+```
+
 ### Chi risponde a cosa
 
 | Nome | Risposta |
