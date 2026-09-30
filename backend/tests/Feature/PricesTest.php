@@ -5,7 +5,7 @@ namespace Tests\Feature;
 use App\Models\ShoppingList;
 use App\Models\Supermarket;
 use App\Models\User;
-use App\Support\PriceEstimator;
+use App\Support\PriceBook;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
@@ -148,10 +148,11 @@ class PricesTest extends TestCase
             ->expectsOutputToContain('Prezzi importati: 4; righe saltate: 2.')
             ->assertSuccessful();
 
-        $this->assertEquals(['price' => 1.29, 'per' => 'l'], Supermarket::match('Esselunga')->priceFor('latte'));
-        $this->assertEquals(['price' => 0.89, 'per' => 'pz'], Supermarket::match('Lidl')->priceFor('pasta'));
+        $price = fn (string $chain, string $key) => Supermarket::match($chain)?->prices()->where('product_key', $key)->first();
+        $this->assertEquals([1.29, 'l'], [(float) $price('Esselunga', 'latte')->price, $price('Esselunga', 'latte')->per]);
+        $this->assertEquals([0.89, 'pz'], [(float) $price('Lidl', 'pasta')->price, $price('Lidl', 'pasta')->per]);
         // Catena sconosciuta: viene creata.
-        $this->assertNotNull(Supermarket::match('Bottega Rossi')?->priceFor('pane'));
+        $this->assertNotNull($price('Bottega Rossi', 'pane'));
 
         // Con --replace i prezzi delle catene nel file vengono sostituiti.
         file_put_contents($file, "Lidl,Latte,1.10,l\n");
@@ -164,10 +165,10 @@ class PricesTest extends TestCase
 
     public function test_pieces_are_read_from_the_quantity(): void
     {
-        $this->assertSame(1.0, PriceEstimator::pieces(null));
-        $this->assertSame(2.0, PriceEstimator::pieces('2'));
-        $this->assertSame(1.5, PriceEstimator::pieces('1,5 kg'));
-        $this->assertSame(1.0, PriceEstimator::pieces('qualche'));
-        $this->assertSame(1.0, PriceEstimator::pieces('0'));
+        $this->assertSame(1.0, PriceBook::pieces(null));
+        $this->assertSame(2.0, PriceBook::pieces('2'));
+        $this->assertSame(1.5, PriceBook::pieces('1,5 kg'));
+        $this->assertSame(1.0, PriceBook::pieces('qualche'));
+        $this->assertSame(1.0, PriceBook::pieces('0'));
     }
 }

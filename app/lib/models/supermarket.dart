@@ -73,3 +73,75 @@ class ComparedItem {
     missing: json['status'] == 'missing',
   );
 }
+
+/// Da dove viene il prezzo mostrato per un articolo: segnalato da un utente, da Open Prices o dal listino.
+class PriceInfo {
+  const PriceInfo({
+    required this.price,
+    required this.per,
+    required this.source,
+    this.reporter,
+    this.observedAt,
+    this.country,
+    this.city,
+    this.locality,
+    this.supermarket,
+    this.productName,
+  });
+
+  /// Prezzo a confezione (per = pz), al kg o al litro.
+  final double price;
+  final String per;
+
+  /// user, open_prices oppure catalog.
+  final String source;
+
+  /// Nome di chi l'ha segnalato (null se l'account è stato eliminato); l'email non arriva mai all'app.
+  final String? reporter;
+  final DateTime? observedAt;
+  final String? country;
+  final String? city;
+  final String? locality;
+
+  /// Solo nello storico: catena e prodotto a cui si riferisce la segnalazione.
+  final String? supermarket;
+  final String? productName;
+
+  bool get fromUser => source == 'user';
+
+  /// Es. "Milano, Città Studi".
+  String? get zone {
+    final parts = [?city, ?locality].where((p) => p.trim().isNotEmpty).toList();
+    return parts.isEmpty ? null : parts.join(', ');
+  }
+
+  factory PriceInfo.fromJson(Map<String, dynamic> json) => PriceInfo(
+    price: (json['price'] as num).toDouble(),
+    per: json['per'] as String? ?? 'pz',
+    source: json['source'] as String? ?? 'catalog',
+    reporter: json['reporter'] as String?,
+    observedAt: json['observed_at'] == null ? null : DateTime.parse(json['observed_at'] as String).toLocal(),
+    country: json['country'] as String?,
+    city: json['city'] as String?,
+    locality: json['locality'] as String?,
+    supermarket: json['supermarket'] as String?,
+    productName: json['product_name'] as String?,
+  );
+}
+
+/// Prezzi di un articolo nella catena della lista: quello mostrato e le segnalazioni, dalla più recente.
+class ItemPrices {
+  const ItemPrices({this.supermarket, this.current, this.reports = const []});
+
+  final String? supermarket;
+  final PriceInfo? current;
+  final List<PriceInfo> reports;
+
+  factory ItemPrices.fromJson(Map<String, dynamic> json) => ItemPrices(
+    supermarket: json['supermarket'] as String?,
+    current: json['current'] == null ? null : PriceInfo.fromJson(json['current'] as Map<String, dynamic>),
+    reports: (json['reports'] as List<dynamic>? ?? [])
+        .map((e) => PriceInfo.fromJson(e as Map<String, dynamic>))
+        .toList(),
+  );
+}

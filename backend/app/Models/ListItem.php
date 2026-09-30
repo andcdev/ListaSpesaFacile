@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Storage;
 
-#[Fillable(['name', 'category', 'custom_icon', 'image_url', 'quantity', 'amount', 'unit', 'checked', 'status', 'position'])]
+#[Fillable(['name', 'barcode', 'brand', 'category', 'custom_icon', 'image_url', 'image_auto', 'quantity', 'amount', 'unit', 'checked', 'status', 'position'])]
 class ListItem extends Model
 {
     use HasFactory;
@@ -33,6 +33,7 @@ class ListItem extends Model
             'checked' => 'boolean',
             'position' => 'integer',
             'amount' => 'float',
+            'image_auto' => 'boolean',
         ];
     }
 

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
@@ -5,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../l10n/l10n.dart';
+import '../models/branded_product.dart';
 import '../models/list_item.dart';
 import '../models/product_suggestion.dart';
 import '../services/api_client.dart';
@@ -17,6 +19,7 @@ import '../state/chat_controller.dart';
 import '../state/list_detail_controller.dart';
 import '../state/lists_controller.dart';
 import '../widgets/chat_panel.dart';
+import '../widgets/item_price_sheet.dart';
 import '../widgets/photo_picker.dart';
 import '../widgets/price_comparison.dart';
 import '../theme/app_theme.dart';
@@ -172,6 +175,15 @@ class _ListDetailScreenState extends State<ListDetailScreen> {
       confirm(context, title: context.l10n.deleteItemQuestion(item.name), message: context.l10n.deleteItemInfo);
 
   /// Tenendo premuto un articolo: tutte le azioni, con "Elimina" ben separato da "Preso".
+  /// Scheda del prezzo: da dove viene, segnalazioni precedenti e rettifica.
+  Future<void> _openPrice(ListDetailController detail, ListItem item) => showItemPriceSheet(
+    context,
+    api: context.read<ApiClient>(),
+    list: detail.list!,
+    item: item,
+    onCorrect: (c) => detail.reportPrice(item, price: c.price, per: c.per, city: c.city, locality: c.locality),
+  );
+
   Future<void> _itemActions(ListDetailController detail, ListItem item) async {
     final error = Theme.of(context).colorScheme.error;
     final l = context.l10n;
@@ -206,6 +218,12 @@ class _ListDetailScreenState extends State<ListDetailScreen> {
               title: Text(item.imageVersion == null ? l.addPhoto : l.changePhoto),
               onTap: () => Navigator.pop(context, 'photo'),
             ),
+            if (detail.list?.supermarketChain != null)
+              ListTile(
+                leading: const Icon(Icons.euro),
+                title: Text(l.priceMenu),
+                onTap: () => Navigator.pop(context, 'price'),
+              ),
             const Divider(),
             ListTile(
               leading: Icon(Icons.delete_outline, color: error),
@@ -227,6 +245,8 @@ class _ListDetailScreenState extends State<ListDetailScreen> {
         await _editItem(detail, item);
       case 'photo':
         await _itemPhotoMenu(detail, item);
+      case 'price':
+        await _openPrice(detail, item);
       case 'delete':
         await _deleteItem(detail, item);
     }
@@ -393,8 +413,9 @@ class _ListDetailScreenState extends State<ListDetailScreen> {
     compact: compact,
     suggestions: detail.suggestions,
     existing: [for (final item in detail.items) item.name],
-    onAdd: (name, qty, amount, unit, imagePath) =>
-        detail.addItem(name, quantity: qty, amount: amount, unit: unit, imagePath: imagePath),
+    search: detail.searchProducts,
+    onAdd: (name, qty, amount, unit, imagePath, product) =>
+        detail.addItem(name, quantity: qty, amount: amount, unit: unit, imagePath: imagePath, product: product),
   );
 
   Widget _body(ListDetailController detail) {
@@ -572,19 +593,31 @@ class _ListDetailScreenState extends State<ListDetailScreen> {
                   ),
                 ),
               ),
-              // Prezzo indicativo nella catena scelta (quantità e peso compresi).
-              if (item.price != null && detail.list?.supermarketChain != null)
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 6),
-                  child: Text(
-                    formatPrice(context, item.price!),
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
-                      color: item.status == ItemStatus.todo ? null : scheme.onSurfaceVariant,
-                      decoration: item.missing ? TextDecoration.lineThrough : null,
-                    ),
-                  ),
-                ),
+              // Prezzo indicativo nella catena scelta (quantità e peso compresi): toccandolo si vede da dove
+              // viene e si corregge. Senza prezzo, un "€" per aggiungerlo.
+              if (detail.list?.supermarketChain != null)
+                item.price != null
+                    ? InkWell(
+                        borderRadius: BorderRadius.circular(8),
+                        onTap: () => _openPrice(detail, item),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
+                          child: Text(
+                            formatPrice(context, item.price!),
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              fontWeight: FontWeight.w600,
+                              color: item.status == ItemStatus.todo ? null : scheme.onSurfaceVariant,
+                              decoration: item.missing ? TextDecoration.lineThrough : null,
+                            ),
+                          ),
+                        ),
+                      )
+                    : IconButton(
+                        visualDensity: VisualDensity.compact,
+                        tooltip: l.addPrice,
+                        icon: Icon(Icons.euro, size: 18, color: scheme.onSurfaceVariant),
+                        onPressed: () => _openPrice(detail, item),
+                      ),
               Opacity(
                 opacity: item.status == ItemStatus.todo ? 1 : 0.5,
                 child: _ItemImage(item: item, listId: detail.listId),
@@ -970,6 +1003,7 @@ class _AddItemBar extends StatefulWidget {
   const _AddItemBar({
     required this.onAdd,
     required this.units,
+    required this.search,
     this.compact = false,
     this.suggestions = const [],
     this.existing = const [],
@@ -979,8 +1013,19 @@ class _AddItemBar extends StatefulWidget {
   final List<ProductSuggestion> suggestions;
   final List<String> existing;
 
-  final Future<void> Function(String name, String? quantity, double? amount, String? unit, String? imagePath) onAdd;
+  final Future<void> Function(
+    String name,
+    String? quantity,
+    double? amount,
+    String? unit,
+    String? imagePath,
+    BrandedProduct? product,
+  )
+  onAdd;
   final List<String> units;
+
+  /// Prodotti di marca per quanto scritto (Open Food Facts).
+  final Future<List<BrandedProduct>> Function(String text) search;
 
   /// Solo il nome (con la chat aperta sotto): quantità e peso si aggiungono con la matita.
   final bool compact;
@@ -1000,12 +1045,59 @@ class _AddItemBarState extends State<_AddItemBar> {
   /// Foto scelta per il prodotto che si sta aggiungendo.
   String? _photoPath;
 
+  /// Prodotti di marca per il testo scritto, cercati dopo una breve pausa; [_chosen] è quello toccato.
+  List<BrandedProduct> _branded = const [];
+  BrandedProduct? _chosen;
+  String _searched = '';
+  Timer? _searchTimer;
+
   @override
   void initState() {
     super.initState();
     // I suggerimenti seguono il testo scritto e compaiono solo mentre si sta scrivendo.
     _name.addListener(_refresh);
+    _name.addListener(_onTextChanged);
     _focus.addListener(_refresh);
+  }
+
+  /// Cambiando il testo il prodotto di marca scelto non vale più; con almeno 3 lettere si cercano quelli nuovi.
+  void _onTextChanged() {
+    final text = _name.text.trim();
+    if (_chosen != null && text != _chosen!.name) _chosen = null;
+    if (text == _searched) return;
+    _searchTimer?.cancel();
+    if (text.length < 3 || _chosen != null) {
+      _searched = text;
+      if (_branded.isNotEmpty) setState(() => _branded = const []);
+      return;
+    }
+    _searchTimer = Timer(const Duration(milliseconds: 450), () async {
+      _searched = text;
+      try {
+        final found = await widget.search(text);
+        // Nel frattempo l'utente ha scritto altro: questi risultati non servono più.
+        if (mounted && _name.text.trim() == text && _chosen == null) setState(() => _branded = found);
+      } catch (_) {
+        // Senza prodotti di marca si aggiunge comunque quello scritto.
+      }
+    });
+  }
+
+  /// Prodotto di marca toccato: nome, peso o volume della confezione; marca, codice e foto arrivano al server.
+  void _useBranded(BrandedProduct product) {
+    setState(() {
+      _chosen = product;
+      _branded = const [];
+      _searched = product.name;
+      if (product.amount != null && widget.units.contains(product.unit)) {
+        _measure = _Measure(quantity: _measure.quantity, amount: product.amount, unit: product.unit!);
+      }
+    });
+    _name.value = TextEditingValue(
+      text: product.name,
+      selection: TextSelection.collapsed(offset: product.name.length),
+    );
+    _focus.requestFocus();
   }
 
   void _refresh() {
@@ -1022,6 +1114,7 @@ class _AddItemBarState extends State<_AddItemBar> {
 
   @override
   void dispose() {
+    _searchTimer?.cancel();
     _name.dispose();
     _focus.dispose();
     super.dispose();
@@ -1072,10 +1165,12 @@ class _AddItemBarState extends State<_AddItemBar> {
     setState(() => _busy = true);
     try {
       final m = _measure;
-      await widget.onAdd(name, m.quantity, m.amount, m.amount == null ? null : m.unit, _photoPath);
+      await widget.onAdd(name, m.quantity, m.amount, m.amount == null ? null : m.unit, _photoPath, _chosen);
       _name.clear();
       setState(() {
         _photoPath = null;
+        _chosen = null;
+        _branded = const [];
         _measure = const _Measure();
       });
       _focus.requestFocus();
@@ -1110,6 +1205,81 @@ class _AddItemBarState extends State<_AddItemBar> {
               tooltip: s.times > 0 ? context.l10n.timesInList(s.times) : null,
               visualDensity: VisualDensity.compact,
               onPressed: () => _useSuggestion(s),
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  /// Prodotti di marca con foto e formato, in una riga che scorre: tocca per sceglierne uno.
+  Widget _brandedRow() {
+    if (_branded.isEmpty) return const SizedBox.shrink();
+    final theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 6),
+      child: SizedBox(
+        height: 64,
+        child: ListView.separated(
+          scrollDirection: Axis.horizontal,
+          itemCount: _branded.length,
+          separatorBuilder: (_, _) => const SizedBox(width: 8),
+          itemBuilder: (context, i) {
+            final p = _branded[i];
+            return SizedBox(
+              width: 220,
+              child: Card(
+                margin: EdgeInsets.zero,
+                clipBehavior: Clip.antiAlias,
+                child: InkWell(
+                  onTap: () => _useBranded(p),
+                  child: Padding(
+                    padding: const EdgeInsets.all(6),
+                    child: Row(
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(10),
+                          child: p.imageUrl == null
+                              ? const SizedBox(width: 48, height: 48, child: Icon(Icons.shopping_basket_outlined))
+                              : Image.network(
+                                  p.imageUrl!,
+                                  width: 48,
+                                  height: 48,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (_, _, _) => const SizedBox(
+                                    width: 48,
+                                    height: 48,
+                                    child: Icon(Icons.shopping_basket_outlined),
+                                  ),
+                                ),
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                p.name,
+                                maxLines: p.quantity == null ? 2 : 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: theme.textTheme.bodyMedium,
+                              ),
+                              if (p.quantity != null)
+                                Text(
+                                  p.quantity!,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: theme.textTheme.bodySmall,
+                                ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
             );
           },
         ),
@@ -1181,7 +1351,12 @@ class _AddItemBarState extends State<_AddItemBar> {
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
-          children: [if (_focus.hasFocus) _suggestionsRow(), const SizedBox(height: 6), bar],
+          children: [
+            if (_focus.hasFocus) _brandedRow(),
+            if (_focus.hasFocus) _suggestionsRow(),
+            const SizedBox(height: 6),
+            bar,
+          ],
         ),
       ),
     );

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\PriceBook;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -12,7 +13,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
-#[Fillable(['name', 'notes', 'supermarket', 'scheduled_at', 'reminder_minutes', 'reminder_target', 'members_can_rename'])]
+#[Fillable(['name', 'notes', 'supermarket', 'country', 'city', 'locality', 'scheduled_at', 'reminder_minutes', 'reminder_target', 'members_can_rename'])]
 class ShoppingList extends Model
 {
     use HasFactory;
@@ -26,10 +27,13 @@ class ShoppingList extends Model
     /** Destinatari del promemoria: solo il proprietario, solo gli utenti con cui è condivisa, tutti. */
     public const REMINDER_TARGETS = ['owner', 'members', 'all'];
 
-    protected $attributes = ['members_can_rename' => false];
+    protected $attributes = ['members_can_rename' => false, 'country' => 'IT'];
 
     /** @var array{0: string|null, 1: Supermarket|null}|null supermercato scritto e catena riconosciuta */
     private ?array $chain = null;
+
+    /** Prezzi degli articoli già letti in questa richiesta. */
+    private ?PriceBook $prices = null;
 
     protected function casts(): array
     {
@@ -101,6 +105,44 @@ class ShoppingList extends Model
         }
 
         return $this->chain[1];
+    }
+
+    /**
+     * Zona del supermercato: paese (ISO), città e località. I prezzi segnalati lì hanno la precedenza.
+     *
+     * @return array{0: string, 1: string|null, 2: string|null}
+     */
+    public function zone(): array
+    {
+        return [$this->country ?? 'IT', $this->city, $this->locality];
+    }
+
+    /**
+     * Prezzo indicativo dell'articolo nella catena e nella zona della lista (vedi PriceBook), null se non si conosce.
+     * I prezzi di tutti gli articoli caricati si leggono insieme, una volta sola.
+     *
+     * @return array<string, mixed>|null
+     */
+    public function quote(ListItem $item): ?array
+    {
+        $chain = $this->supermarketChain();
+        if ($chain === null) {
+            return null;
+        }
+        if (! $this->prices?->covers($item, $this->zone(), $chain->id)) {
+            $items = $this->relationLoaded('items') && $this->items->contains($item) ? $this->items : collect([$item]);
+            $this->prices = PriceBook::forList($this, $items, [$chain->id]);
+        }
+
+        return $this->prices->quote($chain, $item);
+    }
+
+    /**
+     * Dimentica i prezzi letti (dopo una nuova segnalazione).
+     */
+    public function forgetPrices(): void
+    {
+        $this->prices = null;
     }
 
     /**

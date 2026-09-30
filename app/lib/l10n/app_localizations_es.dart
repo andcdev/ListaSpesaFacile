@@ -566,7 +566,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get send => 'Enviar';
 
   @override
-  String get deletedUser => 'Usuario eliminado';
+  String get deletedUser => 'Usuario';
 
   @override
   String get messageReceived => 'Recibido';
@@ -945,4 +945,65 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get close => 'Cerrar';
+
+  @override
+  String get country => 'País';
+
+  @override
+  String get cityLabel => 'Ciudad';
+
+  @override
+  String get cityHint => 'p. ej. Milán';
+
+  @override
+  String get localityLabel => 'Barrio o localidad (opcional)';
+
+  @override
+  String get localityHint => 'p. ej. Città Studi';
+
+  @override
+  String get zoneHelper => 'Los precios indicados en esta zona tienen prioridad';
+
+  @override
+  String get perPiece => 'por envase';
+
+  @override
+  String get perKg => 'el kg';
+
+  @override
+  String get perLitre => 'el litro';
+
+  @override
+  String get listPrice => 'Tarifa orientativa';
+
+  @override
+  String get priceMenu => 'Precio';
+
+  @override
+  String get priceLabel => 'Precio';
+
+  @override
+  String get addPrice => 'Añadir el precio';
+
+  @override
+  String get correctPrice => 'Corregir el precio';
+
+  @override
+  String get priceCorrected => 'Precio actualizado: ¡gracias!';
+
+  @override
+  String get noPriceYet => 'Todavía no hay precio para este producto en esta cadena.';
+
+  @override
+  String get chooseKnownSupermarket => 'Para los precios, elige en la lista un supermercado de una cadena conocida.';
+
+  @override
+  String get previousReports => 'Indicaciones anteriores';
+
+  @override
+  String get invalidPrice => 'Escribe un precio, p. ej. 1,29';
+
+  @override
+  String get priceReportPrivacy =>
+      'El precio valdrá para todos los que compran en esta cadena. Los demás verán tu nombre y la hora, no tu correo.';
 }

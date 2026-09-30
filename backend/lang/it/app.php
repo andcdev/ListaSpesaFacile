@@ -4,6 +4,7 @@
 
 return [
     'errors' => [
+        'unknown_supermarket' => 'Scegli prima un supermercato di una catena conosciuta.',
         'social_only' => 'Questo account usa l\'accesso con :providers.',
         'invalid_credentials' => 'Credenziali non valide.',
         'social_code_invalid' => 'Accesso non valido o scaduto. Riprova.',
