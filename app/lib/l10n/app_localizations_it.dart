@@ -945,7 +945,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get country => 'Paese';
 
   @override
-  String get cityLabel => 'Città';
+  String get cityLabel => 'Città o paese';
 
   @override
   String get cityHint => 'es. Milano';
@@ -957,7 +957,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get localityHint => 'es. Città Studi';
 
   @override
-  String get zoneHelper => 'I prezzi segnalati in questa zona hanno la precedenza';
+  String get zoneHelper => 'Si mostra il prezzo più confermato della zona più vicina';
 
   @override
   String get perPiece => 'a confezione';
@@ -969,22 +969,69 @@ class AppLocalizationsIt extends AppLocalizations {
   String get perLitre => 'al litro';
 
   @override
-  String get listPrice => 'Listino indicativo';
-
-  @override
   String get priceMenu => 'Prezzo';
 
   @override
   String get priceLabel => 'Prezzo';
 
   @override
+  String get provinceLabel => 'Provincia';
+
+  @override
+  String get provinceHint => 'es. MI';
+
+  @override
+  String get proposeOtherPrice => 'Proponi un altro prezzo';
+
+  @override
+  String get priceProposed => 'Prezzo proposto: gli altri lo vedranno quando qualcuno lo conferma.';
+
+  @override
+  String get priceConfirmed => 'Prezzo confermato: grazie!';
+
+  @override
+  String get priceDisputed => 'Segnalato come non giusto: grazie!';
+
+  @override
+  String confirmations(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count conferme',
+      one: '1 conferma',
+      zero: 'Nessuna conferma',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get confirmPrice => 'Confermo';
+
+  @override
+  String get notRightPrice => 'Non è giusto';
+
+  @override
+  String yourProposal(String price) {
+    return 'La tua proposta: $price';
+  }
+
+  @override
+  String get waitingConfirmation => 'In attesa di conferma: per ora la vedi solo tu';
+
+  @override
+  String get otherPrices => 'Altri prezzi';
+
+  @override
+  String get toBeConfirmed => 'da confermare';
+
+  @override
+  String get disputed => 'smentito';
+
+  @override
+  String get proposedByYou => 'proposto da te';
+
+  @override
   String get addPrice => 'Aggiungi il prezzo';
-
-  @override
-  String get correctPrice => 'Correggi il prezzo';
-
-  @override
-  String get priceCorrected => 'Prezzo aggiornato: grazie!';
 
   @override
   String get noPriceYet => 'Nessun prezzo ancora per questo prodotto in questa catena.';
@@ -993,12 +1040,9 @@ class AppLocalizationsIt extends AppLocalizations {
   String get chooseKnownSupermarket => 'Per i prezzi scegli nella lista il supermercato di una catena conosciuta.';
 
   @override
-  String get previousReports => 'Segnalazioni precedenti';
-
-  @override
   String get invalidPrice => 'Scrivi un prezzo, es. 1,29';
 
   @override
   String get priceReportPrivacy =>
-      'Il prezzo varrà per tutti quelli che fanno la spesa in questa catena. Gli altri vedranno il tuo nome e l\'ora, non la tua email.';
+      'Gli altri vedranno il prezzo dopo la conferma di altri utenti. Vedranno il tuo nome e l\'ora, non la tua email.';
 }

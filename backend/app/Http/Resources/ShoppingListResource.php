@@ -26,6 +26,7 @@ class ShoppingListResource extends JsonResource
             'supermarket' => $this->supermarket,
             // Zona del supermercato: i prezzi segnalati lì hanno la precedenza.
             'country' => $this->country ?? 'IT',
+            'province' => $this->province,
             'city' => $this->city,
             'locality' => $this->locality,
             'supermarket_chain' => $this->whenLoaded('items', fn () => $this->supermarketChain()?->only(['id', 'name', 'description'])),

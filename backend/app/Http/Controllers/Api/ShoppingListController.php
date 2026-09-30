@@ -147,8 +147,9 @@ class ShoppingListController extends Controller
             'notes' => ['sometimes', 'nullable', 'string', 'max:5000'],
             // Supermercato dove si fa la spesa: se è una catena nota la lista mostra i prezzi indicativi.
             'supermarket' => ['sometimes', 'nullable', 'string', 'max:100'],
-            // Zona del supermercato (paese ISO, città, località): i prezzi segnalati lì hanno la precedenza.
+            // Zona del supermercato (stato ISO, provincia, città o paese, località): i prezzi di lì hanno la precedenza.
             'country' => ['sometimes', 'string', Rule::in(array_keys(OpenFoodFacts::COUNTRIES))],
+            'province' => ['sometimes', 'nullable', 'string', 'max:100'],
             'city' => ['sometimes', 'nullable', 'string', 'max:100'],
             'locality' => ['sometimes', 'nullable', 'string', 'max:100'],
             'scheduled_at' => [$required, 'date'],

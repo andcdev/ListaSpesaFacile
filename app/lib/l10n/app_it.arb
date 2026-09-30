@@ -606,23 +606,48 @@
   "noChainPrices": "Non ci sono ancora prezzi per i prodotti di questa lista.",
   "close": "Chiudi",
   "country": "Paese",
-  "cityLabel": "Città",
+  "cityLabel": "Città o paese",
   "cityHint": "es. Milano",
   "localityLabel": "Località o quartiere (facoltativo)",
   "localityHint": "es. Città Studi",
-  "zoneHelper": "I prezzi segnalati in questa zona hanno la precedenza",
+  "zoneHelper": "Si mostra il prezzo più confermato della zona più vicina",
   "perPiece": "a confezione",
   "perKg": "al kg",
   "perLitre": "al litro",
-  "listPrice": "Listino indicativo",
   "priceMenu": "Prezzo",
   "priceLabel": "Prezzo",
+  "provinceLabel": "Provincia",
+  "provinceHint": "es. MI",
+  "proposeOtherPrice": "Proponi un altro prezzo",
+  "priceProposed": "Prezzo proposto: gli altri lo vedranno quando qualcuno lo conferma.",
+  "priceConfirmed": "Prezzo confermato: grazie!",
+  "priceDisputed": "Segnalato come non giusto: grazie!",
+  "confirmations": "{count, plural, =0{Nessuna conferma} =1{1 conferma} other{{count} conferme}}",
+  "@confirmations": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "confirmPrice": "Confermo",
+  "notRightPrice": "Non è giusto",
+  "yourProposal": "La tua proposta: {price}",
+  "@yourProposal": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "waitingConfirmation": "In attesa di conferma: per ora la vedi solo tu",
+  "otherPrices": "Altri prezzi",
+  "toBeConfirmed": "da confermare",
+  "disputed": "smentito",
+  "proposedByYou": "proposto da te",
   "addPrice": "Aggiungi il prezzo",
-  "correctPrice": "Correggi il prezzo",
-  "priceCorrected": "Prezzo aggiornato: grazie!",
   "noPriceYet": "Nessun prezzo ancora per questo prodotto in questa catena.",
   "chooseKnownSupermarket": "Per i prezzi scegli nella lista il supermercato di una catena conosciuta.",
-  "previousReports": "Segnalazioni precedenti",
   "invalidPrice": "Scrivi un prezzo, es. 1,29",
-  "priceReportPrivacy": "Il prezzo varrà per tutti quelli che fanno la spesa in questa catena. Gli altri vedranno il tuo nome e l'ora, non la tua email."
+  "priceReportPrivacy": "Gli altri vedranno il prezzo dopo la conferma di altri utenti. Vedranno il tuo nome e l'ora, non la tua email."
 }

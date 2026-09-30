@@ -30,20 +30,20 @@ class _ListFormScreenState extends State<ListFormScreen> {
 
   /// Zona del supermercato: i prezzi segnalati lì hanno la precedenza.
   late String _country = widget.list?.country ?? 'IT';
+  late final _province = TextEditingController(text: widget.list?.province);
   late final _city = TextEditingController(text: widget.list?.city);
   late final _locality = TextEditingController(text: widget.list?.locality);
 
-  /// Paesi supportati per i prezzi (come OpenFoodFacts::COUNTRIES sul server), con la bandiera.
-  static const _countries = {
-    'IT': '🇮🇹',
-    'SM': '🇸🇲',
-    'CH': '🇨🇭',
-    'FR': '🇫🇷',
-    'DE': '🇩🇪',
-    'AT': '🇦🇹',
-    'ES': '🇪🇸',
-    'GB': '🇬🇧',
-  };
+  /// Paesi che si possono scegliere (come OpenFoodFacts::COUNTRIES sul server): quelli con prezzi su Open Prices.
+  static const _countries = [
+    'IT', 'SM', 'VA', 'CH', 'FR', 'MC', 'DE', 'AT', 'ES', 'PT', 'GB', 'IE', 'BE', 'NL', 'LU', 'DK', 'SE', 'NO', 'FI', //
+    'IS', 'PL', 'CZ', 'SK', 'HU', 'SI', 'HR', 'RO', 'BG', 'GR', 'CY', 'MT', 'EE', 'LV', 'LT', 'UA', 'RU', 'AL', 'BA', //
+    'RS', 'TR', 'IL', 'MA', 'TN', 'US', 'CA', 'MX', 'BR', 'AR', 'JP', 'IN', 'SG', 'TW', 'MY', 'TH', 'AU', 'NZ', 'BD', //
+    'KZ',
+  ];
+
+  /// "IT" → 🇮🇹 (le due lettere come simboli regionali).
+  static String _flag(String code) => String.fromCharCodes(code.codeUnits.map((c) => 0x1F1E6 + c - 0x41));
 
   /// Catene note, suggerite mentre si scrive il supermercato.
   List<Supermarket> _chains = const [];
@@ -73,9 +73,10 @@ class _ListFormScreenState extends State<ListFormScreen> {
     _loadChains();
   }
 
+  /// Catene del paese scelto (si ricaricano cambiando paese).
   Future<void> _loadChains() async {
     try {
-      final chains = await context.read<ApiClient>().supermarkets();
+      final chains = await context.read<ApiClient>().supermarkets(country: _country);
       if (mounted) setState(() => _chains = chains);
     } catch (_) {
       // Senza suggerimenti il supermercato si scrive comunque.
@@ -92,6 +93,7 @@ class _ListFormScreenState extends State<ListFormScreen> {
   void dispose() {
     _name.dispose();
     _notes.dispose();
+    _province.dispose();
     _city.dispose();
     _locality.dispose();
     _recipientEmail.dispose();
@@ -159,6 +161,7 @@ class _ListFormScreenState extends State<ListFormScreen> {
     final lists = context.read<ListsController>();
     final notes = _notes.text.trim().isEmpty ? null : _notes.text.trim();
     final supermarket = _supermarket.trim().isEmpty ? null : _supermarket.trim();
+    final province = _province.text.trim().isEmpty ? null : _province.text.trim();
     final city = _city.text.trim().isEmpty ? null : _city.text.trim();
     final locality = _locality.text.trim().isEmpty ? null : _locality.text.trim();
     try {
@@ -170,6 +173,7 @@ class _ListFormScreenState extends State<ListFormScreen> {
           notes: notes,
           supermarket: supermarket,
           country: _country,
+          province: province,
           city: city,
           locality: locality,
           reminderMinutes: _reminderMinutes,
@@ -184,6 +188,7 @@ class _ListFormScreenState extends State<ListFormScreen> {
           notes: notes,
           supermarket: supermarket,
           country: _country,
+          province: province,
           city: city,
           locality: locality,
           reminderMinutes: _reminderMinutes,
@@ -303,11 +308,15 @@ class _ListFormScreenState extends State<ListFormScreen> {
                     child: DropdownButtonFormField<String>(
                       initialValue: _country,
                       decoration: InputDecoration(labelText: l.country),
+                      menuMaxHeight: 400,
                       items: [
-                        for (final MapEntry(key: code, value: flag) in _countries.entries)
-                          DropdownMenuItem(value: code, child: Text('$flag $code')),
+                        for (final code in _countries)
+                          DropdownMenuItem(value: code, child: Text('${_flag(code)} $code')),
                       ],
-                      onChanged: (v) => setState(() => _country = v ?? _country),
+                      onChanged: (v) {
+                        setState(() => _country = v ?? _country);
+                        _loadChains();
+                      },
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -322,17 +331,40 @@ class _ListFormScreenState extends State<ListFormScreen> {
                 ],
               ),
               const SizedBox(height: 12),
-              TextFormField(
-                controller: _locality,
-                maxLength: 100,
-                textCapitalization: TextCapitalization.words,
-                decoration: InputDecoration(
-                  labelText: l.localityLabel,
-                  hintText: l.localityHint,
-                  helperText: l.zoneHelper,
-                  helperMaxLines: 2,
-                  counterText: '',
-                ),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(
+                    width: 104,
+                    child: TextFormField(
+                      controller: _province,
+                      maxLength: 100,
+                      textCapitalization: TextCapitalization.characters,
+                      decoration: InputDecoration(
+                        labelText: l.provinceLabel,
+                        hintText: l.provinceHint,
+                        counterText: '',
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: TextFormField(
+                      controller: _locality,
+                      maxLength: 100,
+                      textCapitalization: TextCapitalization.words,
+                      decoration: InputDecoration(
+                        labelText: l.localityLabel,
+                        hintText: l.localityHint,
+                        counterText: '',
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 4, left: 12),
+                child: Text(l.zoneHelper, style: Theme.of(context).textTheme.bodySmall),
               ),
               const SizedBox(height: 16),
               TextFormField(

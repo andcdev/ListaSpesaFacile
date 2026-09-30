@@ -6,6 +6,7 @@ import '../models/branded_product.dart';
 import '../models/list_item.dart';
 import '../models/product_suggestion.dart';
 import '../models/shopping_list.dart';
+import '../models/supermarket.dart';
 import '../services/api_client.dart';
 import '../services/realtime_client.dart';
 
@@ -61,14 +62,29 @@ class ListDetailController extends ChangeNotifier {
 
   int get missingCount => _items.values.where((i) => i.missing).length;
 
-  /// Articoli con un prezzo indicativo (i non trovati non contano).
-  Iterable<ListItem> get _priced => _items.values.where((i) => i.price != null && !i.missing);
+  /// Valuta dei prezzi della lista: quella più presente (in un paese di solito ce n'è una sola).
+  String get currency {
+    final counts = <String, int>{};
+    for (final i in _items.values.where((i) => i.shownPrice != null)) {
+      final c = i.currency;
+      counts[c] = (counts[c] ?? 0) + 1;
+    }
+    return counts.isEmpty ? 'EUR' : (counts.entries.toList()..sort((a, b) => b.value.compareTo(a.value))).first.key;
+  }
+
+  /// Articoli con un prezzo nella valuta della lista (i non trovati non contano): per chi ha proposto un prezzo
+  /// ancora da confermare conta il suo.
+  Iterable<ListItem> get _priced {
+    final c = currency;
+    return _items.values.where((i) => i.shownPrice != null && !i.missing && i.currency == c);
+  }
 
   int get pricedCount => _priced.length;
 
   /// Totale stimato nella catena scelta; null se la lista non ha una catena nota o nessun articolo ha un prezzo.
-  double? get estimatedTotal =>
-      list?.supermarketChain == null || _priced.isEmpty ? null : _priced.fold<double>(0, (sum, i) => sum + i.price!);
+  double? get estimatedTotal => list?.supermarketChain == null || _priced.isEmpty
+      ? null
+      : _priced.fold<double>(0, (sum, i) => sum + i.shownPrice!);
 
   bool get canEdit => list?.canEdit ?? false;
 
@@ -131,7 +147,10 @@ class ListDetailController extends ChangeNotifier {
     switch (e.event) {
       case 'item.saved':
         final item = ListItem.fromJson(e.data['item'] as Map<String, dynamic>);
-        _items[item.id] = item;
+        // Gli eventi non portano la mia proposta in attesa: la tengo, salvo che ora sia il prezzo confermato.
+        final mine = _items[item.id]?.myPrice;
+        final nowShown = mine != null && item.priceInfo?.reportId == mine.reportId;
+        _items[item.id] = mine == null || nowShown ? item : item.copyWith(myPrice: () => mine);
       case 'item.deleted':
         for (final id in (e.data['ids'] as List<dynamic>? ?? [])) {
           _items.remove(id);
@@ -145,6 +164,7 @@ class ListDetailController extends ChangeNotifier {
             old != null &&
             (old.supermarket != list!.supermarket ||
                 old.country != list!.country ||
+                old.province != list!.province ||
                 old.city != list!.city ||
                 old.locality != list!.locality);
         if (pricesChanged) load(silent: true);
@@ -256,17 +276,33 @@ class ListDetailController extends ChangeNotifier {
   /// Prodotti di marca per quanto scritto, nel paese della lista.
   Future<List<BrandedProduct>> searchProducts(String text) => api.searchProducts(text, country: list?.country ?? 'IT');
 
-  /// Rettifica del prezzo nella catena della lista: il nuovo prezzo arriva con l'articolo aggiornato.
+  /// Proposta di un prezzo nella catena della lista: arriva con l'articolo aggiornato (la vedo subito solo io).
   Future<void> reportPrice(
     ListItem item, {
     required double price,
     required String per,
+    String? province,
     String? city,
     String? locality,
   }) async {
-    final saved = await api.reportPrice(listId, item.id, price: price, per: per, city: city, locality: locality);
+    final saved = await api.reportPrice(
+      listId,
+      item.id,
+      price: price,
+      per: per,
+      province: province,
+      city: city,
+      locality: locality,
+    );
     _items[saved.id] = saved;
     _notify();
+  }
+
+  /// Conferma o smentita di un prezzo: il prezzo mostrato può cambiare, quindi si rileggono gli articoli.
+  Future<ItemPrices> votePrice(ListItem item, PriceInfo report, {required bool approve}) async {
+    final prices = await api.votePrice(listId, item.id, report.reportId!, approve: approve);
+    await load(silent: true);
+    return prices;
   }
 
   Future<void> deleteItem(ListItem item) async {

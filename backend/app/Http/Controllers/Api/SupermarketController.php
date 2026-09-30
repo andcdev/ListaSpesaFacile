@@ -3,27 +3,36 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\PriceReport;
 use App\Models\ShoppingList;
 use App\Models\Supermarket;
+use App\Support\OpenFoodFacts;
 use App\Support\PriceEstimator;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class SupermarketController extends Controller
 {
     /**
-     * Catene note, per suggerire il supermercato mentre si scrive.
+     * Catene del paese della lista, per suggerire il supermercato mentre si scrive.
      */
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
+        $country = $request->validate([
+            'country' => ['sometimes', Rule::in(array_keys(OpenFoodFacts::COUNTRIES))],
+        ])['country'] ?? 'IT';
+
         $supermarkets = Supermarket::query()
-            ->withCount('prices')
+            ->whereKey(Supermarket::forCountry($country)->modelKeys())
+            ->withCount(['reports' => fn ($q) => $q->where('country', $country)->where('status', PriceReport::APPROVED)])
             ->orderBy('name')
             ->get()
             ->map(fn (Supermarket $s) => [
                 'id' => $s->id,
                 'name' => $s->name,
                 'description' => $s->description,
-                'has_prices' => $s->prices_count > 0,
+                'has_prices' => $s->reports_count > 0,
             ]);
 
         return response()->json(['data' => $supermarkets]);

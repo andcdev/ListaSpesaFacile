@@ -1748,7 +1748,7 @@ abstract class AppLocalizations {
   /// No description provided for @cityLabel.
   ///
   /// In it, this message translates to:
-  /// **'Città'**
+  /// **'Città o paese'**
   String get cityLabel;
 
   /// No description provided for @cityHint.
@@ -1772,7 +1772,7 @@ abstract class AppLocalizations {
   /// No description provided for @zoneHelper.
   ///
   /// In it, this message translates to:
-  /// **'I prezzi segnalati in questa zona hanno la precedenza'**
+  /// **'Si mostra il prezzo più confermato della zona più vicina'**
   String get zoneHelper;
 
   /// No description provided for @perPiece.
@@ -1793,12 +1793,6 @@ abstract class AppLocalizations {
   /// **'al litro'**
   String get perLitre;
 
-  /// No description provided for @listPrice.
-  ///
-  /// In it, this message translates to:
-  /// **'Listino indicativo'**
-  String get listPrice;
-
   /// No description provided for @priceMenu.
   ///
   /// In it, this message translates to:
@@ -1811,23 +1805,101 @@ abstract class AppLocalizations {
   /// **'Prezzo'**
   String get priceLabel;
 
+  /// No description provided for @provinceLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Provincia'**
+  String get provinceLabel;
+
+  /// No description provided for @provinceHint.
+  ///
+  /// In it, this message translates to:
+  /// **'es. MI'**
+  String get provinceHint;
+
+  /// No description provided for @proposeOtherPrice.
+  ///
+  /// In it, this message translates to:
+  /// **'Proponi un altro prezzo'**
+  String get proposeOtherPrice;
+
+  /// No description provided for @priceProposed.
+  ///
+  /// In it, this message translates to:
+  /// **'Prezzo proposto: gli altri lo vedranno quando qualcuno lo conferma.'**
+  String get priceProposed;
+
+  /// No description provided for @priceConfirmed.
+  ///
+  /// In it, this message translates to:
+  /// **'Prezzo confermato: grazie!'**
+  String get priceConfirmed;
+
+  /// No description provided for @priceDisputed.
+  ///
+  /// In it, this message translates to:
+  /// **'Segnalato come non giusto: grazie!'**
+  String get priceDisputed;
+
+  /// No description provided for @confirmations.
+  ///
+  /// In it, this message translates to:
+  /// **'{count, plural, =0{Nessuna conferma} =1{1 conferma} other{{count} conferme}}'**
+  String confirmations(int count);
+
+  /// No description provided for @confirmPrice.
+  ///
+  /// In it, this message translates to:
+  /// **'Confermo'**
+  String get confirmPrice;
+
+  /// No description provided for @notRightPrice.
+  ///
+  /// In it, this message translates to:
+  /// **'Non è giusto'**
+  String get notRightPrice;
+
+  /// No description provided for @yourProposal.
+  ///
+  /// In it, this message translates to:
+  /// **'La tua proposta: {price}'**
+  String yourProposal(String price);
+
+  /// No description provided for @waitingConfirmation.
+  ///
+  /// In it, this message translates to:
+  /// **'In attesa di conferma: per ora la vedi solo tu'**
+  String get waitingConfirmation;
+
+  /// No description provided for @otherPrices.
+  ///
+  /// In it, this message translates to:
+  /// **'Altri prezzi'**
+  String get otherPrices;
+
+  /// No description provided for @toBeConfirmed.
+  ///
+  /// In it, this message translates to:
+  /// **'da confermare'**
+  String get toBeConfirmed;
+
+  /// No description provided for @disputed.
+  ///
+  /// In it, this message translates to:
+  /// **'smentito'**
+  String get disputed;
+
+  /// No description provided for @proposedByYou.
+  ///
+  /// In it, this message translates to:
+  /// **'proposto da te'**
+  String get proposedByYou;
+
   /// No description provided for @addPrice.
   ///
   /// In it, this message translates to:
   /// **'Aggiungi il prezzo'**
   String get addPrice;
-
-  /// No description provided for @correctPrice.
-  ///
-  /// In it, this message translates to:
-  /// **'Correggi il prezzo'**
-  String get correctPrice;
-
-  /// No description provided for @priceCorrected.
-  ///
-  /// In it, this message translates to:
-  /// **'Prezzo aggiornato: grazie!'**
-  String get priceCorrected;
 
   /// No description provided for @noPriceYet.
   ///
@@ -1841,12 +1913,6 @@ abstract class AppLocalizations {
   /// **'Per i prezzi scegli nella lista il supermercato di una catena conosciuta.'**
   String get chooseKnownSupermarket;
 
-  /// No description provided for @previousReports.
-  ///
-  /// In it, this message translates to:
-  /// **'Segnalazioni precedenti'**
-  String get previousReports;
-
   /// No description provided for @invalidPrice.
   ///
   /// In it, this message translates to:
@@ -1856,7 +1922,7 @@ abstract class AppLocalizations {
   /// No description provided for @priceReportPrivacy.
   ///
   /// In it, this message translates to:
-  /// **'Il prezzo varrà per tutti quelli che fanno la spesa in questa catena. Gli altri vedranno il tuo nome e l\'ora, non la tua email.'**
+  /// **'Gli altri vedranno il prezzo dopo la conferma di altri utenti. Vedranno il tuo nome e l\'ora, non la tua email.'**
   String get priceReportPrivacy;
 }
 

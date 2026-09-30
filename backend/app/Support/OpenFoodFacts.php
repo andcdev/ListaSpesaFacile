@@ -19,11 +19,38 @@ class OpenFoodFacts
 {
     public const SEARCH_URL = 'https://search.openfoodfacts.org/search';
 
-    /** Paesi (ISO) → tag di Open Food Facts. */
+    /** Paesi che si possono scegliere per una lista (ISO) → tag di Open Food Facts. Sono quelli con prezzi su Open Prices. */
     public const COUNTRIES = [
-        'IT' => 'en:italy', 'SM' => 'en:san-marino', 'CH' => 'en:switzerland', 'FR' => 'en:france',
-        'DE' => 'en:germany', 'AT' => 'en:austria', 'ES' => 'en:spain', 'GB' => 'en:united-kingdom',
+        'IT' => 'en:italy', 'SM' => 'en:san-marino', 'VA' => 'en:vatican-city', 'CH' => 'en:switzerland', 'FR' => 'en:france',
+        'MC' => 'en:monaco', 'DE' => 'en:germany', 'AT' => 'en:austria', 'ES' => 'en:spain', 'PT' => 'en:portugal',
+        'GB' => 'en:united-kingdom', 'IE' => 'en:ireland', 'BE' => 'en:belgium', 'NL' => 'en:netherlands', 'LU' => 'en:luxembourg',
+        'DK' => 'en:denmark', 'SE' => 'en:sweden', 'NO' => 'en:norway', 'FI' => 'en:finland', 'IS' => 'en:iceland',
+        'PL' => 'en:poland', 'CZ' => 'en:czech-republic', 'SK' => 'en:slovakia', 'HU' => 'en:hungary', 'SI' => 'en:slovenia',
+        'HR' => 'en:croatia', 'RO' => 'en:romania', 'BG' => 'en:bulgaria', 'GR' => 'en:greece', 'CY' => 'en:cyprus',
+        'MT' => 'en:malta', 'EE' => 'en:estonia', 'LV' => 'en:latvia', 'LT' => 'en:lithuania', 'UA' => 'en:ukraine',
+        'RU' => 'en:russia', 'AL' => 'en:albania', 'BA' => 'en:bosnia-and-herzegovina', 'RS' => 'en:serbia', 'TR' => 'en:turkey',
+        'IL' => 'en:israel', 'MA' => 'en:morocco', 'TN' => 'en:tunisia', 'US' => 'en:united-states', 'CA' => 'en:canada',
+        'MX' => 'en:mexico', 'BR' => 'en:brazil', 'AR' => 'en:argentina', 'JP' => 'en:japan', 'IN' => 'en:india',
+        'SG' => 'en:singapore', 'TW' => 'en:taiwan', 'MY' => 'en:malaysia', 'TH' => 'en:thailand', 'AU' => 'en:australia',
+        'NZ' => 'en:new-zealand', 'BD' => 'en:bangladesh', 'KZ' => 'en:kazakhstan',
     ];
+
+    /** Valuta dei paesi fuori dall'euro (gli altri paesi di COUNTRIES usano l'euro). */
+    public const CURRENCIES = [
+        'CH' => 'CHF', 'GB' => 'GBP', 'DK' => 'DKK', 'SE' => 'SEK', 'NO' => 'NOK', 'IS' => 'ISK', 'PL' => 'PLN',
+        'CZ' => 'CZK', 'HU' => 'HUF', 'RO' => 'RON', 'UA' => 'UAH', 'RU' => 'RUB', 'AL' => 'ALL', 'BA' => 'BAM',
+        'RS' => 'RSD', 'TR' => 'TRY', 'IL' => 'ILS', 'MA' => 'MAD', 'TN' => 'TND', 'US' => 'USD', 'CA' => 'CAD',
+        'MX' => 'MXN', 'BR' => 'BRL', 'AR' => 'ARS', 'JP' => 'JPY', 'IN' => 'INR', 'SG' => 'SGD', 'TW' => 'TWD',
+        'MY' => 'MYR', 'TH' => 'THB', 'AU' => 'AUD', 'NZ' => 'NZD', 'BD' => 'BDT', 'KZ' => 'KZT',
+    ];
+
+    /**
+     * Valuta dei prezzi segnalati in un paese: "IT" → "EUR", "CH" → "CHF".
+     */
+    public static function currency(string $country): string
+    {
+        return self::CURRENCIES[$country] ?? 'EUR';
+    }
 
     /**
      * Prodotti che corrispondono a quanto scritto: tutte le parole, l'ultima anche solo iniziata.

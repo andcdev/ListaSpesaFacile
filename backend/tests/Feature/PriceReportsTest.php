@@ -11,6 +11,7 @@ use App\Support\OpenFoodFacts;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Client\Request;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Sleep;
 use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
@@ -40,41 +41,150 @@ class PriceReportsTest extends TestCase
         Http::fake(['search.openfoodfacts.org/*' => Http::response(['hits' => $hits])]);
     }
 
-    public function test_user_correction_shows_name_and_time_but_never_the_email(): void
+    public function test_proposed_price_is_seen_by_its_author_until_others_confirm_it(): void
     {
-        Supermarket::where('name', 'Lidl')->first()->prices()->create(['product_key' => 'latte', 'product_name' => 'Latte', 'price' => 1.20, 'per' => 'l']);
+        $this->report('Lidl', ['product_key' => 'latte', 'price' => 1.20, 'per' => 'l', 'source' => 'open_prices']);
         $list = ShoppingList::factory()->create(['supermarket' => 'Lidl', 'city' => 'Milano']);
+        $owner = $list->owner;
         $mario = User::factory()->create(['name' => 'Mario', 'email' => 'mario.segreto@example.com']);
         $list->sharedWith()->attach($mario->id, ['can_edit' => false]);
-        Sanctum::actingAs($list->owner);
+        Sanctum::actingAs($owner);
         $id = $this->postJson("/api/lists/{$list->id}/items", ['name' => 'Latte'])
             ->assertJsonPath('data.price', 1.2)
-            ->assertJsonPath('data.price_info.source', 'catalog')
+            ->assertJsonPath('data.price_info.source', 'open_prices')
             ->json('data.id');
 
-        // Anche chi ha la sola lettura può correggere un prezzo.
+        // Anche chi ha la sola lettura propone un prezzo: lo vede subito solo lui.
         Sanctum::actingAs($mario);
-        $response = $this->postJson("/api/lists/{$list->id}/items/{$id}/prices", ['price' => 1.35, 'per' => 'l'])
+        $proposed = $this->postJson("/api/lists/{$list->id}/items/{$id}/prices", ['price' => 1.35, 'per' => 'l'])
             ->assertCreated()
-            ->assertJsonPath('data.price', 1.35)
-            ->assertJsonPath('data.price_info.source', 'user')
-            ->assertJsonPath('data.price_info.reporter', 'Mario')
-            ->assertJsonPath('data.price_info.city', 'Milano');
-        $this->assertNotNull($response->json('data.price_info.observed_at'));
+            ->assertJsonPath('data.price', 1.2)
+            ->assertJsonPath('data.my_price.price', 1.35)
+            ->assertJsonPath('data.my_price.status', 'pending')
+            ->assertJsonPath('data.my_price.reporter', 'Mario')
+            ->assertJsonPath('data.my_price.city', 'Milano');
+        $reportId = $proposed->json('data.my_price.report_id');
+        // Non si conferma da solo.
+        $this->postJson("/api/lists/{$list->id}/items/{$id}/prices/{$reportId}/vote", ['approve' => true])
+            ->assertJsonValidationErrors('approve');
 
+        // Gli altri vedono ancora il prezzo confermato, e che ce n'è uno da confermare.
+        Sanctum::actingAs($owner);
+        $this->getJson("/api/lists/{$list->id}")
+            ->assertJsonPath('data.items.0.price', 1.2)
+            ->assertJsonPath('data.items.0.my_price', null)
+            ->assertJsonPath('data.items.0.pending_prices', 1);
         $history = $this->getJson("/api/lists/{$list->id}/items/{$id}/prices")
             ->assertOk()
             ->assertJsonPath('data.supermarket', 'Lidl')
             ->assertJsonPath('data.reports.0.reporter', 'Mario')
-            ->assertJsonPath('data.reports.0.price', 1.35);
-        $this->assertSame('mario.segreto@example.com', PriceReport::first()->reporter_email);
+            ->assertJsonPath('data.reports.0.status', 'pending')
+            ->assertJsonPath('data.reports.0.mine', false)
+            ->assertJsonPath('data.reports.0.my_vote', null);
+
+        // Confermato da un altro utente: lo vedono tutti (è anche della stessa città).
+        $voted = $this->postJson("/api/lists/{$list->id}/items/{$id}/prices/{$reportId}/vote", ['approve' => true])
+            ->assertOk()
+            ->assertJsonPath('data.current.price', 1.35)
+            ->assertJsonPath('data.current.reporter', 'Mario')
+            ->assertJsonPath('data.reports.0.status', 'approved')
+            ->assertJsonPath('data.reports.0.approvals', 1)
+            ->assertJsonPath('data.reports.0.my_vote', true);
+        $this->getJson("/api/lists/{$list->id}")
+            ->assertJsonPath('data.items.0.price', 1.35)
+            ->assertJsonPath('data.items.0.pending_prices', 0);
+
+        $this->assertSame('mario.segreto@example.com', PriceReport::find($reportId)->reporter_email);
         $items = $this->getJson("/api/lists/{$list->id}")->json('data.items');
-        foreach ([$response->getContent(), $history->getContent(), json_encode($items)] as $json) {
+        foreach ([$proposed->getContent(), $history->getContent(), $voted->getContent(), json_encode($items)] as $json) {
             $this->assertStringNotContainsString('mario.segreto', $json);
         }
 
         Sanctum::actingAs(User::factory()->create());
         $this->postJson("/api/lists/{$list->id}/items/{$id}/prices", ['price' => 1])->assertForbidden();
+        $this->postJson("/api/lists/{$list->id}/items/{$id}/prices/{$reportId}/vote", ['approve' => true])->assertForbidden();
+    }
+
+    public function test_the_most_confirmed_price_of_the_zone_is_shown(): void
+    {
+        // Il prezzo più vecchio ha una conferma, quello più recente nessuna: si vede il più confermato.
+        $a = $this->report('Coop', ['product_key' => 'pane', 'price' => 2.00, 'city' => 'Roma', 'approvals' => 1, 'observed_at' => now()->subDays(20)]);
+        $b = $this->report('Coop', ['product_key' => 'pane', 'price' => 2.50, 'city' => 'Roma']);
+        $list = ShoppingList::factory()->create(['supermarket' => 'Coop', 'city' => 'Roma']);
+        Sanctum::actingAs($list->owner);
+        $id = $this->postJson("/api/lists/{$list->id}/items", ['name' => 'Pane'])->assertJsonPath('data.price', 2)->json('data.id');
+
+        // Due utenti confermano l'altro prezzo: ora ha più conferme.
+        foreach (User::factory()->count(2)->create() as $user) {
+            $list->sharedWith()->attach($user->id);
+            Sanctum::actingAs($user);
+            $this->postJson("/api/lists/{$list->id}/items/{$id}/prices/{$b->id}/vote", ['approve' => true])->assertOk();
+        }
+        $this->getJson("/api/lists/{$list->id}")->assertJsonPath('data.items.0.price', 2.5);
+        $this->assertSame(2, $b->fresh()->approvals);
+        $this->assertSame(1, $a->fresh()->approvals);
+    }
+
+    public function test_proposing_a_price_already_there_confirms_it(): void
+    {
+        $report = $this->report('Coop', ['product_key' => 'pane', 'price' => 2.00, 'city' => 'Roma', 'source' => 'open_prices']);
+        $list = ShoppingList::factory()->create(['supermarket' => 'Coop', 'city' => 'roma']);
+        Sanctum::actingAs($list->owner);
+        $id = $this->postJson("/api/lists/{$list->id}/items", ['name' => 'Pane'])->json('data.id');
+
+        $this->postJson("/api/lists/{$list->id}/items/{$id}/prices", ['price' => 2.0])->assertCreated();
+
+        $this->assertSame(1, PriceReport::count());
+        $this->assertSame(1, $report->fresh()->approvals);
+    }
+
+    public function test_rejected_proposal_disappears_for_everyone_but_its_author(): void
+    {
+        $list = ShoppingList::factory()->create(['supermarket' => 'Coop', 'city' => 'Roma']);
+        $other = User::factory()->create();
+        $list->sharedWith()->attach($other->id);
+        Sanctum::actingAs($list->owner);
+        $id = $this->postJson("/api/lists/{$list->id}/items", ['name' => 'Pane'])->json('data.id');
+        $reportId = $this->postJson("/api/lists/{$list->id}/items/{$id}/prices", ['price' => 99])->json('data.my_price.report_id');
+
+        Sanctum::actingAs($other);
+        $this->postJson("/api/lists/{$list->id}/items/{$id}/prices/{$reportId}/vote", ['approve' => false])
+            ->assertOk()
+            ->assertJsonCount(0, 'data.reports');
+        $this->getJson("/api/lists/{$list->id}")->assertJsonPath('data.items.0.pending_prices', 0);
+
+        Sanctum::actingAs($list->owner);
+        $this->getJson("/api/lists/{$list->id}/items/{$id}/prices")->assertJsonPath('data.reports.0.status', 'rejected');
+        $this->getJson("/api/lists/{$list->id}")->assertJsonPath('data.items.0.my_price', null);
+    }
+
+    public function test_more_confirmations_can_be_required(): void
+    {
+        config(['prices.approvals_required' => 2]);
+        $list = ShoppingList::factory()->create(['supermarket' => 'Coop']);
+        [$anna, $luca] = User::factory()->count(2)->create();
+        $list->sharedWith()->attach([$anna->id, $luca->id]);
+        Sanctum::actingAs($list->owner);
+        $id = $this->postJson("/api/lists/{$list->id}/items", ['name' => 'Pane'])->json('data.id');
+        $reportId = $this->postJson("/api/lists/{$list->id}/items/{$id}/prices", ['price' => 1.8])->json('data.my_price.report_id');
+
+        Sanctum::actingAs($anna);
+        $this->postJson("/api/lists/{$list->id}/items/{$id}/prices/{$reportId}/vote", ['approve' => true]);
+        $this->assertSame('pending', PriceReport::find($reportId)->status);
+        Sanctum::actingAs($luca);
+        $this->postJson("/api/lists/{$list->id}/items/{$id}/prices/{$reportId}/vote", ['approve' => true])
+            ->assertJsonPath('data.current.price', 1.8);
+    }
+
+    public function test_province_comes_between_city_and_country(): void
+    {
+        $this->report('Esselunga', ['product_key' => 'pane', 'price' => 2.20, 'city' => 'Monza', 'province' => 'MB', 'observed_at' => now()->subMonth()]);
+        $this->report('Esselunga', ['product_key' => 'pane', 'price' => 3.10, 'city' => 'Firenze', 'province' => 'FI']);
+        $list = ShoppingList::factory()->create(['supermarket' => 'Esselunga', 'city' => 'Lissone', 'province' => 'mb']);
+        Sanctum::actingAs($list->owner);
+
+        $this->postJson("/api/lists/{$list->id}/items", ['name' => 'Pane'])->assertJsonPath('data.price', 2.2);
+        $this->patchJson("/api/lists/{$list->id}", ['province' => null])->assertJsonPath('data.items.0.price', 3.1);
     }
 
     public function test_correction_needs_a_known_chain_and_a_valid_price(): void
@@ -234,58 +344,120 @@ class PriceReportsTest extends TestCase
         $this->getJson('/api/products/search?q=latte')->assertOk()->assertJsonCount(0, 'data');
     }
 
-    public function test_open_prices_are_imported_for_known_chains(): void
+    /**
+     * Un prezzo di Open Prices com'è nell'API, con il negozio dentro.
+     */
+    private function openPrice(int $id, ?array $store, string $name, float $price, array $extra = []): array
+    {
+        [$storeId, $brand, $osmName, $country, $city] = $store ?? [null, null, null, null, null];
+
+        return [
+            'id' => $id, 'type' => 'PRODUCT', 'product_code' => (string) (8000000000000 + $id), 'price' => $price,
+            'currency' => 'EUR', 'date' => '2026-09-05',
+            'product' => ['product_name' => $name, 'product_quantity' => 1000, 'product_quantity_unit' => 'ml'],
+            'location' => $store === null ? null : [
+                'id' => $storeId, 'osm_brand' => $brand, 'osm_name' => $osmName, 'osm_address_country_code' => $country,
+                'osm_address_city' => $city,
+            ],
+            ...$extra,
+        ];
+    }
+
+    public function test_all_open_prices_are_imported_with_their_chain_and_currency(): void
     {
         config(['services.openfoodfacts.enabled' => true]);
-        $location = fn (int $id, string $brand, string $country, string $city) => [
-            'id' => $id, 'osm_brand' => $brand, 'osm_name' => $brand, 'osm_address_country_code' => $country,
-            'osm_address_city' => $city, 'price_count' => 3,
+        $milano = [1, 'Carrefour Market', 'Carrefour Market', 'IT', 'Milano'];
+        $esselunga = [2, null, 'Esselunga Viale Piave', 'IT', 'Milano'];
+        $prices = [
+            $this->openPrice(10, $milano, 'latte intero', 1.89, ['product_code' => '8002580018446']),
+            $this->openPrice(11, $milano, 'Pasta', 0.99, ['price_is_discounted' => true, 'price_without_discount' => 1.29]),
+            $this->openPrice(12, [3, 'Carrefour', 'Carrefour', 'FR', 'Lyon'], 'lait', 1.50, ['product_code' => '8002580018446']),
+            $this->openPrice(13, [4, 'E.Leclerc', 'E.Leclerc Drive', 'FR', 'Paris'], 'Lait demi-écrémé', 0.99),
+            $this->openPrice(14, [5, 'Rema 1000', 'Rema 1000', 'NO', 'Oslo'], 'Milk', 25.9, ['currency' => 'NOK']),
+            $this->openPrice(15, $esselunga, 'Latte', 1.39),
+            ['id' => 16, 'type' => 'CATEGORY', 'category_tag' => 'en:bananas', 'price_per' => 'KILOGRAM', 'price' => 1.99,
+                'currency' => 'EUR', 'date' => '2026-09-06', 'location' => $this->openPrice(0, $esselunga, '', 0)['location']],
+            $this->openPrice(17, null, 'Senza negozio', 1),
+            $this->openPrice(18, [6, 'Les 400 Coop', 'Les 400 Coop', 'FR', 'Paris'], 'Pain', 2.1),
         ];
-        $price = fn (int $id, string $code, ?string $name, float $price, array $extra = []) => [
-            'id' => $id, 'product_code' => $code, 'price' => $price, 'currency' => 'EUR', 'date' => '2026-09-05',
-            'product' => ['product_name' => $name, 'product_quantity' => 1000, 'product_quantity_unit' => 'ml'], ...$extra,
-        ];
-        Http::fake(function (Request $request) use ($location, $price) {
-            if (str_contains($request->url(), '/locations')) {
-                return Http::response(['items' => [
-                    $location(1, 'Carrefour Market', 'IT', 'Milano'),
-                    $location(2, 'Auchan', 'FR', 'Paris'),
-                    $location(3, 'Carrefour', 'FR', 'Lyon'),
-                    $location(4, 'Bottega Rossi', 'IT', 'Roma'),
-                ], 'pages' => 1]);
-            }
-            // Solo i negozi delle catene note in Italia: Carrefour a Milano (non Auchan, né Carrefour a Lione).
-            $store = (int) $request['location_id'];
-            $this->assertSame(1, $store);
-
-            return Http::response(['items' => [
-                $price($store * 100, '8002580018446', 'latte intero', $store === 1 ? 1.89 : 1.50),
-                $price($store * 100 + 1, '8000000000002', 'Pasta', 0.99, ['price_is_discounted' => true, 'price_without_discount' => 1.29]),
-                $price($store * 100 + 2, '8000000000003', 'Chips', 2.00, ['currency' => 'USD']),
-            ], 'pages' => 1]);
-        });
+        Http::fake(fn () => Http::response(['items' => $prices, 'pages' => 1]));
 
         $this->artisan('prices:sync-open-prices', ['--pause' => 0])
-            ->expectsOutputToContain('Negozi delle catene note: 1; prezzi importati o aggiornati: 2.')
+            ->expectsOutputToContain('Prezzi importati o aggiornati: 8; catene nuove: 3.')
             ->assertSuccessful();
         // La volta dopo si chiedono solo i prezzi nuovi (con un giorno di margine); rileggendoli non si duplicano.
         $this->artisan('prices:sync-open-prices', ['--pause' => 0])->assertSuccessful();
-        Http::assertSent(fn (Request $r) => str_contains($r->url(), '/prices') && ($r->data()['created__gte'] ?? null) === now()->subDay()->toDateString());
+        Http::assertSent(fn (Request $r) => ($r->data()['created__gte'] ?? null) === now()->subDay()->toDateString());
+        $this->assertSame(8, PriceReport::count());
 
-        $this->assertSame(2, PriceReport::count());
-        $milk = PriceReport::where('barcode', '8002580018446')->where('city', 'Milano')->sole();
-        $this->assertSame(['Carrefour', 'latte', 1.89, 'Milano', 'open_prices', 'Open Prices', 1.0, 'l'], [
-            $milk->supermarket->name, $milk->product_key, $milk->price, $milk->city, $milk->source, $milk->reporter_name,
-            $milk->package_amount, $milk->package_unit,
+        $report = fn (int $id) => PriceReport::where('external_id', "op:$id")->with('supermarket')->sole();
+        $this->assertSame(['Carrefour', 'latte', 1.89, 'EUR', 'Milano', 1.0, 'l'], [
+            $report(10)->supermarket->name, $report(10)->product_key, $report(10)->price, $report(10)->currency,
+            $report(10)->city, $report(10)->package_amount, $report(10)->package_unit,
         ]);
         // Prezzo in offerta: si tiene quello pieno.
-        $this->assertEquals(1.29, PriceReport::where('barcode', '8000000000002')->where('city', 'Milano')->value('price'));
+        $this->assertEquals(1.29, $report(11)->price);
+        // Stessa catena in Francia; insegne sconosciute diventano catene nuove del loro paese ("Les 400 Coop" non è Coop).
+        $this->assertSame('Carrefour', $report(12)->supermarket->name);
+        $this->assertSame(['E.Leclerc', 'FR'], [$report(13)->supermarket->name, $report(13)->supermarket->country]);
+        $this->assertSame(['Rema 1000', 'NO', 'NOK', 25.9], [$report(14)->supermarket->name, $report(14)->country, $report(14)->currency, $report(14)->price]);
+        $this->assertSame('Les 400 Coop', $report(18)->supermarket->name);
+        // Insegna italiana scritta con l'indirizzo; frutta sfusa al kg riconosciuta dal nome inglese.
+        $this->assertSame('Esselunga', $report(15)->supermarket->name);
+        $this->assertSame(['Esselunga', 'banan', 'kg', 1.99], [$report(16)->supermarket->name, $report(16)->product_key, $report(16)->per, $report(16)->price]);
 
-        // Il prezzo importato è la base per le liste in quella catena, anche in un'altra città italiana.
+        // In Italia vale il prezzo italiano, anche in un'altra città; quello francese, più basso, no.
         $list = ShoppingList::factory()->create(['supermarket' => 'Carrefour', 'city' => 'Torino']);
         Sanctum::actingAs($list->owner);
         $this->postJson("/api/lists/{$list->id}/items", ['name' => 'Latte'])
             ->assertJsonPath('data.price', 1.89)
-            ->assertJsonPath('data.price_info.source', 'open_prices');
+            ->assertJsonPath('data.price_info.source', 'open_prices')
+            ->assertJsonPath('data.price_info.currency', 'EUR');
+
+        // In Norvegia il prezzo è in corone.
+        $oslo = ShoppingList::factory()->for($list->owner, 'owner')->create(['supermarket' => 'Rema 1000', 'country' => 'NO']);
+        $this->postJson("/api/lists/{$oslo->id}/items", ['name' => 'Latte'])
+            ->assertJsonPath('data.price', 25.9)
+            ->assertJsonPath('data.price_info.currency', 'NOK');
+        $this->getJson("/api/lists/{$oslo->id}/price-comparison")->assertJsonPath('data.0.currency', 'NOK');
+
+        // Le catene suggerite sono quelle del paese della lista.
+        $names = fn (string $country) => array_column($this->getJson("/api/supermarkets?country=$country")->json('data'), 'name');
+        $this->assertContains('E.Leclerc', $names('FR'));
+        $this->assertContains('Carrefour', $names('FR'));
+        $this->assertNotContains('Esselunga', $names('FR'));
+        $this->assertContains('Esselunga', $names('IT'));
+        $this->assertNotContains('E.Leclerc', $names('IT'));
+        // Una catena straniera non viene scambiata per quella scritta in una lista italiana.
+        $rome = ShoppingList::factory()->for($list->owner, 'owner')->create(['supermarket' => 'Rema 1000']);
+        $this->getJson("/api/lists/{$rome->id}")->assertJsonPath('data.supermarket_chain', null);
+    }
+
+    public function test_interrupted_full_import_resumes_from_the_last_page(): void
+    {
+        config(['services.openfoodfacts.enabled' => true]);
+        Sleep::fake();
+        $store = [1, 'Lidl', 'Lidl', 'IT', 'Roma'];
+        $page = fn (int $n) => Http::response([
+            'items' => array_map(fn (int $i) => $this->openPrice($n * 1000 + $i, $store, 'Latte', 1), range(1, 100)),
+            'pages' => 3,
+        ]);
+        $fail = true;
+        Http::fake(function (Request $r) use ($page, &$fail) {
+            $n = (int) $r['page'];
+
+            return $n === 2 && $fail ? Http::response('errore', 500) : $page($n);
+        });
+
+        $this->artisan('prices:sync-open-prices', ['--pause' => 0])->assertFailed();
+        $this->assertSame(100, PriceReport::count());
+
+        $fail = false;
+        $this->artisan('prices:sync-open-prices', ['--pause' => 0])
+            ->expectsOutputToContain('Prezzi importati o aggiornati: 200;')
+            ->assertSuccessful();
+        $this->assertSame(300, PriceReport::count());
+        // La prima pagina si è letta una volta sola.
+        $this->assertCount(1, Http::recorded(fn (Request $r) => (int) $r['page'] === 1));
     }
 }

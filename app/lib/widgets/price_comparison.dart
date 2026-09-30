@@ -6,9 +6,9 @@ import '../l10n/l10n.dart';
 import '../models/supermarket.dart';
 import '../services/api_client.dart';
 
-/// 1.5 → "1,50 €" (nel formato della lingua dell'app).
-String formatPrice(BuildContext context, double value) =>
-    NumberFormat.currency(locale: Localizations.localeOf(context).toLanguageTag(), symbol: '€').format(value);
+/// 1.5 → "1,50 €", in CHF "1,50 CHF", in USD "1,50 $" (nel formato della lingua dell'app).
+String formatPrice(BuildContext context, double value, [String currency = 'EUR']) =>
+    NumberFormat.simpleCurrency(locale: Localizations.localeOf(context).toLanguageTag(), name: currency).format(value);
 
 /// Popup con il costo della lista in ogni catena che ha dei prezzi: una fisarmonica con nome, descrizione e totale;
 /// toccando una catena si aprono i prezzi articolo per articolo.
@@ -114,7 +114,7 @@ class _ChainTile extends StatelessWidget {
           ].join('\n'),
         ),
         trailing: Text(
-          '${formatPrice(context, row.total)}*',
+          '${formatPrice(context, row.total, row.currency)}*',
           style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
         ),
         childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
@@ -133,7 +133,7 @@ class _ChainTile extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    item.price == null ? '—' : formatPrice(context, item.price!),
+                    item.price == null ? '—' : formatPrice(context, item.price!, item.currency),
                     style: TextStyle(color: item.price == null || item.missing ? muted : null),
                   ),
                 ],

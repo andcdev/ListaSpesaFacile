@@ -9,9 +9,10 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 
 /**
- * Catena di supermercati (distribuzione) con i suoi prezzi indicativi.
+ * Catena di supermercati (distribuzione) con i suoi prezzi indicativi. Le catene italiane sono precaricate; quelle
+ * degli altri paesi le crea l'importazione di Open Prices dalle insegne dei negozi (country = paese del primo negozio).
  */
-#[Fillable(['name', 'aliases', 'description'])]
+#[Fillable(['name', 'country', 'aliases', 'description'])]
 class Supermarket extends Model
 {
     protected function casts(): array
@@ -20,11 +21,24 @@ class Supermarket extends Model
     }
 
     /**
-     * @return HasMany<SupermarketPrice, $this>
+     * @return HasMany<PriceReport, $this>
      */
-    public function prices(): HasMany
+    public function reports(): HasMany
     {
-        return $this->hasMany(SupermarketPrice::class);
+        return $this->hasMany(PriceReport::class);
+    }
+
+    /**
+     * Catene di un paese: di quel paese o con prezzi segnalati lì (Carrefour, Lidl… sono in molti paesi).
+     *
+     * @return Collection<int, self>
+     */
+    public static function forCountry(string $country): Collection
+    {
+        return self::query()
+            ->where('country', $country)
+            ->orWhereHas('reports', fn ($q) => $q->where('country', $country))
+            ->get();
     }
 
     /**

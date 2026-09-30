@@ -27,6 +27,7 @@ class ShoppingList {
     this.supermarket,
     this.supermarketChain,
     this.country = 'IT',
+    this.province,
     this.city,
     this.locality,
     this.imageVersion,
@@ -52,6 +53,7 @@ class ShoppingList {
 
   /// Zona del supermercato (paese ISO, città, località): i prezzi segnalati lì hanno la precedenza.
   final String country;
+  final String? province;
   final String? city;
   final String? locality;
 
@@ -102,6 +104,7 @@ class ShoppingList {
           ? null
           : Supermarket.fromJson(json['supermarket_chain'] as Map<String, dynamic>),
       country: json['country'] as String? ?? 'IT',
+      province: json['province'] as String?,
       city: json['city'] as String?,
       locality: json['locality'] as String?,
       imageVersion: json['image_version'] as String?,
@@ -129,6 +132,7 @@ class ShoppingList {
     supermarket: json.containsKey('supermarket') ? json['supermarket'] as String? : supermarket,
     supermarketChain: !json.containsKey('supermarket') || json['supermarket'] == supermarket ? supermarketChain : null,
     country: json['country'] as String? ?? country,
+    province: json.containsKey('province') ? json['province'] as String? : province,
     city: json.containsKey('city') ? json['city'] as String? : city,
     locality: json.containsKey('locality') ? json['locality'] as String? : locality,
     imageVersion: json.containsKey('image_version') ? json['image_version'] as String? : imageVersion,
