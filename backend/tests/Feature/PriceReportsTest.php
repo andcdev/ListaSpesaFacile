@@ -382,12 +382,12 @@ class PriceReportsTest extends TestCase
         ];
         Http::fake(fn () => Http::response(['items' => $prices, 'pages' => 1]));
 
-        $this->artisan('prices:sync-open-prices', ['--pause' => 0])
+        $this->artisan('prices:sync-open-prices', ['--pause' => 0, '--from' => now()->startOfMonth()->toDateString()])
             ->expectsOutputToContain('Prezzi importati o aggiornati: 8; catene nuove: 3.')
             ->assertSuccessful();
         // La volta dopo si chiedono solo i prezzi nuovi (con un giorno di margine); rileggendoli non si duplicano.
         $this->artisan('prices:sync-open-prices', ['--pause' => 0])->assertSuccessful();
-        Http::assertSent(fn (Request $r) => ($r->data()['created__gte'] ?? null) === now()->subDay()->toDateString());
+        Http::assertSent(fn (Request $r) => ($r->data()['created__gte'] ?? null) === now()->subDay()->toDateString().'T00:00:00');
         $this->assertSame(8, PriceReport::count());
 
         $report = fn (int $id) => PriceReport::where('external_id', "op:$id")->with('supermarket')->sole();
@@ -433,31 +433,97 @@ class PriceReportsTest extends TestCase
         $this->getJson("/api/lists/{$rome->id}")->assertJsonPath('data.supermarket_chain', null);
     }
 
-    public function test_interrupted_full_import_resumes_from_the_last_page(): void
+    public function test_import_reads_one_month_at_a_time_and_resumes_after_an_interruption(): void
     {
         config(['services.openfoodfacts.enabled' => true]);
         Sleep::fake();
+        $this->travelTo('2026-09-15 12:00:00');
         $store = [1, 'Lidl', 'Lidl', 'IT', 'Roma'];
-        $page = fn (int $n) => Http::response([
-            'items' => array_map(fn (int $i) => $this->openPrice($n * 1000 + $i, $store, 'Latte', 1), range(1, 100)),
-            'pages' => 3,
-        ]);
-        $fail = true;
-        Http::fake(function (Request $r) use ($page, &$fail) {
-            $n = (int) $r['page'];
+        $failSeptember = true;
+        Http::fake(function (Request $r) use ($store, &$failSeptember) {
+            $month = substr($r['created__gte'], 0, 7);
+            if ($month === '2026-09' && $failSeptember) {
+                return Http::response('errore', 500);
+            }
+            // Luglio e agosto: 2 pagine da 100; settembre: 1 pagina da 10.
+            $pages = $month === '2026-09' ? 1 : 2;
+            $count = $month === '2026-09' ? 10 : 100;
+            $base = (int) str_replace('-', '', $month) * 1000 + (int) $r['page'] * 100;
 
-            return $n === 2 && $fail ? Http::response('errore', 500) : $page($n);
+            return Http::response([
+                'items' => array_map(fn (int $i) => $this->openPrice($base + $i, $store, 'Latte', 1), range(1, $count)),
+                'pages' => $pages,
+            ]);
         });
 
-        $this->artisan('prices:sync-open-prices', ['--pause' => 0])->assertFailed();
-        $this->assertSame(100, PriceReport::count());
+        $this->artisan('prices:sync-open-prices', ['--pause' => 0, '--from' => '2026-07-01'])->assertFailed();
+        $this->assertSame(400, PriceReport::count());
 
-        $fail = false;
+        $failSeptember = false;
         $this->artisan('prices:sync-open-prices', ['--pause' => 0])
-            ->expectsOutputToContain('Prezzi importati o aggiornati: 200;')
+            ->expectsOutputToContain('Prezzi importati o aggiornati: 10;')
             ->assertSuccessful();
-        $this->assertSame(300, PriceReport::count());
-        // La prima pagina si è letta una volta sola.
-        $this->assertCount(1, Http::recorded(fn (Request $r) => (int) $r['page'] === 1));
+        $this->assertSame(410, PriceReport::count());
+        // Luglio e agosto non si rileggono; ogni mese è chiesto per intero, fino all'ultimo istante del mese.
+        $this->assertCount(2, Http::recorded(fn (Request $r) => str_starts_with($r['created__gte'], '2026-07')));
+        Http::assertSent(fn (Request $r) => $r['created__gte'] === '2026-08-01T00:00:00' && str_starts_with($r['created__lte'], '2026-08-31T23:59:59'));
+    }
+
+    public function test_a_month_with_too_many_prices_is_split(): void
+    {
+        config(['services.openfoodfacts.enabled' => true]);
+        Sleep::fake();
+        $this->travelTo('2026-09-30 12:00:00');
+        Http::fake(function (Request $r) {
+            // Il mese intero supera le 500 pagine; le due metà no.
+            $whole = str_starts_with($r['created__gte'], '2026-09-01') && str_starts_with($r['created__lte'], '2026-09-30');
+
+            return Http::response(['items' => [], 'pages' => $whole ? 600 : 1]);
+        });
+
+        $this->artisan('prices:sync-open-prices', ['--pause' => 0, '--from' => '2026-09-01'])->assertSuccessful();
+
+        Http::assertSent(fn (Request $r) => $r['created__gte'] === '2026-09-01T00:00:00' && str_starts_with($r['created__lte'], '2026-09-15T23:59:59'));
+        Http::assertSent(fn (Request $r) => $r['created__gte'] === '2026-09-16T00:00:00' && str_starts_with($r['created__lte'], '2026-09-30T23:59:59'));
+        Http::assertNotSent(fn (Request $r) => (int) $r['page'] > 500);
+    }
+
+    public function test_only_the_latest_price_per_product_chain_and_town_is_kept(): void
+    {
+        config(['services.openfoodfacts.enabled' => true]);
+        Sleep::fake();
+        $this->travelTo('2026-09-30 12:00:00');
+        $milan1 = [1, 'Carrefour', 'Carrefour', 'IT', 'Milano'];
+        $milan2 = [2, 'Carrefour Market', 'Carrefour Market Brera', 'IT', 'Milano'];
+        $monza = [3, 'Carrefour', 'Carrefour', 'IT', 'Monza'];
+        $milk = fn (int $id, array $store, float $price, string $date) => $this->openPrice($id, $store, 'Latte', $price, ['product_code' => '8002580018446', 'date' => $date]);
+        $page = [
+            $milk(100, $milan1, 1.00, '2026-09-01'),
+            $milk(101, $milan2, 1.20, '2026-09-10'),
+            $milk(102, $monza, 1.10, '2026-09-02'),
+            // Inserito dopo, ma è un prezzo più vecchio: non sostituisce quello del 10 settembre.
+            $milk(103, $milan1, 0.90, '2026-08-01'),
+        ];
+        Http::fake(function () use (&$page) {
+            return Http::response(['items' => $page, 'pages' => 1]);
+        });
+
+        $this->artisan('prices:sync-open-prices', ['--pause' => 0, '--from' => '2026-09-01'])->assertSuccessful();
+
+        $this->assertSame(2, PriceReport::count());
+        $milan = PriceReport::where('city', 'Milano')->sole();
+        $this->assertEquals(1.2, $milan->price);
+        $this->assertSame('op:101', $milan->external_id);
+
+        // Il prezzo di Milano ha una conferma; poi arriva un prezzo più recente: lo sostituisce e le conferme ripartono.
+        $milan->vote(User::factory()->create(), true);
+        $this->assertSame(1, $milan->fresh()->approvals);
+        $page = [$milk(104, $milan1, 1.30, '2026-09-20'), $milk(101, $milan2, 1.20, '2026-09-10')];
+        $this->artisan('prices:sync-open-prices', ['--pause' => 0, '--from' => '2026-09-01'])->assertSuccessful();
+
+        $this->assertSame(2, PriceReport::count());
+        $milan = PriceReport::where('city', 'Milano')->sole();
+        $this->assertEquals([1.3, 'op:104', 0, 'approved'], [$milan->price, $milan->external_id, $milan->approvals, $milan->status]);
+        $this->assertSame(0, $milan->votes()->count());
     }
 }

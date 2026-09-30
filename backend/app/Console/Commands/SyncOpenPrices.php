@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Models\PriceReport;
+use App\Models\PriceReportVote;
 use App\Models\Supermarket;
 use App\Support\OpenFoodFacts;
 use App\Support\PriceBook;
@@ -10,6 +11,7 @@ use App\Support\ProductCatalog;
 use Illuminate\Console\Attributes\Description;
 use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
+use Illuminate\Http\Client\Response;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
@@ -19,17 +21,22 @@ use Throwable;
 /**
  * Prezzi di partenza da Open Prices (prices.openfoodfacts.org): prezzi fotografati nei negozi dagli utenti di
  * Open Food Facts, in tutto il mondo (OPEN_PRICES_COUNTRIES li limita ad alcuni paesi). La zona è la città del
- * negozio; le rettifiche degli utenti dell'app, più recenti, hanno la precedenza.
+ * negozio. Si tiene solo il prezzo più recente per prodotto, catena, stato e comune (dedupe_key): uno più nuovo
+ * sostituisce il vecchio e ne azzera le conferme, uno più vecchio si scarta.
  *
  * Ogni prezzo porta con sé il negozio. La catena si riconosce dall'insegna: prima uguale a una catena nota
  * (nome o altro nome), poi, in Italia, contenuta nel nome ("Esselunga Viale Piave"); altrimenti la catena viene
  * creata con il nome dell'insegna (Leclerc, Rema 1000…) e il paese del negozio.
  *
+ * L'API non va oltre la pagina 500 (50.000 prezzi) per ricerca: si legge un mese di prezzi per volta (per data di
+ * inserimento; un mese con troppi prezzi si divide in due). Gli export giornalieri di Open Prices non servono: non
+ * hanno nome e formato dei prodotti.
+ *
  * La prima volta si importa tutto (circa 3.200 pagine da 100 prezzi, 35-40 minuti); se si interrompe, la volta dopo
- * riprende dall'ultima pagina completata. Poi solo i prezzi aggiunti dall'ultima esecuzione riuscita (con un giorno
+ * riprende dal primo mese non completato. Poi solo i prezzi aggiunti dall'ultima esecuzione riuscita (con un giorno
  * di margine). --all rilegge tutto. Rileggere un prezzo già importato lo aggiorna.
  */
-#[Signature('prices:sync-open-prices {--pause=300 : millisecondi tra una richiesta e l\'altra} {--all : rilegge tutti i prezzi, non solo i nuovi}')]
+#[Signature('prices:sync-open-prices {--pause=300 : millisecondi tra una richiesta e l\'altra} {--all : rilegge tutti i prezzi, non solo i nuovi} {--from= : data (AAAA-MM-GG) da cui leggere invece dell\'inizio o dell\'ultima esecuzione}')]
 #[Description('Importa i prezzi di Open Prices')]
 class SyncOpenPrices extends Command
 {
@@ -38,8 +45,14 @@ class SyncOpenPrices extends Command
     /** Chiave in cache dell'ultima importazione riuscita. */
     public const LAST_SYNC = 'open-prices:last-sync';
 
-    /** Chiave in cache della prossima pagina da leggere durante l'importazione completa (per riprendere). */
-    public const NEXT_PAGE = 'open-prices:next-page';
+    /** Chiave in cache del primo giorno non ancora importato di un'importazione interrotta (per riprendere). */
+    public const RESUME_FROM = 'open-prices:resume-from';
+
+    /** Primo giorno con prezzi su Open Prices. */
+    public const START = '2023-11-01';
+
+    /** L'API risponde fino a questa pagina per ricerca. */
+    public const MAX_PAGES = 500;
 
     /** Unità dei prezzi a peso o volume di Open Prices → unità dell'app. */
     private const PER = ['KILOGRAM' => 'kg', 'LITER' => 'l', 'LITRE' => 'l', 'UNIT' => 'pz'];
@@ -64,20 +77,23 @@ class SyncOpenPrices extends Command
             $this->remember($supermarket);
         }
         $startedAt = now();
-        $since = $this->option('all') ? null : Cache::get(self::LAST_SYNC);
-        // Importazione completa interrotta: si riprende da dove si era arrivati.
-        $firstPage = $since === null ? (int) Cache::get(self::NEXT_PAGE, 1) : 1;
-        if ($this->option('all')) {
-            $firstPage = 1;
+        // Da dove leggere: la data indicata, oppure dove si era interrotta l'ultima volta, oppure (con --all o la prima
+        // volta) dall'inizio, oppure dall'ultima esecuzione riuscita.
+        $from = $this->option('from')
+            ?? Cache::get(self::RESUME_FROM)
+            ?? ($this->option('all') ? null : Cache::get(self::LAST_SYNC))
+            ?? self::START;
+        if ($this->option('all') && ! $this->option('from')) {
+            $from = self::START;
         }
 
         $imported = 0;
         try {
-            foreach ($this->pages(array_filter(['created__gte' => $since]), $firstPage) as $page => $prices) {
-                $imported += $this->import($prices);
-                if ($since === null) {
-                    Cache::forever(self::NEXT_PAGE, $page + 1);
-                }
+            // Un mese per volta: finito un mese, un'interruzione riparte dal successivo.
+            for ($day = Carbon::parse($from)->startOfDay(); $day->lte($startedAt); $day = $end->copy()->addDay()->startOfDay()) {
+                $end = $day->copy()->endOfMonth()->min($startedAt->copy()->endOfDay());
+                $imported += $this->importWindow($day, $end);
+                Cache::forever(self::RESUME_FROM, $end->copy()->addDay()->toDateString());
             }
         } catch (Throwable $e) {
             $this->error('Open Prices non raggiungibile: '.$e->getMessage()." (prezzi importati finora: $imported)");
@@ -85,11 +101,38 @@ class SyncOpenPrices extends Command
             return self::FAILURE;
         }
 
-        Cache::forget(self::NEXT_PAGE);
+        Cache::forget(self::RESUME_FROM);
+        Cache::forget('open-prices:next-page');
         Cache::forever(self::LAST_SYNC, $startedAt->copy()->subDay()->toDateString());
         $this->info("Prezzi importati o aggiornati: $imported; catene nuove: {$this->created}.");
 
         return self::SUCCESS;
+    }
+
+    /**
+     * I prezzi inseriti tra [$from] e [$to] (compresi); se sono più di quanti l'API ne dà per ricerca, a metà.
+     */
+    private function importWindow(Carbon $from, Carbon $to): int
+    {
+        $query = [
+            'created__gte' => $from->copy()->startOfDay()->format('Y-m-d\\TH:i:s'),
+            'created__lte' => $to->copy()->endOfDay()->format('Y-m-d\\TH:i:s.u'),
+        ];
+        $first = $this->fetch($query, 1);
+        $pages = (int) $first->json('pages', 1);
+        if ($pages > self::MAX_PAGES && $from->lt($to->copy()->startOfDay())) {
+            $middle = $from->copy()->addDays(intdiv((int) $from->diffInDays($to->copy()->startOfDay(), true), 2));
+
+            return $this->importWindow($from, $middle) + $this->importWindow($middle->copy()->addDay(), $to);
+        }
+
+        $imported = $this->import((array) $first->json('items', []));
+        for ($page = 2; $page <= min($pages, self::MAX_PAGES); $page++) {
+            $imported += $this->import((array) $this->fetch($query, $page)->json('items', []));
+        }
+        $this->line($from->toDateString().' → '.$to->toDateString().": $imported prezzi");
+
+        return $imported;
     }
 
     /**
@@ -100,21 +143,71 @@ class SyncOpenPrices extends Command
     private function import(array $prices): int
     {
         $now = now();
-        $rows = [];
+        // Di ogni prodotto, catena, stato e comune si tiene solo il prezzo più recente.
+        $latest = [];
         foreach ($prices as $price) {
             $location = $price['location'] ?? null;
             $supermarket = is_array($location) ? $this->chain($location) : null;
             $row = $supermarket ? $this->row($price, $location) : null;
-            if ($row !== null) {
-                $rows[] = [...$row, 'supermarket_id' => $supermarket->id, 'created_at' => $now, 'updated_at' => $now];
+            if ($row === null) {
+                continue;
+            }
+            $row = [...$row, 'supermarket_id' => $supermarket->id, 'created_at' => $now, 'updated_at' => $now];
+            $row['dedupe_key'] = sha1(implode('|', [
+                $supermarket->id, $row['country'], Supermarket::normalize((string) $row['city']),
+                $row['barcode'] ?? 'k:'.($row['product_key'] ?? Supermarket::normalize($row['product_name'])),
+            ]));
+            if (! isset($latest[$row['dedupe_key']]) || self::newer($row, $latest[$row['dedupe_key']])) {
+                $latest[$row['dedupe_key']] = $row;
             }
         }
-        if ($rows !== []) {
-            // Rileggendo un prezzo si aggiornano i dati, non lo stato: le smentite degli utenti restano.
-            PriceReport::upsert($rows, ['external_id'], array_keys(collect($rows[0])->except(['external_id', 'created_at', 'status'])->all()));
+        if ($latest === []) {
+            return 0;
+        }
+
+        $existing = PriceReport::whereIn('dedupe_key', array_keys($latest))
+            ->get(['id', 'dedupe_key', 'external_id', 'observed_at'])
+            ->keyBy('dedupe_key');
+        $replaced = [];
+        foreach ($latest as $key => $row) {
+            $old = $existing[$key] ?? null;
+            if ($old === null || $old->external_id === $row['external_id']) {
+                continue;
+            }
+            $current = ['observed_at' => $old->observed_at->toDateTimeString(), 'external_id' => $old->external_id];
+            if (self::newer($row, $current)) {
+                $replaced[] = $old->id;
+            } else {
+                unset($latest[$key]);
+            }
+        }
+        if ($latest === []) {
+            return 0;
+        }
+
+        // Rileggendo lo stesso prezzo si aggiornano i dati, non lo stato: le smentite degli utenti restano.
+        $rows = array_values($latest);
+        PriceReport::upsert($rows, ['dedupe_key'], array_keys(collect($rows[0])->except(['dedupe_key', 'created_at', 'status'])->all()));
+        // Un prezzo più recente sostituisce il vecchio: le conferme erano per il prezzo vecchio.
+        if ($replaced !== []) {
+            PriceReportVote::whereIn('price_report_id', $replaced)->delete();
+            PriceReport::whereKey($replaced)->update(['status' => PriceReport::APPROVED, 'approvals' => 0, 'rejections' => 0]);
         }
 
         return count($rows);
+    }
+
+    /**
+     * [$a] è più recente di [$b]: data del prezzo e, a parità, inserito dopo su Open Prices.
+     *
+     * @param  array<string, mixed>  $a
+     * @param  array<string, mixed>  $b
+     */
+    private static function newer(array $a, array $b): bool
+    {
+        $id = fn (array $row) => (int) substr((string) $row['external_id'], 3);
+
+        return [(string) $a['observed_at'], $id($a)] > [(string) $b['observed_at'], $id($b)];
     }
 
     /**
@@ -222,32 +315,17 @@ class SyncOpenPrices extends Command
     }
 
     /**
-     * Le pagine di prezzi, dalla prima indicata, in ordine di id.
+     * Una pagina di prezzi (100), con una pausa per non pesare sul servizio.
      *
      * @param  array<string, mixed>  $query
-     * @return iterable<int, array<int, array<string, mixed>>> numero di pagina → prezzi
      */
-    private function pages(array $query, int $page): iterable
+    private function fetch(array $query, int $page): Response
     {
-        for (; ; $page++) {
-            usleep((int) $this->option('pause') * 1000);
-            $response = Http::withUserAgent(OpenFoodFacts::userAgent())
-                ->timeout(60)
-                ->retry(3, 5000, throw: false)
-                ->get(self::API.'/prices', [...$query, 'size' => 100, 'page' => $page]);
-            // Oltre l'ultima pagina l'API risponde 404.
-            if ($response->status() === 404) {
-                return;
-            }
-            $response->throw();
-            $items = (array) $response->json('items', []);
-            yield $page => $items;
-            if ($page % 100 === 0) {
-                $this->line("Pagina $page di ".$response->json('pages', '?'));
-            }
-            if (count($items) < 100 || $page >= (int) $response->json('pages', $page)) {
-                return;
-            }
-        }
+        usleep((int) $this->option('pause') * 1000);
+
+        return Http::withUserAgent(OpenFoodFacts::userAgent())
+            ->timeout(60)
+            ->retry(3, 5000)
+            ->get(self::API.'/prices', [...$query, 'size' => 100, 'page' => $page]);
     }
 }
