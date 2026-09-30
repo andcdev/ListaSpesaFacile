@@ -375,11 +375,13 @@ Le date viaggiano in ISO 8601; il server le salva in UTC e l'app le mostra nel f
 I prezzi di **Open Prices** si importano ogni notte alle 4:30 (container `scheduler`): tutto il mondo, o solo i
 paesi di `OPEN_PRICES_COUNTRIES` (es. `IT,SM,CH`). Ogni negozio viene abbinato alla sua catena dall'insegna; le
 insegne sconosciute (Leclerc, Rema 1000…) diventano catene nuove del loro paese. La prima importazione è completa
-(circa 3.200 pagine, 35-40 minuti; se si interrompe riprende dall'ultima pagina), poi solo i prezzi nuovi. A mano:
+(35-40 minuti; l'API non va oltre 500 pagine per ricerca, quindi si legge un mese per volta e, se si interrompe,
+si riprende dal primo mese non completato), poi solo i prezzi nuovi. A mano:
 
 ```bash
 docker compose exec app php artisan prices:sync-open-prices          # nuovi (o completa la prima volta)
 docker compose exec app php artisan prices:sync-open-prices --all    # rilegge tutto
+docker compose exec app php artisan prices:sync-open-prices --from=2026-09-01   # da una data
 ```
 
 Ricerche e foto di Open Food Facts restano in cache un giorno; con `OPENFOODFACTS_ENABLED=false` nel `.env` il
