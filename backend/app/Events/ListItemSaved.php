@@ -35,6 +35,6 @@ class ListItemSaved implements ShouldBroadcastNow
     {
         $this->item->loadMissing(['creator', 'checker']);
 
-        return ['item' => (new ListItemResource($this->item))->resolve()];
+        return ['item' => (new ListItemResource($this->item))->forEveryone()->resolve()];
     }
 }

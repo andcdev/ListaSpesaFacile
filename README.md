@@ -71,14 +71,19 @@ Sorgente modificabile: [`docs/architettura.svg`](docs/architettura.svg).
   cambiando supermercato o aggiungendo e modificando un prodotto; i non trovati non contano nel totale.
   **Confronta catene** apre un popup con una riga per catena (nome, descrizione, totale): toccandola si vedono i
   prezzi articolo per articolo.
-  Con il supermercato si indica la **zona** (paese, città, località): vale prima il prezzo segnalato nella stessa
-  località, poi nella stessa città, poi nel resto del paese (a parità di zona il più recente); i prezzi di un altro
-  paese non contano. **Correggi il prezzo**: toccando il prezzo di un articolo (o "€" se manca, o *Prezzo* nel
-  menu) si vede da dove viene (chi l'ha segnalato, giorno e ora, zona) con le segnalazioni precedenti, e chiunque
-  veda la lista può correggerlo: il nuovo prezzo vale per tutti quelli che fanno la spesa in quella catena. Di chi
-  segnala si mostrano nome e ora; l'email resta sul server e non viene mai mostrata (eliminando l'account, nome ed
-  email spariscono dalle segnalazioni). Base di partenza: i prezzi di **Open Prices** (prezzi fotografati nei
-  negozi dagli utenti di Open Food Facts), importati ogni notte; poi il listino caricato da CSV.
+  Con il supermercato si indica la **zona** (stato, provincia, città o paese, località). Si mostra il prezzo della
+  zona più vicina (stessa località, stessa città, stessa provincia, resto dello stato; i prezzi di un altro stato
+  non contano) con **più conferme** e, a parità, il più recente. Il prezzo cambia quindi con la catena e con la
+  zona di vendita. Toccando il prezzo di un articolo (o "€" se manca, o *Prezzo* nel menu) si vede da dove viene
+  (chi l'ha proposto, giorno e ora, zona, conferme) insieme agli altri prezzi della zona: si può **confermare** quello
+  giusto (*Confermo*), smentire quello sbagliato (*Non è giusto*) o **proporre un altro prezzo**. Un prezzo proposto
+  lo vede subito solo chi l'ha scritto (con la clessidra); gli altri lo vedono dopo la conferma di altri utenti
+  (`PRICE_APPROVALS_REQUIRED`, di norma 1). Proporre lo stesso prezzo già presente in città vale come conferma; un
+  prezzo con più smentite che conferme viene scartato. Il pallino sul prezzo dice che ci sono proposte da
+  confermare. Di chi propone si mostrano nome e ora; l'email resta sul server e non viene mai mostrata (eliminando
+  l'account, nome ed email spariscono dai prezzi). Base di partenza: i prezzi di **Open Prices** (fotografati nei
+  negozi dagli utenti di Open Food Facts, in tutto il mondo e in ogni valuta), importati ogni notte e già
+  confermati; anche questi si possono confermare o smentire.
 - **Prodotti di marca**: scrivendo un prodotto compaiono, dopo una breve pausa, i prodotti di marca di **Open Food
   Facts** con foto e formato ("latte parm" → Latte intero Parmalat, 1 L). Toccandone uno si compilano nome, marca,
   foto e peso o volume, e il prezzo è quello di quel prodotto, se c'è. **Foto automatica**: aggiungendo o
@@ -323,8 +328,8 @@ Tutte le rotte sono sotto `/api`. Le rotte protette richiedono `Authorization: B
 | DELETE | `/me/avatar` | Rimuove la foto profilo |
 | GET | `/users/{id}/avatar?v=` | Foto profilo (te stesso o chi ha una lista in comune con te) |
 | GET | `/lists` | Liste accessibili, ordinate per `scheduled_at` |
-| POST | `/lists` | `name, scheduled_at, notes?, supermarket?, country?, city?, locality?, reminder_minutes?, reminder_target?, members_can_rename?, shares?: [{email, can_edit?}]` |
-| GET | `/lists/{id}` | Lista con articoli e condivisioni; `supermarket_chain` = catena riconosciuta (null = niente prezzi); per ogni articolo `price` e `price_info` (`source`: `user`, `open_prices`, `catalog`; `reporter`, `observed_at`, `city`, `locality`) |
+| POST | `/lists` | `name, scheduled_at, notes?, supermarket?, country?, province?, city?, locality?, reminder_minutes?, reminder_target?, members_can_rename?, shares?: [{email, can_edit?}]` |
+| GET | `/lists/{id}` | Lista con articoli e condivisioni; `supermarket_chain` = catena riconosciuta (null = niente prezzi); per ogni articolo `price` e `price_info` (il più confermato della zona: `source` `user` o `open_prices`, `currency`, `approvals`, `reporter`, `observed_at`, zona), `my_price` (la propria proposta in attesa) e `pending_prices` |
 | PATCH | `/lists/{id}` | Modifica (proprietario o permesso di modifica), anche `reminder_minutes` (`null` = nessuno) e `reminder_target` (`owner`, `members`, `all`). Il nome solo se `can_rename`; `members_can_rename` solo il proprietario |
 | DELETE | `/lists/{id}` | Elimina (solo proprietario) |
 | GET | `/lists/{id}/image?v=` | Foto della lista (chi ha accesso; `v` = `image_version` della lista) |
@@ -347,9 +352,10 @@ Tutte le rotte sono sotto `/api`. Le rotte protette richiedono `Authorization: B
 | GET | `/lists/{id}/messages?before=` | Chat: 50 messaggi dal più recente + `has_more` + `delivered` (`{user_id: ultimo messaggio ricevuto}`) |
 | POST | `/lists/{id}/messages/delivered` | `up_to`: il telefono ha ricevuto i messaggi fino a questo id (spunte blu) |
 | GET | `/products/search?q=&country=` | Prodotti di marca da Open Food Facts: `barcode, name, brand, quantity, amount, unit, image_url` |
-| GET | `/lists/{id}/items/{item}/prices` | Prezzo mostrato e segnalazioni precedenti nella catena della lista (nome e ora, mai l'email) |
-| POST | `/lists/{id}/items/{item}/prices` | `price, per? (pz, kg, l), city?, locality?, country?`: rettifica (chiunque veda la lista) |
-| GET | `/supermarkets` | Catene note (`name, description, has_prices`) |
+| GET | `/lists/{id}/items/{item}/prices` | `current`, `mine` e i prezzi della catena nello stato della lista, con `status`, `approvals`, `my_vote` (nome e ora, mai l'email) |
+| POST | `/lists/{id}/items/{item}/prices` | `price, per? (pz, kg, l), province?, city?, locality?`: proposta (chiunque veda la lista), in attesa di conferma |
+| POST | `/lists/{id}/items/{item}/prices/{report}/vote` | `approve`: conferma o smentisce un prezzo (non il proprio) |
+| GET | `/supermarkets?country=` | Catene del paese (`name, description, has_prices`) |
 | GET | `/lists/{id}/price-comparison` | Costo della lista in ogni catena con prezzi: `total, priced_count, items_count, current, items[{name, price}]` |
 | GET | `/products/suggestions` | Prodotti da suggerire: già usati nelle liste accessibili (con `times`), poi i più comuni |
 | POST | `/lists/{id}/messages` | `body` e/o `image` (multipart, max 8 MB): chiunque abbia accesso alla lista |
@@ -364,30 +370,16 @@ Tutte le rotte sono sotto `/api`. Le rotte protette richiedono `Authorization: B
 
 Le date viaggiano in ISO 8601; il server le salva in UTC e l'app le mostra nel fuso del dispositivo.
 
-### Prezzi delle catene
+### Prezzi di Open Prices
 
-I prezzi indicativi si caricano da un CSV (virgole o punti e virgola; la prima riga può essere l'intestazione):
-
-```
-supermercato;prodotto;prezzo;per
-Esselunga;Latte;1,29;l
-Lidl;Banane;1,49;kg
-Coop;Pasta;0,89;pz
-```
-
-`per` è `pz` (a confezione), `kg` o `l`. Il prodotto è riconosciuto come negli articoli (`ProductCatalog`: "Latte"
-vale per ogni latte, "Pomodorini" per tutti i pomodori); le righe non riconosciute vengono saltate e segnalate. Una
-catena sconosciuta viene creata.
+I prezzi di **Open Prices** si importano ogni notte alle 4:30 (container `scheduler`): tutto il mondo, o solo i
+paesi di `OPEN_PRICES_COUNTRIES` (es. `IT,SM,CH`). Ogni negozio viene abbinato alla sua catena dall'insegna; le
+insegne sconosciute (Leclerc, Rema 1000…) diventano catene nuove del loro paese. La prima importazione è completa
+(circa 3.200 pagine, 35-40 minuti; se si interrompe riprende dall'ultima pagina), poi solo i prezzi nuovi. A mano:
 
 ```bash
-docker compose exec app php artisan prices:import storage/app/prezzi.csv            # aggiunge o aggiorna
-docker compose exec app php artisan prices:import storage/app/prezzi.csv --replace  # sostituisce i prezzi delle catene nel file
-```
-
-I prezzi di **Open Prices** si importano ogni notte alle 4:30 (container `scheduler`); a mano:
-
-```bash
-docker compose exec app php artisan prices:sync-open-prices
+docker compose exec app php artisan prices:sync-open-prices          # nuovi (o completa la prima volta)
+docker compose exec app php artisan prices:sync-open-prices --all    # rilegge tutto
 ```
 
 Ricerche e foto di Open Food Facts restano in cache un giorno; con `OPENFOODFACTS_ENABLED=false` nel `.env` il

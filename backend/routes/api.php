@@ -59,6 +59,10 @@ Route::middleware('auth:sanctum')->group(function () {
 
         Route::get('/lists/{list}/items/{item}/prices', [ItemPriceController::class, 'index']);
         Route::post('/lists/{list}/items/{item}/prices', [ItemPriceController::class, 'store'])->middleware('throttle:20,1');
+        // Il prezzo votato non appartiene all'articolo: si controlla nel controller che sia della catena della lista.
+        Route::post('/lists/{list}/items/{item}/prices/{report}/vote', [ItemPriceController::class, 'vote'])
+            ->withoutScopedBindings()
+            ->middleware('throttle:60,1');
     });
 
     Route::get('/lists/{list}/shares', [ListShareController::class, 'index']);

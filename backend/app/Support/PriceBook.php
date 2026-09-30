@@ -6,19 +6,21 @@ use App\Models\ListItem;
 use App\Models\PriceReport;
 use App\Models\ShoppingList;
 use App\Models\Supermarket;
-use App\Models\SupermarketPrice;
 use Illuminate\Support\Collection;
 
 /**
- * Prezzi indicativi di un gruppo di articoli, letti con due sole query (segnalazioni e listino) e poi scelti in memoria.
+ * Prezzi indicativi di un gruppo di articoli, letti con una sola query e poi scelti in memoria.
  *
+ * Contano le segnalazioni approvate: quelle di Open Prices e le rettifiche degli utenti confermate da altri utenti.
  * Per ogni articolo e catena vale, nell'ordine:
  * 1. le segnalazioni dello stesso prodotto di marca (codice a barre), se l'articolo ne ha uno;
  * 2. altrimenti le segnalazioni dello stesso tipo di prodotto ("latte", "pomodor"…, vedi ProductCatalog::productKey);
- *    tra queste vince la zona più vicina a quella della lista (stessa località, stessa città, stesso paese; i prezzi
- *    di un altro paese non valgono)
- *    e, a parità di zona, la più recente;
- * 3. altrimenti il listino caricato da CSV (supermarket_prices).
+ *    tra queste vince la zona più vicina a quella della lista (stessa località, stessa città o paese, stessa
+ *    provincia, stesso stato; i prezzi di un altro stato non valgono), poi quella con più conferme degli utenti e,
+ *    a parità, la più recente.
+ *
+ * Le rettifiche in attesa di conferma le vede solo chi le ha scritte (myPending); agli altri si dice solo quante
+ * ce ne sono da confermare (pendingCount).
  *
  * Il prezzo dell'articolo è il prezzo trovato moltiplicato per il numero di pezzi e, se il prezzo è al kg o al litro
  * (o è di una confezione di contenuto noto) e l'articolo ha un peso o volume, per la quantità in proporzione.
@@ -37,14 +39,14 @@ class PriceBook
     /** @var array<int, string> */
     private array $barcodes;
 
-    /** @var Collection<int, PriceReport> dalla più recente */
+    /** @var Collection<int, PriceReport> approvate, dalla più recente */
     private Collection $reports;
 
-    /** @var array<int, array<string, array{price: float, per: string}>> catena => chiave del prodotto => prezzo di listino */
-    private array $catalog = [];
+    /** @var Collection<int, PriceReport> in attesa di conferma, dalla più recente */
+    private Collection $pending;
 
     /**
-     * @param  array{0: string, 1: string|null, 2: string|null}  $zone  paese, città, località
+     * @param  array{0: string, 1: string|null, 2: string|null, 3: string|null}  $zone  stato, provincia, città, località
      * @param  Collection<int, ListItem>  $items
      * @param  array<int, int>|null  $supermarketIds  solo queste catene (null = tutte)
      */
@@ -53,22 +55,15 @@ class PriceBook
         $this->keys = $items->map(fn (ListItem $i) => ProductCatalog::productKey($i->name))->filter()->unique()->values()->all();
         $this->barcodes = $items->pluck('barcode')->filter()->unique()->values()->all();
 
-        $this->reports = $this->keys === [] && $this->barcodes === [] ? collect() : PriceReport::query()
+        $all = $this->keys === [] && $this->barcodes === [] ? collect() : PriceReport::query()
             ->when($supermarketIds !== null, fn ($q) => $q->whereIn('supermarket_id', $supermarketIds))
+            ->where('country', $zone[0])
+            ->whereIn('status', [PriceReport::APPROVED, PriceReport::PENDING])
             ->where(fn ($q) => $q->whereIn('product_key', $this->keys)->orWhereIn('barcode', $this->barcodes))
             ->orderByDesc('observed_at')
             ->orderByDesc('id')
             ->get();
-
-        if ($this->keys !== []) {
-            SupermarketPrice::query()
-                ->when($supermarketIds !== null, fn ($q) => $q->whereIn('supermarket_id', $supermarketIds))
-                ->whereIn('product_key', $this->keys)
-                ->get()
-                ->each(function (SupermarketPrice $p) {
-                    $this->catalog[$p->supermarket_id][$p->product_key] = ['price' => (float) $p->price, 'per' => $p->per];
-                });
-        }
+        [$this->reports, $this->pending] = $all->partition(fn (PriceReport $r) => $r->status === PriceReport::APPROVED);
     }
 
     /**
@@ -83,7 +78,7 @@ class PriceBook
     /**
      * Il libro contiene già tutto ciò che serve per l'articolo, nella stessa zona e per la stessa catena.
      *
-     * @param  array{0: string, 1: string|null, 2: string|null}  $zone
+     * @param  array{0: string, 1: string|null, 2: string|null, 3: string|null}  $zone
      */
     public function covers(ListItem $item, array $zone, int $supermarketId): bool
     {
@@ -96,61 +91,94 @@ class PriceBook
     }
 
     /**
-     * Catene che hanno almeno un prezzo per questi articoli.
+     * Catene che hanno almeno un prezzo approvato per questi articoli.
      *
      * @return array<int, int>
      */
     public function supermarketIds(): array
     {
-        return $this->reports->pluck('supermarket_id')->merge(array_keys($this->catalog))->unique()->values()->all();
+        return $this->reports->pluck('supermarket_id')->unique()->values()->all();
     }
 
     /**
-     * Prezzo stimato dell'articolo nella catena, con la sua provenienza; null se non si conosce.
+     * Prezzo stimato dell'articolo nella catena (solo segnalazioni approvate), con la sua provenienza;
+     * null se non si conosce.
      *
-     * @return array{line: float, price: float, per: string, source: string, reporter: string|null, observed_at: string|null, city: string|null, locality: string|null, report_id: int|null}|null
+     * @return array<string, mixed>|null
      */
     public function quote(Supermarket $supermarket, ListItem $item): ?array
     {
-        $key = ProductCatalog::productKey($item->name);
-        $chainReports = $this->reports->where('supermarket_id', $supermarket->id);
+        [$candidates, $sameProduct] = $this->candidates($this->reports, $supermarket, $item);
+        $report = $this->closest($candidates);
+
+        return $report ? $this->describe($report, $item, $sameProduct) : null;
+    }
+
+    /**
+     * La rettifica più recente di [$userId] per l'articolo ancora in attesa di conferma (la vede solo lui).
+     *
+     * @return array<string, mixed>|null
+     */
+    public function myPending(Supermarket $supermarket, ListItem $item, int $userId): ?array
+    {
+        $mine = $this->pending->where('user_id', $userId);
+        [$candidates, $sameProduct] = $this->candidates($mine, $supermarket, $item);
+        $report = $candidates->first();
+
+        return $report ? $this->describe($report, $item, $sameProduct) : null;
+    }
+
+    /**
+     * Quante rettifiche di altri utenti per l'articolo aspettano una conferma.
+     */
+    public function pendingCount(Supermarket $supermarket, ListItem $item, ?int $exceptUserId): int
+    {
+        $others = $this->pending->filter(fn (PriceReport $r) => $exceptUserId === null || $r->user_id !== $exceptUserId);
+
+        return $this->candidates($others, $supermarket, $item)[0]->count();
+    }
+
+    /**
+     * Segnalazioni che valgono per l'articolo: dello stesso prodotto di marca se ce ne sono, altrimenti dello stesso
+     * tipo di prodotto.
+     *
+     * @param  Collection<int, PriceReport>  $reports
+     * @return array{0: Collection<int, PriceReport>, 1: bool} segnalazioni, true se sono dello stesso prodotto di marca
+     */
+    private function candidates(Collection $reports, Supermarket $supermarket, ListItem $item): array
+    {
+        $chainReports = $reports->where('supermarket_id', $supermarket->id);
         $sameProduct = $item->barcode ? $chainReports->where('barcode', $item->barcode) : collect();
-        $candidates = $sameProduct->isNotEmpty() ? $sameProduct : ($key ? $chainReports->where('product_key', $key) : collect());
-
-        if ($report = $this->closest($candidates)) {
-            // Una confezione di contenuto noto si riporta in proporzione, salvo che sia proprio lo stesso prodotto.
-            $package = $sameProduct->isEmpty() && $report->per === 'pz' && $report->package_amount
-                ? [$report->package_amount, $report->package_unit]
-                : null;
-
-            return [
-                'line' => self::line($report->price, $report->per, $item, $package),
-                'price' => $report->price,
-                'per' => $report->per,
-                'source' => $report->source,
-                'reporter' => $report->reporter_name,
-                'observed_at' => $report->observed_at->toIso8601String(),
-                'city' => $report->city,
-                'locality' => $report->locality,
-                'report_id' => $report->id,
-            ];
+        if ($sameProduct->isNotEmpty()) {
+            return [$sameProduct, true];
         }
+        $key = ProductCatalog::productKey($item->name);
 
-        $listed = $key ? ($this->catalog[$supermarket->id][$key] ?? null) : null;
-        if ($listed === null) {
-            return null;
-        }
+        return [$key ? $chainReports->where('product_key', $key) : collect(), false];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function describe(PriceReport $report, ListItem $item, bool $sameProduct): array
+    {
+        // Una confezione di contenuto noto si riporta in proporzione, salvo che sia proprio lo stesso prodotto.
+        $package = ! $sameProduct && $report->per === 'pz' && $report->package_amount
+            ? [$report->package_amount, $report->package_unit]
+            : null;
 
         return [
-            'line' => self::line($listed['price'], $listed['per'], $item),
-            'price' => $listed['price'],
-            'per' => $listed['per'],
-            'source' => 'catalog',
-            'reporter' => null,
-            'observed_at' => null,
-            'city' => null,
-            'locality' => null,
-            'report_id' => null,
+            'line' => self::line($report->price, $report->per, $item, $package),
+            'price' => $report->price,
+            'currency' => $report->currency,
+            'per' => $report->per,
+            'source' => $report->source,
+            'status' => $report->status,
+            'reporter' => $report->reporter_name,
+            'observed_at' => $report->observed_at->toIso8601String(),
+            'city' => $report->city,
+            'locality' => $report->locality,
+            'report_id' => $report->id,
         ];
     }
 
@@ -162,11 +190,11 @@ class PriceBook
     private function closest(Collection $reports): ?PriceReport
     {
         $best = null;
-        $bestRank = 0;
+        $bestScore = [0, -1];
         foreach ($reports as $report) {
-            $rank = $this->zoneRank($report);
-            if ($rank > $bestRank) {
-                [$best, $bestRank] = [$report, $rank];
+            $score = [self::zoneRank($this->zone, $report), $report->approvals];
+            if ($score[0] > 0 && $score > $bestScore) {
+                [$best, $bestScore] = [$report, $score];
             }
         }
 
@@ -174,19 +202,24 @@ class PriceBook
     }
 
     /**
-     * 3 = stessa località, 2 = stessa città, 1 = stesso paese, 0 = altro paese (non vale).
+     * Vicinanza della segnalazione alla zona: 4 = stessa località, 3 = stessa città o paese, 2 = stessa provincia,
+     * 1 = stesso stato, 0 = altro stato (non vale).
+     *
+     * @param  array{0: string, 1: string|null, 2: string|null, 3: string|null}  $zone  stato, provincia, città, località
      */
-    private function zoneRank(PriceReport $report): int
+    public static function zoneRank(array $zone, PriceReport $report): int
     {
-        [$country, $city, $locality] = $this->zone;
-        if ($report->country !== $country) {
-            return 0;
-        }
-        if ($city === null || Supermarket::normalize((string) $report->city) !== Supermarket::normalize($city)) {
-            return 1;
-        }
+        [$country, $province, $city, $locality] = $zone;
+        $same = fn (?string $a, ?string $b) => $a !== null && $b !== null && Supermarket::normalize($a) === Supermarket::normalize($b)
+            && Supermarket::normalize($a) !== '';
 
-        return $locality !== null && Supermarket::normalize((string) $report->locality) === Supermarket::normalize($locality) ? 3 : 2;
+        return match (true) {
+            $report->country !== $country => 0,
+            $same($city, $report->city) && $same($locality, $report->locality) => 4,
+            $same($city, $report->city) => 3,
+            $same($province, $report->province) => 2,
+            default => 1,
+        };
     }
 
     /**

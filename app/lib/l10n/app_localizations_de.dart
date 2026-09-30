@@ -945,7 +945,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get country => 'Land';
 
   @override
-  String get cityLabel => 'Stadt';
+  String get cityLabel => 'Stadt oder Ort';
 
   @override
   String get cityHint => 'z. B. Mailand';
@@ -957,7 +957,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get localityHint => 'z. B. Città Studi';
 
   @override
-  String get zoneHelper => 'In dieser Gegend gemeldete Preise haben Vorrang';
+  String get zoneHelper => 'Angezeigt wird der meistbestätigte Preis der nächstgelegenen Gegend';
 
   @override
   String get perPiece => 'pro Packung';
@@ -969,22 +969,69 @@ class AppLocalizationsDe extends AppLocalizations {
   String get perLitre => 'pro Liter';
 
   @override
-  String get listPrice => 'Richtpreisliste';
-
-  @override
   String get priceMenu => 'Preis';
 
   @override
   String get priceLabel => 'Preis';
 
   @override
+  String get provinceLabel => 'Kreis';
+
+  @override
+  String get provinceHint => 'z. B. München';
+
+  @override
+  String get proposeOtherPrice => 'Anderen Preis vorschlagen';
+
+  @override
+  String get priceProposed => 'Preis vorgeschlagen: Andere sehen ihn, sobald jemand ihn bestätigt.';
+
+  @override
+  String get priceConfirmed => 'Preis bestätigt: danke!';
+
+  @override
+  String get priceDisputed => 'Als falsch gemeldet: danke!';
+
+  @override
+  String confirmations(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Bestätigungen',
+      one: '1 Bestätigung',
+      zero: 'Keine Bestätigung',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get confirmPrice => 'Stimmt';
+
+  @override
+  String get notRightPrice => 'Stimmt nicht';
+
+  @override
+  String yourProposal(String price) {
+    return 'Dein Vorschlag: $price';
+  }
+
+  @override
+  String get waitingConfirmation => 'Wartet auf Bestätigung: Vorerst siehst nur du ihn';
+
+  @override
+  String get otherPrices => 'Andere Preise';
+
+  @override
+  String get toBeConfirmed => 'zu bestätigen';
+
+  @override
+  String get disputed => 'widerlegt';
+
+  @override
+  String get proposedByYou => 'von dir vorgeschlagen';
+
+  @override
   String get addPrice => 'Preis hinzufügen';
-
-  @override
-  String get correctPrice => 'Preis korrigieren';
-
-  @override
-  String get priceCorrected => 'Preis aktualisiert: danke!';
 
   @override
   String get noPriceYet => 'Noch kein Preis für dieses Produkt in dieser Kette.';
@@ -993,12 +1040,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get chooseKnownSupermarket => 'Für Preise wähle in der Liste einen Supermarkt einer bekannten Kette.';
 
   @override
-  String get previousReports => 'Frühere Meldungen';
-
-  @override
   String get invalidPrice => 'Gib einen Preis ein, z. B. 1,29';
 
   @override
   String get priceReportPrivacy =>
-      'Der Preis gilt für alle, die in dieser Kette einkaufen. Andere sehen deinen Namen und die Uhrzeit, nicht deine E-Mail-Adresse.';
+      'Andere sehen den Preis, sobald andere Nutzer ihn bestätigen. Sie sehen deinen Namen und die Uhrzeit, nicht deine E-Mail-Adresse.';
 }

@@ -39,6 +39,7 @@ class ShoppingListUpdated implements ShouldBroadcastNow
                 'notes' => $this->list->notes,
                 'supermarket' => $this->list->supermarket,
                 'country' => $this->list->country,
+                'province' => $this->list->province,
                 'city' => $this->list->city,
                 'locality' => $this->list->locality,
                 'scheduled_at' => $this->list->scheduled_at->toIso8601String(),

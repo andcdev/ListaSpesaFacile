@@ -244,6 +244,7 @@ class ApiClient {
     String? notes,
     String? supermarket,
     String country = 'IT',
+    String? province,
     String? city,
     String? locality,
     int? reminderMinutes,
@@ -257,6 +258,7 @@ class ApiClient {
       'notes': notes,
       'supermarket': supermarket,
       'country': country,
+      'province': province,
       'city': city,
       'locality': locality,
       'reminder_minutes': reminderMinutes,
@@ -275,6 +277,7 @@ class ApiClient {
     String? notes,
     String? supermarket,
     String country = 'IT',
+    String? province,
     String? city,
     String? locality,
     int? reminderMinutes,
@@ -287,6 +290,7 @@ class ApiClient {
       'notes': notes,
       'supermarket': supermarket,
       'country': country,
+      'province': province,
       'city': city,
       'locality': locality,
       'reminder_minutes': reminderMinutes,
@@ -359,23 +363,34 @@ class ApiClient {
     return ItemPrices.fromJson(json['data'] as Map<String, dynamic>);
   }
 
-  /// Rettifica del prezzo nella catena e nella zona indicate (di chi la fa si salvano nome, email e ora).
+  /// Proposta di un prezzo nella catena e nella zona indicate (di chi la fa si salvano nome, email e ora): la vedono
+  /// gli altri dopo la conferma di altri utenti. Se c'è già lo stesso prezzo nella stessa città vale come conferma.
   Future<ListItem> reportPrice(
     int listId,
     int itemId, {
     required double price,
     required String per,
+    String? province,
     String? city,
     String? locality,
   }) async => _data(
     await _send('POST', '/lists/$listId/items/$itemId/prices', {
       'price': price,
       'per': per,
+      'province': province,
       'city': city,
       'locality': locality,
     }),
     ListItem.fromJson,
   );
+
+  /// Conferma (approve = true) o smentita di un prezzo: tornano i prezzi aggiornati.
+  Future<ItemPrices> votePrice(int listId, int itemId, int reportId, {required bool approve}) async {
+    final json = await _send('POST', '/lists/$listId/items/$itemId/prices/$reportId/vote', {
+      'approve': approve,
+    }) as Map<String, dynamic>;
+    return ItemPrices.fromJson(json['data'] as Map<String, dynamic>);
+  }
 
   Future<ListItem> updateItem(int listId, int itemId, Map<String, dynamic> changes) async =>
       _data(await _send('PATCH', '/lists/$listId/items/$itemId', changes), ListItem.fromJson);
@@ -437,7 +452,8 @@ class ApiClient {
       _send('POST', '/lists/$listId/messages/delivered', {'up_to': upTo});
 
   /// Catene di supermercati note, da suggerire mentre si scrive il supermercato.
-  Future<List<Supermarket>> supermarkets() async => _list(await _send('GET', '/supermarkets'), Supermarket.fromJson);
+  Future<List<Supermarket>> supermarkets({String country = 'IT'}) async =>
+      _list(await _send('GET', '/supermarkets?country=$country'), Supermarket.fromJson);
 
   /// Costo della lista in ogni catena che ha dei prezzi.
   Future<List<PriceComparison>> priceComparison(int listId) async =>

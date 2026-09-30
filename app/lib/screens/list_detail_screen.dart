@@ -181,7 +181,9 @@ class _ListDetailScreenState extends State<ListDetailScreen> {
     api: context.read<ApiClient>(),
     list: detail.list!,
     item: item,
-    onCorrect: (c) => detail.reportPrice(item, price: c.price, per: c.per, city: c.city, locality: c.locality),
+    onPropose: (c) =>
+        detail.reportPrice(item, price: c.price, per: c.per, province: c.province, city: c.city, locality: c.locality),
+    onVote: (report, approve) => detail.votePrice(item, report, approve: approve),
   );
 
   Future<void> _itemActions(ListDetailController detail, ListItem item) async {
@@ -593,31 +595,46 @@ class _ListDetailScreenState extends State<ListDetailScreen> {
                   ),
                 ),
               ),
-              // Prezzo indicativo nella catena scelta (quantità e peso compresi): toccandolo si vede da dove
-              // viene e si corregge. Senza prezzo, un "€" per aggiungerlo.
+              // Prezzo nella catena scelta (quantità e peso compresi): il più confermato della zona, oppure la mia
+              // proposta in attesa (con la clessidra). Toccandolo si conferma o se ne propone un altro; il pallino
+              // dice che ci sono prezzi di altri da confermare. Senza prezzo, un "€" per aggiungerlo.
               if (detail.list?.supermarketChain != null)
-                item.price != null
-                    ? InkWell(
-                        borderRadius: BorderRadius.circular(8),
-                        onTap: () => _openPrice(detail, item),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
-                          child: Text(
-                            formatPrice(context, item.price!),
-                            style: theme.textTheme.bodyMedium?.copyWith(
-                              fontWeight: FontWeight.w600,
-                              color: item.status == ItemStatus.todo ? null : scheme.onSurfaceVariant,
-                              decoration: item.missing ? TextDecoration.lineThrough : null,
+                Badge(
+                  isLabelVisible: item.pendingPrices > 0,
+                  smallSize: 8,
+                  child: item.shownPrice != null
+                      ? InkWell(
+                          borderRadius: BorderRadius.circular(8),
+                          onTap: () => _openPrice(detail, item),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                if (item.myPrice != null)
+                                  Padding(
+                                    padding: const EdgeInsets.only(right: 2),
+                                    child: Icon(Icons.hourglass_top, size: 14, color: scheme.onSurfaceVariant),
+                                  ),
+                                Text(
+                                  formatPrice(context, item.shownPrice!, item.currency),
+                                  style: theme.textTheme.bodyMedium?.copyWith(
+                                    fontWeight: FontWeight.w600,
+                                    color: item.status == ItemStatus.todo ? null : scheme.onSurfaceVariant,
+                                    decoration: item.missing ? TextDecoration.lineThrough : null,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
+                        )
+                      : IconButton(
+                          visualDensity: VisualDensity.compact,
+                          tooltip: l.addPrice,
+                          icon: Icon(Icons.euro, size: 18, color: scheme.onSurfaceVariant),
+                          onPressed: () => _openPrice(detail, item),
                         ),
-                      )
-                    : IconButton(
-                        visualDensity: VisualDensity.compact,
-                        tooltip: l.addPrice,
-                        icon: Icon(Icons.euro, size: 18, color: scheme.onSurfaceVariant),
-                        onPressed: () => _openPrice(detail, item),
-                      ),
+                ),
               Opacity(
                 opacity: item.status == ItemStatus.todo ? 1 : 0.5,
                 child: _ItemImage(item: item, listId: detail.listId),
@@ -853,7 +870,7 @@ class _PriceSummary extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.only(right: 8),
                       child: Text(
-                        formatPrice(context, total),
+                        formatPrice(context, total, detail.currency),
                         style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
                       ),
                     ),

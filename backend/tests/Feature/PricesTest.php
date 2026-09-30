@@ -18,7 +18,11 @@ class PricesTest extends TestCase
     {
         $supermarket = Supermarket::where('name', $chain)->firstOrFail();
         foreach ($prices as $key => [$price, $per]) {
-            $supermarket->prices()->create(['product_key' => $key, 'product_name' => $key, 'price' => $price, 'per' => $per]);
+            // Prezzi già confermati (come quelli importati da Open Prices).
+            $supermarket->reports()->create([
+                'product_key' => $key, 'product_name' => $key, 'price' => $price, 'per' => $per, 'country' => 'IT',
+                'source' => 'open_prices', 'status' => 'approved', 'observed_at' => now()->subDay(),
+            ]);
         }
 
         return $supermarket;
@@ -136,31 +140,6 @@ class PricesTest extends TestCase
 
         $this->assertTrue($rows['Lidl']['has_prices']);
         $this->assertFalse($rows['Esselunga']['has_prices']);
-    }
-
-    public function test_prices_are_imported_from_csv(): void
-    {
-        $file = tempnam(sys_get_temp_dir(), 'prezzi');
-        file_put_contents($file, "\u{FEFF}supermercato;prodotto;prezzo;per\nEsselunga di Milano;Latte;1,29;l\nLidl;Banane;1.49;kg\n"
-            ."Lidl;Pasta;0,89;\nLidl;Oggetto misterioso;3;pz\nBottega Rossi;Pane;2,50;pz\nLidl;Latte;abc;l\n");
-
-        $this->artisan('prices:import', ['file' => $file])
-            ->expectsOutputToContain('Prezzi importati: 4; righe saltate: 2.')
-            ->assertSuccessful();
-
-        $price = fn (string $chain, string $key) => Supermarket::match($chain)?->prices()->where('product_key', $key)->first();
-        $this->assertEquals([1.29, 'l'], [(float) $price('Esselunga', 'latte')->price, $price('Esselunga', 'latte')->per]);
-        $this->assertEquals([0.89, 'pz'], [(float) $price('Lidl', 'pasta')->price, $price('Lidl', 'pasta')->per]);
-        // Catena sconosciuta: viene creata.
-        $this->assertNotNull($price('Bottega Rossi', 'pane'));
-
-        // Con --replace i prezzi delle catene nel file vengono sostituiti.
-        file_put_contents($file, "Lidl,Latte,1.10,l\n");
-        $this->artisan('prices:import', ['file' => $file, '--replace' => true])->assertSuccessful();
-        $lidl = Supermarket::match('Lidl');
-        $this->assertSame(['latte'], $lidl->prices()->pluck('product_key')->all());
-        $this->assertEquals(1.1, $lidl->prices()->value('price'));
-        unlink($file);
     }
 
     public function test_pieces_are_read_from_the_quantity(): void

@@ -77,8 +77,8 @@ return [
     // riaccendono con le risposte finte.
     'openfoodfacts' => [
         'enabled' => (bool) env('OPENFOODFACTS_ENABLED', true),
-        // Paesi (ISO, separati da virgole) dei negozi da cui importare i prezzi di Open Prices.
-        'price_countries' => array_filter(explode(',', (string) env('OPEN_PRICES_COUNTRIES', 'IT'))),
+        // Paesi (ISO, separati da virgole) dei negozi da cui importare i prezzi di Open Prices; vuoto = tutto il mondo.
+        'price_countries' => array_values(array_filter(explode(',', (string) env('OPEN_PRICES_COUNTRIES', '')))),
     ],
 
 ];
