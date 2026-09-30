@@ -7,6 +7,7 @@ import '../models/shopping_list.dart';
 import '../models/supermarket.dart';
 import '../services/api_client.dart';
 import '../state/lists_controller.dart';
+import '../widgets/permission_picker.dart';
 import '../widgets/ui.dart';
 
 /// Creazione (list == null) o modifica di nome, data/ora, supermercato, note e promemoria di una lista.
@@ -332,20 +333,14 @@ class _ListFormScreenState extends State<ListFormScreen> {
                     contentPadding: EdgeInsets.zero,
                     leading: UserAvatar(initials: r.email[0].toUpperCase()),
                     title: Text(r.email, overflow: TextOverflow.ellipsis),
-                    subtitle: Text(r.canEdit ? l.canEdit : l.readOnly),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Switch(
-                          value: r.canEdit,
-                          onChanged: (v) => setState(() => _recipients[i] = ShareRequest(r.email, canEdit: v)),
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.close),
-                          tooltip: l.remove,
-                          onPressed: () => setState(() => _recipients.removeAt(i)),
-                        ),
-                      ],
+                    subtitle: PermissionPicker(
+                      canEdit: r.canEdit,
+                      onChanged: (v) => setState(() => _recipients[i] = ShareRequest(r.email, canEdit: v)),
+                    ),
+                    trailing: IconButton(
+                      icon: const Icon(Icons.close),
+                      tooltip: l.remove,
+                      onPressed: () => setState(() => _recipients.removeAt(i)),
                     ),
                   ),
               ],

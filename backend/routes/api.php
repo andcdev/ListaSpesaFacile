@@ -69,6 +69,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/lists/{list}/shares', [ListShareController::class, 'index']);
     Route::post('/lists/{list}/shares', [ListShareController::class, 'store']);
+    Route::patch('/lists/{list}/shares/{user}', [ListShareController::class, 'update']);
     Route::delete('/lists/{list}/shares/{user}', [ListShareController::class, 'destroy']);
 
     Route::get('/lists/{list}/image', [ListImageController::class, 'show']);
@@ -90,6 +91,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/global-shares', [GlobalShareController::class, 'index']);
     Route::post('/global-shares', [GlobalShareController::class, 'store']);
+    Route::patch('/global-shares/{user}', [GlobalShareController::class, 'update']);
     Route::delete('/global-shares/{user}', [GlobalShareController::class, 'destroy']);
     Route::delete('/global-shares/received/{user}', [GlobalShareController::class, 'leave']);
 });

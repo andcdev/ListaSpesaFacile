@@ -4,7 +4,7 @@ namespace App\Support;
 
 class SocialProviders
 {
-    public const ALL = ['google', 'facebook', 'amazon'];
+    public const ALL = ['google', 'amazon'];
 
     /**
      * Provider configurati sul server (con client_id e client_secret).

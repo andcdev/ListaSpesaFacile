@@ -76,33 +76,33 @@ class ProductsTest extends TestCase
         $this->assertSame([null, null], OpenFoodFacts::parseQuantity('una confezione'));
     }
 
-    public function test_items_get_a_photo_from_open_food_facts_unless_the_user_chose_one(): void
+    public function test_only_branded_products_get_a_photo_and_it_goes_away_when_renamed(): void
     {
         config(['services.openfoodfacts.enabled' => true]);
-        // Latte con foto (la prima senza); la torta non c'è.
-        Http::fake(fn (Request $r) => Http::response(['hits' => str_contains($r['q'], 'torta') ? [] : [
-            ['code' => '1', 'product_name' => 'Latte', 'brands' => ['Parmalat']],
-            ['code' => '2', 'product_name' => 'Latte', 'brands' => ['Granarolo'], 'image_front_url' => 'https://images.openfoodfacts.org/latte.jpg'],
-        ]]));
+        Http::fake(['*' => Http::response(['hits' => [['code' => '1', 'product_name' => 'Latte', 'image_front_url' => 'https://images.openfoodfacts.org/latte.jpg']]])]);
         $list = ShoppingList::factory()->create();
         Sanctum::actingAs($list->owner);
 
-        $id = $this->postJson("/api/lists/{$list->id}/items", ['name' => 'Latte'])->json('data.id');
-        $this->getJson("/api/lists/{$list->id}")->assertJsonPath('data.items.0.image_url', 'https://images.openfoodfacts.org/latte.jpg');
-
-        // Link scelto a mano: resta anche cambiando il nome.
-        $this->patchJson("/api/lists/{$list->id}/items/{$id}", ['image_url' => 'https://example.com/mio.jpg']);
-        $this->patchJson("/api/lists/{$list->id}/items/{$id}", ['name' => 'Latte intero']);
-        $this->getJson("/api/lists/{$list->id}")->assertJsonPath('data.items.0.image_url', 'https://example.com/mio.jpg');
-
-        // Senza link, rinominando se ne cerca una di nuovo.
-        $this->patchJson("/api/lists/{$list->id}/items/{$id}", ['image_url' => null]);
-        $this->patchJson("/api/lists/{$list->id}/items/{$id}", ['name' => 'Latte scremato']);
-        $this->getJson("/api/lists/{$list->id}")->assertJsonPath('data.items.0.image_url', 'https://images.openfoodfacts.org/latte.jpg');
-
-        // Nome nuovo senza foto su Open Food Facts: la foto automatica del nome vecchio se ne va.
-        $this->patchJson("/api/lists/{$list->id}/items/{$id}", ['name' => 'Torta della nonna']);
+        // Scritto a mano: nessuna foto cercata in automatico.
+        $this->postJson("/api/lists/{$list->id}/items", ['name' => 'Latte'])->assertJsonPath('data.image_url', null);
         $this->getJson("/api/lists/{$list->id}")->assertJsonPath('data.items.0.image_url', null);
+        Http::assertNothingSent();
+
+        // Scelto dai suggerimenti: la foto del prodotto; rinominandolo in un altro prodotto se ne va con la marca.
+        $id = $this->postJson("/api/lists/{$list->id}/items", [
+            'name' => 'Latte intero Parmalat', 'barcode' => '8002580018446', 'brand' => 'Parmalat',
+            'image_url' => 'https://images.openfoodfacts.org/parmalat.jpg',
+        ])->assertJsonPath('data.image_url', 'https://images.openfoodfacts.org/parmalat.jpg')->json('data.id');
+        $this->patchJson("/api/lists/{$list->id}/items/{$id}", ['quantity' => '2', 'image_url' => 'https://images.openfoodfacts.org/parmalat.jpg'])
+            ->assertJsonPath('data.image_url', 'https://images.openfoodfacts.org/parmalat.jpg');
+        $this->patchJson("/api/lists/{$list->id}/items/{$id}", ['name' => 'Latte di capra', 'image_url' => 'https://images.openfoodfacts.org/parmalat.jpg'])
+            ->assertJsonPath('data.image_url', null)
+            ->assertJsonPath('data.barcode', null);
+
+        // Un link scelto a mano resta anche cambiando nome.
+        $id = $this->postJson("/api/lists/{$list->id}/items", ['name' => 'Torta', 'image_url' => 'https://example.com/torta.jpg'])->json('data.id');
+        $this->patchJson("/api/lists/{$list->id}/items/{$id}", ['name' => 'Torta della nonna'])
+            ->assertJsonPath('data.image_url', 'https://example.com/torta.jpg');
     }
 
     public function test_open_food_facts_down_does_not_break_adding_items(): void
@@ -112,7 +112,7 @@ class ProductsTest extends TestCase
         $list = ShoppingList::factory()->create();
         Sanctum::actingAs($list->owner);
 
-        $this->postJson("/api/lists/{$list->id}/items", ['name' => 'Latte'])->assertCreated()->assertJsonPath('data.image_url', null);
+        $this->postJson("/api/lists/{$list->id}/items", ['name' => 'Latte'])->assertCreated();
         $this->getJson('/api/products/search?q=latte')->assertOk()->assertJsonCount(0, 'data');
     }
 

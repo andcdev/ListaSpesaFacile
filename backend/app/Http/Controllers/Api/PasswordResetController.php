@@ -17,7 +17,7 @@ use Throwable;
 
 /**
  * Recupero della password dall'app: un codice di 6 cifre via email (più comodo di un link su un telefono),
- * poi codice + nuova password → accesso. Funziona anche per chi si era registrato con Google o Facebook.
+ * poi codice + nuova password → accesso. Funziona anche per chi si era registrato con Google o Amazon.
  */
 class PasswordResetController extends Controller
 {

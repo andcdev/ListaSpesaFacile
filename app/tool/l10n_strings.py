@@ -31,7 +31,6 @@ S = {
     'tomorrow': ('Domani', 'Tomorrow', 'Demain', 'Morgen', 'Mañana'),
     'yesterday': ('Ieri', 'Yesterday', 'Hier', 'Gestern', 'Ayer'),
     'canEdit': ('Può modificare', 'Can edit', 'Peut modifier', 'Darf bearbeiten', 'Puede editar'),
-    'readOnly': ('Sola lettura', 'Read only', 'Lecture seule', 'Nur lesen', 'Solo lectura'),
     'userCanEdit': ('può modificare', 'can edit', 'peut modifier', 'darf bearbeiten', 'puede editar'),
     'userReadOnly': ('sola lettura', 'read only', 'lecture seule', 'nur lesen', 'solo lectura'),
     'invalidEmail': ("Inserisci un'email valida", 'Enter a valid email', 'Saisissez un e-mail valide',
@@ -112,20 +111,20 @@ S = {
                              'Acceso con {provider} aún no activo', {'provider': 'String'}),
     'socialNotActiveBody': (
         "Il server non è ancora collegato a {provider}. Chi gestisce il server deve registrare l'app presso "
-        "{provider} e inserire ID e secret nel file .env (vedi il README, \"Accesso con Google, Facebook e Amazon\")."
+        "{provider} e inserire ID e secret nel file .env (vedi il README, \"Accesso con Google e Amazon\")."
         "\n\nNel frattempo puoi registrarti con email e password.",
         "The server is not connected to {provider} yet. The server administrator must register the app with "
-        "{provider} and put its ID and secret in the .env file (see the README, \"Accesso con Google, Facebook e "
+        "{provider} and put its ID and secret in the .env file (see the README, \"Accesso con Google e "
         "Amazon\").\n\nIn the meantime you can sign up with email and password.",
         "Le serveur n'est pas encore relié à {provider}. L'administrateur du serveur doit enregistrer l'application "
         "auprès de {provider} et saisir l'ID et le secret dans le fichier .env (voir le README, \"Accesso con "
-        "Google, Facebook e Amazon\").\n\nEn attendant, vous pouvez vous inscrire avec e-mail et mot de passe.",
+        "Google e Amazon\").\n\nEn attendant, vous pouvez vous inscrire avec e-mail et mot de passe.",
         "Der Server ist noch nicht mit {provider} verbunden. Der Serveradministrator muss die App bei {provider} "
-        "registrieren und ID und Secret in die Datei .env eintragen (siehe README, \"Accesso con Google, Facebook "
+        "registrieren und ID und Secret in die Datei .env eintragen (siehe README, \"Accesso con Google "
         "e Amazon\").\n\nBis dahin kannst du dich mit E-Mail und Passwort registrieren.",
         "El servidor aún no está conectado a {provider}. Quien gestiona el servidor debe registrar la app en "
-        "{provider} e introducir el ID y el secret en el archivo .env (ver el README, \"Accesso con Google, "
-        "Facebook e Amazon\").\n\nMientras tanto puedes registrarte con correo y contraseña.",
+        "{provider} e introducir el ID y el secret en el archivo .env (ver el README, \"Accesso con Google "
+        "e Amazon\").\n\nMientras tanto puedes registrarte con correo y contraseña.",
         {'provider': 'String'}),
     'or': ('oppure', 'or', 'ou', 'oder', 'o'),
     'continueWith': ('Continua con {provider}', 'Continue with {provider}', 'Continuer avec {provider}',
@@ -319,9 +318,6 @@ S = {
                 {'head': 'String', 'last': 'String'}),
 
     # ── Condivisione ────────────────────────────────────────────────
-    'canEditSubtitle': ('Aggiunge, spunta ed elimina articoli', 'Adds, checks off and deletes items',
-                        'Ajoute, coche et supprime des articles', 'Fügt Artikel hinzu, hakt sie ab und löscht sie',
-                        'Añade, marca y elimina artículos'),
     'listSharedWith': ('Lista condivisa con {email}', 'List shared with {email}', 'Liste partagée avec {email}',
                        'Liste geteilt mit {email}', 'Lista compartida con {email}', {'email': 'String'}),
     'removeUserQuestion': ('Rimuovere {name}?', 'Remove {name}?', 'Retirer {name} ?', '{name} entfernen?',
@@ -685,10 +681,10 @@ S = {
                            'Facultatif : vous pouvez le modifier à tout moment depuis le menu du profil',
                            'Optional: Du kannst es jederzeit im Profilmenü ändern',
                            'Opcional: puedes cambiarlo cuando quieras desde el menú del perfil'),
-    'socialPrivacyNotice': ('Continuando con Google o Facebook accetti l\'', 'By continuing with Google or Facebook you accept the ',
-                            'En continuant avec Google ou Facebook, vous acceptez la ',
-                            'Wenn du mit Google oder Facebook fortfährst, akzeptierst du die ',
-                            'Al continuar con Google o Facebook aceptas la '),
+    'socialPrivacyNotice': ('Continuando con Google o Amazon accetti l\'', 'By continuing with Google or Amazon you accept the ',
+                            'En continuant avec Google ou Amazon, vous acceptez la ',
+                            'Wenn du mit Google oder Amazon fortfährst, akzeptierst du die ',
+                            'Al continuar con Google o Amazon aceptas la '),
     'newsletter': ('Newsletter', 'Newsletter', 'Newsletter', 'Newsletter', 'Newsletter'),
 
     # ── I miei prezzi ───────────────────────────────────────────────
@@ -778,6 +774,12 @@ S = {
     'allergenSulphites': ('Solfiti', 'Sulphites', 'Sulfites', 'Sulfite', 'Sulfitos'),
     'allergenLupin': ('Lupini', 'Lupin', 'Lupin', 'Lupinen', 'Altramuces'),
     'allergenMolluscs': ('Molluschi', 'Molluscs', 'Mollusques', 'Weichtiere', 'Moluscos'),
+
+    # ── Permessi di condivisione ────────────────────────────────────
+    'permission': ('Permesso', 'Permission', 'Autorisation', 'Berechtigung', 'Permiso'),
+    'permissionRead': ('Solo lettura', 'Read only', 'Lecture seule', 'Nur lesen', 'Solo lectura'),
+    'permissionReadWrite': ('Lettura e modifica', 'Read and edit', 'Lecture et modification', 'Lesen und bearbeiten',
+                            'Lectura y edición'),
 }
 
 

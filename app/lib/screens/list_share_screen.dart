@@ -5,6 +5,7 @@ import '../l10n/l10n.dart';
 import '../models/app_user.dart';
 import '../services/api_client.dart';
 import '../widgets/share_form.dart';
+import '../widgets/permission_picker.dart';
 import '../widgets/ui.dart';
 
 /// Condivisione di una lista con uno o più utenti registrati.
@@ -43,6 +44,16 @@ class _ListShareScreenState extends State<ListShareScreen> {
     if (!mounted) return;
     setState(() => _users = users);
     showMessage(context, context.l10n.listSharedWith(email));
+  }
+
+  /// Solo lettura oppure lettura e modifica per chi ha già la lista.
+  Future<void> _setPermission(AppUser user, bool canEdit) async {
+    try {
+      final users = await _api.updateShare(widget.listId, user.id, canEdit: canEdit);
+      if (mounted) setState(() => _users = users);
+    } catch (e) {
+      if (mounted) showError(context, e);
+    }
   }
 
   Future<void> _remove(AppUser user) async {
@@ -92,7 +103,13 @@ class _ListShareScreenState extends State<ListShareScreen> {
                     image: avatarImage(context.read<ApiClient>(), u),
                   ),
                   title: Text(u.name),
-                  subtitle: Text('${u.email} · ${u.canEdit == false ? l.userReadOnly : l.userCanEdit}'),
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(u.email, overflow: TextOverflow.ellipsis),
+                      PermissionPicker(canEdit: u.canEdit != false, onChanged: (v) => _setPermission(u, v)),
+                    ],
+                  ),
                   trailing: IconButton(
                     icon: const Icon(Icons.person_remove_outlined),
                     tooltip: l.remove,

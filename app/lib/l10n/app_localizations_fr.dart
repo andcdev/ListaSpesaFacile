@@ -61,9 +61,6 @@ class AppLocalizationsFr extends AppLocalizations {
   String get canEdit => 'Peut modifier';
 
   @override
-  String get readOnly => 'Lecture seule';
-
-  @override
   String get userCanEdit => 'peut modifier';
 
   @override
@@ -177,7 +174,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String socialNotActiveBody(String provider) {
-    return 'Le serveur n\'est pas encore relié à $provider. L\'administrateur du serveur doit enregistrer l\'application auprès de $provider et saisir l\'ID et le secret dans le fichier .env (voir le README, \"Accesso con Google, Facebook e Amazon\").\n\nEn attendant, vous pouvez vous inscrire avec e-mail et mot de passe.';
+    return 'Le serveur n\'est pas encore relié à $provider. L\'administrateur du serveur doit enregistrer l\'application auprès de $provider et saisir l\'ID et le secret dans le fichier .env (voir le README, \"Accesso con Google e Amazon\").\n\nEn attendant, vous pouvez vous inscrire avec e-mail et mot de passe.';
   }
 
   @override
@@ -455,9 +452,6 @@ class AppLocalizationsFr extends AppLocalizations {
   String listAnd(String head, String last) {
     return '$head et $last';
   }
-
-  @override
-  String get canEditSubtitle => 'Ajoute, coche et supprime des articles';
 
   @override
   String listSharedWith(String email) {
@@ -953,7 +947,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get newsletterOptional => 'Facultatif : vous pouvez le modifier à tout moment depuis le menu du profil';
 
   @override
-  String get socialPrivacyNotice => 'En continuant avec Google ou Facebook, vous acceptez la ';
+  String get socialPrivacyNotice => 'En continuant avec Google ou Amazon, vous acceptez la ';
 
   @override
   String get newsletter => 'Newsletter';
@@ -1137,4 +1131,13 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get allergenMolluscs => 'Mollusques';
+
+  @override
+  String get permission => 'Autorisation';
+
+  @override
+  String get permissionRead => 'Lecture seule';
+
+  @override
+  String get permissionReadWrite => 'Lecture et modification';
 }

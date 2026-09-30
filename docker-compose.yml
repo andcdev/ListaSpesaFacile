@@ -40,8 +40,6 @@ x-laravel-env: &laravel-env
   # Login social: il provider compare nell'app solo se ID e secret sono impostati.
   GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
   GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
-  FACEBOOK_CLIENT_ID: ${FACEBOOK_CLIENT_ID:-}
-  FACEBOOK_CLIENT_SECRET: ${FACEBOOK_CLIENT_SECRET:-}
   AMAZON_CLIENT_ID: ${AMAZON_CLIENT_ID:-}
   AMAZON_CLIENT_SECRET: ${AMAZON_CLIENT_SECRET:-}
   # Email (codice per il recupero della password). Con MAIL_MAILER=log l'email finisce nel log di "app".

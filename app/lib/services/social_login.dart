@@ -11,7 +11,7 @@ import 'api_client.dart';
 
 typedef WebAuthenticator = Future<String> Function(Uri url, String callbackScheme);
 
-/// Login con Google / Facebook / Amazon tramite il backend.
+/// Login con Google / Amazon tramite il backend.
 ///
 /// Apre la pagina del server nel browser di sistema (Custom Tabs su Android,
 /// ASWebAuthenticationSession su iOS); al termine il server riapre l'app su
@@ -23,7 +23,7 @@ class SocialLogin {
   /// Deve coincidere con SOCIAL_APP_CALLBACK del backend e con l'intent-filter Android.
   static const callbackScheme = 'listaspesafacile';
 
-  static const labels = {'google': 'Google', 'facebook': 'Facebook', 'amazon': 'Amazon'};
+  static const labels = {'google': 'Google', 'amazon': 'Amazon'};
 
   final ApiClient _api;
   final WebAuthenticator _authenticate;

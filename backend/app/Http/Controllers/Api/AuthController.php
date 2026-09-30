@@ -96,7 +96,7 @@ class AuthController extends Controller
     /**
      * Eliminazione dell'account dall'app (Google Play la chiede sia nell'app sia sul sito): stessa pulizia della
      * pagina listaspesafacile.com/elimina-account. Il token dell'app basta come prova d'identità, e chi è entrato
-     * con Google o Facebook non ha una password da chiedere.
+     * con Google o Amazon non ha una password da chiedere.
      */
     public function destroy(Request $request): JsonResponse
     {

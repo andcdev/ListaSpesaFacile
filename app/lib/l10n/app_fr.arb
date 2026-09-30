@@ -17,7 +17,6 @@
   "tomorrow": "Demain",
   "yesterday": "Hier",
   "canEdit": "Peut modifier",
-  "readOnly": "Lecture seule",
   "userCanEdit": "peut modifier",
   "userReadOnly": "lecture seule",
   "invalidEmail": "Saisissez un e-mail valide",
@@ -52,7 +51,7 @@
   "server": "Serveur",
   "serverAddress": "Adresse du serveur",
   "socialNotActiveTitle": "Connexion avec {provider} pas encore active",
-  "socialNotActiveBody": "Le serveur n'est pas encore relié à {provider}. L'administrateur du serveur doit enregistrer l'application auprès de {provider} et saisir l'ID et le secret dans le fichier .env (voir le README, \"Accesso con Google, Facebook e Amazon\").\n\nEn attendant, vous pouvez vous inscrire avec e-mail et mot de passe.",
+  "socialNotActiveBody": "Le serveur n'est pas encore relié à {provider}. L'administrateur du serveur doit enregistrer l'application auprès de {provider} et saisir l'ID et le secret dans le fichier .env (voir le README, \"Accesso con Google e Amazon\").\n\nEn attendant, vous pouvez vous inscrire avec e-mail et mot de passe.",
   "or": "ou",
   "continueWith": "Continuer avec {provider}",
   "socialOpenFailed": "Impossible d'ouvrir la connexion avec {provider}.",
@@ -135,7 +134,6 @@
   "durationMinutes": "{count, plural, =1{1 minute} other{{count} minutes}}",
   "durationMoments": "quelques instants",
   "listAnd": "{head} et {last}",
-  "canEditSubtitle": "Ajoute, coche et supprime des articles",
   "listSharedWith": "Liste partagée avec {email}",
   "removeUserQuestion": "Retirer {name} ?",
   "removeUserInfo": "Il ne verra plus cette liste.",
@@ -277,7 +275,7 @@
   "privacyPolicy": "politique de confidentialité",
   "newsletterConsent": "Je veux recevoir la newsletter de Lista Spesa Facile",
   "newsletterOptional": "Facultatif : vous pouvez le modifier à tout moment depuis le menu du profil",
-  "socialPrivacyNotice": "En continuant avec Google ou Facebook, vous acceptez la ",
+  "socialPrivacyNotice": "En continuant avec Google ou Amazon, vous acceptez la ",
   "newsletter": "Newsletter",
   "myPrices": "Mes prix",
   "myPrice": "Mon prix",
@@ -336,5 +334,8 @@
   "allergenSesame": "Sésame",
   "allergenSulphites": "Sulfites",
   "allergenLupin": "Lupin",
-  "allergenMolluscs": "Mollusques"
+  "allergenMolluscs": "Mollusques",
+  "permission": "Autorisation",
+  "permissionRead": "Lecture seule",
+  "permissionReadWrite": "Lecture et modification"
 }

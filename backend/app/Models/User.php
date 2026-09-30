@@ -97,7 +97,7 @@ class User extends Authenticatable implements HasLocalePreference
     }
 
     /**
-     * Account Google / Facebook / Amazon collegati.
+     * Account Google / Amazon collegati (anche Facebook, per chi lo usava prima).
      *
      * @return HasMany<SocialAccount, $this>
      */

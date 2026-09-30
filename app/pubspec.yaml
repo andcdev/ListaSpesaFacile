@@ -84,6 +84,8 @@ flutter:
   # Sfondo delle schermate (disegni dei prodotti ripetuti), in versione chiara e scura.
   assets:
     - assets/backgrounds/
+    # Loghi ufficiali per i pulsanti di accesso: Google (kit Sign in with Google) e Amazon (Login with Amazon).
+    - assets/logos/
 
   # Caratteri dello stile "Mercato" (licenza SIL OFL, vedi assets/fonts/OFL-*.txt): inclusi nell'app,
   # funzionano anche offline.

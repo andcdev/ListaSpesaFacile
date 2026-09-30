@@ -203,12 +203,6 @@ abstract class AppLocalizations {
   /// **'Può modificare'**
   String get canEdit;
 
-  /// No description provided for @readOnly.
-  ///
-  /// In it, this message translates to:
-  /// **'Sola lettura'**
-  String get readOnly;
-
   /// No description provided for @userCanEdit.
   ///
   /// In it, this message translates to:
@@ -416,7 +410,7 @@ abstract class AppLocalizations {
   /// No description provided for @socialNotActiveBody.
   ///
   /// In it, this message translates to:
-  /// **'Il server non è ancora collegato a {provider}. Chi gestisce il server deve registrare l\'app presso {provider} e inserire ID e secret nel file .env (vedi il README, \"Accesso con Google, Facebook e Amazon\").\n\nNel frattempo puoi registrarti con email e password.'**
+  /// **'Il server non è ancora collegato a {provider}. Chi gestisce il server deve registrare l\'app presso {provider} e inserire ID e secret nel file .env (vedi il README, \"Accesso con Google e Amazon\").\n\nNel frattempo puoi registrarti con email e password.'**
   String socialNotActiveBody(String provider);
 
   /// No description provided for @or.
@@ -910,12 +904,6 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'{head} e {last}'**
   String listAnd(String head, String last);
-
-  /// No description provided for @canEditSubtitle.
-  ///
-  /// In it, this message translates to:
-  /// **'Aggiunge, spunta ed elimina articoli'**
-  String get canEditSubtitle;
 
   /// No description provided for @listSharedWith.
   ///
@@ -1766,7 +1754,7 @@ abstract class AppLocalizations {
   /// No description provided for @socialPrivacyNotice.
   ///
   /// In it, this message translates to:
-  /// **'Continuando con Google o Facebook accetti l\''**
+  /// **'Continuando con Google o Amazon accetti l\''**
   String get socialPrivacyNotice;
 
   /// No description provided for @newsletter.
@@ -2122,6 +2110,24 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Molluschi'**
   String get allergenMolluscs;
+
+  /// No description provided for @permission.
+  ///
+  /// In it, this message translates to:
+  /// **'Permesso'**
+  String get permission;
+
+  /// No description provided for @permissionRead.
+  ///
+  /// In it, this message translates to:
+  /// **'Solo lettura'**
+  String get permissionRead;
+
+  /// No description provided for @permissionReadWrite.
+  ///
+  /// In it, this message translates to:
+  /// **'Lettura e modifica'**
+  String get permissionReadWrite;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

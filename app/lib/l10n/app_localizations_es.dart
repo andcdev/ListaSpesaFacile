@@ -61,9 +61,6 @@ class AppLocalizationsEs extends AppLocalizations {
   String get canEdit => 'Puede editar';
 
   @override
-  String get readOnly => 'Solo lectura';
-
-  @override
   String get userCanEdit => 'puede editar';
 
   @override
@@ -177,7 +174,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String socialNotActiveBody(String provider) {
-    return 'El servidor aún no está conectado a $provider. Quien gestiona el servidor debe registrar la app en $provider e introducir el ID y el secret en el archivo .env (ver el README, \"Accesso con Google, Facebook e Amazon\").\n\nMientras tanto puedes registrarte con correo y contraseña.';
+    return 'El servidor aún no está conectado a $provider. Quien gestiona el servidor debe registrar la app en $provider e introducir el ID y el secret en el archivo .env (ver el README, \"Accesso con Google e Amazon\").\n\nMientras tanto puedes registrarte con correo y contraseña.';
   }
 
   @override
@@ -454,9 +451,6 @@ class AppLocalizationsEs extends AppLocalizations {
   String listAnd(String head, String last) {
     return '$head y $last';
   }
-
-  @override
-  String get canEditSubtitle => 'Añade, marca y elimina artículos';
 
   @override
   String listSharedWith(String email) {
@@ -952,7 +946,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get newsletterOptional => 'Opcional: puedes cambiarlo cuando quieras desde el menú del perfil';
 
   @override
-  String get socialPrivacyNotice => 'Al continuar con Google o Facebook aceptas la ';
+  String get socialPrivacyNotice => 'Al continuar con Google o Amazon aceptas la ';
 
   @override
   String get newsletter => 'Newsletter';
@@ -1135,4 +1129,13 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get allergenMolluscs => 'Moluscos';
+
+  @override
+  String get permission => 'Permiso';
+
+  @override
+  String get permissionRead => 'Solo lectura';
+
+  @override
+  String get permissionReadWrite => 'Lectura y edición';
 }

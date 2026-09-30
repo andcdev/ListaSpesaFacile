@@ -17,7 +17,6 @@
   "tomorrow": "Tomorrow",
   "yesterday": "Yesterday",
   "canEdit": "Can edit",
-  "readOnly": "Read only",
   "userCanEdit": "can edit",
   "userReadOnly": "read only",
   "invalidEmail": "Enter a valid email",
@@ -52,7 +51,7 @@
   "server": "Server",
   "serverAddress": "Server address",
   "socialNotActiveTitle": "Sign-in with {provider} not active yet",
-  "socialNotActiveBody": "The server is not connected to {provider} yet. The server administrator must register the app with {provider} and put its ID and secret in the .env file (see the README, \"Accesso con Google, Facebook e Amazon\").\n\nIn the meantime you can sign up with email and password.",
+  "socialNotActiveBody": "The server is not connected to {provider} yet. The server administrator must register the app with {provider} and put its ID and secret in the .env file (see the README, \"Accesso con Google e Amazon\").\n\nIn the meantime you can sign up with email and password.",
   "or": "or",
   "continueWith": "Continue with {provider}",
   "socialOpenFailed": "Cannot open sign-in with {provider}.",
@@ -135,7 +134,6 @@
   "durationMinutes": "{count, plural, =1{1 minute} other{{count} minutes}}",
   "durationMoments": "a few moments",
   "listAnd": "{head} and {last}",
-  "canEditSubtitle": "Adds, checks off and deletes items",
   "listSharedWith": "List shared with {email}",
   "removeUserQuestion": "Remove {name}?",
   "removeUserInfo": "They will no longer see this list.",
@@ -277,7 +275,7 @@
   "privacyPolicy": "privacy policy",
   "newsletterConsent": "I want to receive the Lista Spesa Facile newsletter",
   "newsletterOptional": "Optional: you can change it anytime from the profile menu",
-  "socialPrivacyNotice": "By continuing with Google or Facebook you accept the ",
+  "socialPrivacyNotice": "By continuing with Google or Amazon you accept the ",
   "newsletter": "Newsletter",
   "myPrices": "My prices",
   "myPrice": "My price",
@@ -336,5 +334,8 @@
   "allergenSesame": "Sesame",
   "allergenSulphites": "Sulphites",
   "allergenLupin": "Lupin",
-  "allergenMolluscs": "Molluscs"
+  "allergenMolluscs": "Molluscs",
+  "permission": "Permission",
+  "permissionRead": "Read only",
+  "permissionReadWrite": "Read and edit"
 }

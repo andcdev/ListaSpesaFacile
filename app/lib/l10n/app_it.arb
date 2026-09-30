@@ -17,7 +17,6 @@
   "tomorrow": "Domani",
   "yesterday": "Ieri",
   "canEdit": "Può modificare",
-  "readOnly": "Sola lettura",
   "userCanEdit": "può modificare",
   "userReadOnly": "sola lettura",
   "invalidEmail": "Inserisci un'email valida",
@@ -87,7 +86,7 @@
       }
     }
   },
-  "socialNotActiveBody": "Il server non è ancora collegato a {provider}. Chi gestisce il server deve registrare l'app presso {provider} e inserire ID e secret nel file .env (vedi il README, \"Accesso con Google, Facebook e Amazon\").\n\nNel frattempo puoi registrarti con email e password.",
+  "socialNotActiveBody": "Il server non è ancora collegato a {provider}. Chi gestisce il server deve registrare l'app presso {provider} e inserire ID e secret nel file .env (vedi il README, \"Accesso con Google e Amazon\").\n\nNel frattempo puoi registrarti con email e password.",
   "@socialNotActiveBody": {
     "placeholders": {
       "provider": {
@@ -264,7 +263,6 @@
       }
     }
   },
-  "canEditSubtitle": "Aggiunge, spunta ed elimina articoli",
   "listSharedWith": "Lista condivisa con {email}",
   "@listSharedWith": {
     "placeholders": {
@@ -585,7 +583,7 @@
   "privacyPolicy": "informativa privacy",
   "newsletterConsent": "Voglio ricevere la newsletter di Lista Spesa Facile",
   "newsletterOptional": "Facoltativo: puoi cambiarlo quando vuoi dal menu del profilo",
-  "socialPrivacyNotice": "Continuando con Google o Facebook accetti l'",
+  "socialPrivacyNotice": "Continuando con Google o Amazon accetti l'",
   "newsletter": "Newsletter",
   "myPrices": "I miei prezzi",
   "myPrice": "Il mio prezzo",
@@ -658,5 +656,8 @@
   "allergenSesame": "Sesamo",
   "allergenSulphites": "Solfiti",
   "allergenLupin": "Lupini",
-  "allergenMolluscs": "Molluschi"
+  "allergenMolluscs": "Molluschi",
+  "permission": "Permesso",
+  "permissionRead": "Solo lettura",
+  "permissionReadWrite": "Lettura e modifica"
 }

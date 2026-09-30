@@ -10,7 +10,7 @@ use Throwable;
 
 /**
  * Prodotti di marca da Open Food Facts (search.openfoodfacts.org): suggerimenti mentre si scrive ("latte parm" →
- * Latte intero Parmalat 1 L, con foto) e foto di un articolo scritto a mano.
+ * Latte intero Parmalat 1 L, con foto) e scheda del prodotto (menu Info).
  *
  * Le risposte restano in cache un giorno: la stessa ricerca fatta da più utenti interroga il servizio una volta.
  * Se il servizio non risponde si torna una lista vuota: la lista della spesa funziona comunque.
@@ -79,20 +79,6 @@ class OpenFoodFacts
         }
 
         return array_slice(array_values($products), 0, $limit);
-    }
-
-    /**
-     * Foto per un articolo scritto a mano ("Latte intero" → la foto del primo latte intero trovato), null se non c'è.
-     */
-    public static function imageFor(string $name, ?string $country = 'IT'): ?string
-    {
-        foreach (self::search($name, $country, 20) as $product) {
-            if ($product['image_url']) {
-                return $product['image_url'];
-            }
-        }
-
-        return null;
     }
 
     public const PRODUCT_URL = 'https://world.openfoodfacts.org/api/v2/product/';

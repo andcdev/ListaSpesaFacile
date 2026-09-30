@@ -61,9 +61,6 @@ class AppLocalizationsDe extends AppLocalizations {
   String get canEdit => 'Darf bearbeiten';
 
   @override
-  String get readOnly => 'Nur lesen';
-
-  @override
   String get userCanEdit => 'darf bearbeiten';
 
   @override
@@ -177,7 +174,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String socialNotActiveBody(String provider) {
-    return 'Der Server ist noch nicht mit $provider verbunden. Der Serveradministrator muss die App bei $provider registrieren und ID und Secret in die Datei .env eintragen (siehe README, \"Accesso con Google, Facebook e Amazon\").\n\nBis dahin kannst du dich mit E-Mail und Passwort registrieren.';
+    return 'Der Server ist noch nicht mit $provider verbunden. Der Serveradministrator muss die App bei $provider registrieren und ID und Secret in die Datei .env eintragen (siehe README, \"Accesso con Google e Amazon\").\n\nBis dahin kannst du dich mit E-Mail und Passwort registrieren.';
   }
 
   @override
@@ -455,9 +452,6 @@ class AppLocalizationsDe extends AppLocalizations {
   String listAnd(String head, String last) {
     return '$head und $last';
   }
-
-  @override
-  String get canEditSubtitle => 'Fügt Artikel hinzu, hakt sie ab und löscht sie';
 
   @override
   String listSharedWith(String email) {
@@ -948,7 +942,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get newsletterOptional => 'Optional: Du kannst es jederzeit im Profilmenü ändern';
 
   @override
-  String get socialPrivacyNotice => 'Wenn du mit Google oder Facebook fortfährst, akzeptierst du die ';
+  String get socialPrivacyNotice => 'Wenn du mit Google oder Amazon fortfährst, akzeptierst du die ';
 
   @override
   String get newsletter => 'Newsletter';
@@ -1132,4 +1126,13 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get allergenMolluscs => 'Weichtiere';
+
+  @override
+  String get permission => 'Berechtigung';
+
+  @override
+  String get permissionRead => 'Nur lesen';
+
+  @override
+  String get permissionReadWrite => 'Lesen und bearbeiten';
 }

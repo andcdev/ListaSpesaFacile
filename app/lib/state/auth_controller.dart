@@ -132,7 +132,7 @@ class AuthController extends ChangeNotifier {
     await _signedIn(token, user);
   }
 
-  /// Accesso o registrazione con Google / Facebook / Amazon. false se l'utente ha annullato.
+  /// Accesso o registrazione con Google / Amazon. false se l'utente ha annullato.
   Future<bool> loginWithSocial(String provider) async {
     final result = await socialLogin.signIn(provider);
     if (result == null) return false;

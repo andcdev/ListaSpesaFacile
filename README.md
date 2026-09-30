@@ -14,11 +14,11 @@ Sorgente modificabile: [`docs/architettura.svg`](docs/architettura.svg).
 
 ## Funzionalità
 
-- **Account**: registrazione e accesso con email e password, oppure con **Google, Facebook o Amazon**. Alla
+- **Account**: registrazione e accesso con email e password, oppure con **Google o Amazon** (pulsanti con i loghi ufficiali). Alla
   registrazione l'email deve essere valida (nome@dominio.estensione) e si accetta l'**informativa privacy**
   (obbligatoria, con data salvata); il consenso alla **newsletter** è facoltativo e si cambia dal menu del profilo.
-  Con Google o Facebook l'informativa si accetta continuando (è scritto sotto i pulsanti). Il token Sanctum è
-  salvato in modo sicuro sul dispositivo. I pulsanti Google e Facebook sono sempre visibili:
+  Con Google o Amazon l'informativa si accetta continuando (è scritto sotto i pulsanti). Il token Sanctum è
+  salvato in modo sicuro sul dispositivo. I pulsanti Google e Amazon sono sempre visibili:
   se il server non è ancora configurato, toccandoli l'app spiega cosa manca (vedi sotto).
 - **Aspetto** (stile "Mercato", `app/lib/theme/app_theme.dart`): fondo crema con i disegni dei prodotti ripetuti
   (`app/assets/backgrounds/`, versione chiara e scura) sotto tutte le pagine, card bianche arrotondate, titoli
@@ -31,7 +31,7 @@ Sorgente modificabile: [`docs/architettura.svg`](docs/architettura.svg).
   anche da rimuovere). La vede solo chi ha almeno una lista in comune con te.
 - **Password dimenticata**: dalla schermata di accesso si riceve via email un codice di 6 cifre valido 30 minuti
   (5 tentativi); con codice e nuova password si entra subito e le altre sessioni vengono chiuse. Funziona anche
-  per chi si era registrato con Google o Facebook e vuole una password.
+  per chi si era registrato con Google o Amazon (o, in passato, con Facebook) e vuole una password.
 - **Liste**: crea, modifica ed elimina liste con nome, data, ora e note. Il creatore sceglie (alla creazione o
   dopo) se chi ha il permesso di modifica può **cambiare anche il nome** della lista; altrimenti gli altri
   modificano articoli, note e data ma il nome resta bloccato. L'elenco è raggruppato per giorno
@@ -78,14 +78,13 @@ Sorgente modificabile: [`docs/architettura.svg`](docs/architettura.svg).
   dita) con la sua foto e quelle del prodotto su Open Food Facts (confezione, ingredienti, tabella nutrizionale).
 - **Prodotti di marca**: scrivendo un prodotto compaiono, dopo una breve pausa, i prodotti di marca di **Open Food
   Facts** con foto e formato ("latte parm" → Latte intero Parmalat, 1 L). Toccandone uno si compilano nome, marca,
-  foto e peso o volume. **Foto automatica**: aggiungendo o
-  rinominando un articolo senza foto il server ne cerca una su Open Food Facts (le foto dal telefono e i link
-  scelti a mano non vengono mai sostituiti).
+  foto e peso o volume. La foto arriva **solo** con un prodotto scelto dai suggerimenti (e se ne va se l'articolo
+  cambia nome) oppure scattandola o scegliendola dal telefono: un prodotto scritto a mano resta senza foto.
 - **Condivisione**
-  - *per lista*: con uno o più utenti registrati (tramite email), con permesso di modifica o sola lettura;
-  - *globale*: tutte le tue liste, comprese quelle future, con uno o più utenti.
-  Chi riceve una condivisione può abbandonarla. I destinatari si possono indicare già **alla creazione**
-  della lista, ognuno con il proprio permesso.
+  - *per lista*: con uno o più utenti registrati (tramite email), dall'icona nella lista;
+  - *globale*: tutte le tue liste, comprese quelle future, con uno o più utenti (icona in alto nell'elenco).
+  Per ogni utente si sceglie **Solo lettura** oppure **Lettura e modifica**, e si può cambiare in ogni momento
+  (anche alla **creazione** della lista, per ogni destinatario). Chi riceve una condivisione può abbandonarla.
 - **Promemoria**: alla creazione (o modifica) scegli un avviso *10 minuti prima*, *1 ora prima* o
   *personalizzato* (da 1 minuto a 30 giorni) e chi avvisare: solo il creatore, solo i destinatari o tutti.
 - **Chat** interna per ogni lista: si apre **sotto la lista**, nella stessa schermata (con una barra minima,
@@ -225,9 +224,9 @@ MAIL_FROM_ADDRESS=tuoaccount@gmail.com
 
 poi `docker compose up -d`. Vanno bene anche Brevo, Mailgun, Amazon SES… (stesse variabili).
 
-## Accesso con Google, Facebook e Amazon
+## Accesso con Google e Amazon
 
-Il login avviene tramite il server, quindi lo stesso meccanismo vale per tutti e tre i provider e sia per Android sia per iOS:
+Il login avviene tramite il server, quindi lo stesso meccanismo vale per entrambi i provider e sia per Android sia per iOS:
 
 1. l'app apre `https://<dominio>/auth/<provider>/redirect` nel browser di sistema (Custom Tabs / ASWebAuthenticationSession);
 2. il provider rimanda l'utente a `https://<dominio>/auth/<provider>/callback`; il server trova l'utente o lo crea;
@@ -237,7 +236,8 @@ Il login avviene tramite il server, quindi lo stesso meccanismo vale per tutti e
 
 Al primo accesso l'account viene creato; se esiste già un utente con la stessa email, il profilo social viene
 collegato a quell'account. Serve che il provider condivida l'email, perché è quella che si usa per condividere le liste.
-Nell'app i pulsanti Google e Facebook sono sempre visibili; Amazon solo se configurato. Il server indica quali
+Nell'app i pulsanti Google e Amazon sono sempre visibili, con i loghi ufficiali (`app/assets/logos/`: "G" dal kit
+Sign in with Google, icona di Login with Amazon). Il server indica quali
 sono attivi con `GET /api/config` → `social_providers`: finché ID e secret mancano nel `.env`, toccando il pulsante
 l'app spiega che l'accesso non è ancora configurato.
 
@@ -247,7 +247,6 @@ Per ogni provider va registrata un'applicazione, poi ID e secret vanno inseriti 
 | Provider | Dove | Cosa fare |
 |---|---|---|
 | Google | [Google Cloud Console](https://console.cloud.google.com/apis/credentials) → Credenziali | Configura la schermata di consenso, poi crea un *ID client OAuth* di tipo **Applicazione web** e aggiungi la callback tra gli *URI di reindirizzamento autorizzati*. → `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` |
-| Facebook | [Meta for Developers](https://developers.facebook.com/apps) → Crea app → caso d'uso *Autenticazione* | In *Facebook Login → Impostazioni* aggiungi la callback agli *URI di reindirizzamento OAuth validi*; abilita l'autorizzazione `email`. ID e chiave segreta sono in *Impostazioni app → Di base*. Per usarlo con utenti reali, pubblica l'app. → `FACEBOOK_CLIENT_ID`, `FACEBOOK_CLIENT_SECRET` |
 | Amazon | [Amazon Developer Console](https://developer.amazon.com/loginwithamazon/console/site/lwa/overview.html) → Login with Amazon | Crea un *Security Profile* e in *Web Settings* aggiungi la callback agli *Allowed Return URLs*. → `AMAZON_CLIENT_ID`, `AMAZON_CLIENT_SECRET` |
 
 Dopo aver modificato il `.env`: `docker compose up -d` (i container rileggono le variabili).
@@ -337,9 +336,11 @@ Tutte le rotte sono sotto `/api`. Le rotte protette richiedono `Authorization: B
 | DELETE | `/lists/{id}/items/{item}/image` | Rimuove la foto del prodotto |
 | GET | `/lists/{id}/shares` | Utenti con cui è condivisa |
 | POST | `/lists/{id}/shares` | `email, can_edit?` (solo proprietario) |
+| PATCH | `/lists/{id}/shares/{user}` | `can_edit`: cambia il permesso (solo proprietario) |
 | DELETE | `/lists/{id}/shares/{user}` | Revoca (proprietario) o abbandona (se `user` sei tu) |
 | GET | `/global-shares` | `{shared_with, shared_by}` |
 | POST | `/global-shares` | `email, can_edit?` |
+| PATCH | `/global-shares/{user}` | `can_edit`: cambia il permesso su tutte le mie liste |
 | DELETE | `/global-shares/{user}` | Smetti di condividere con `user` |
 | DELETE | `/global-shares/received/{user}` | Rinuncia alle liste di `user` |
 | GET | `/lists/{id}/messages?before=` | Chat: 50 messaggi dal più recente + `has_more` + `delivered` (`{user_id: ultimo messaggio ricevuto}`) |

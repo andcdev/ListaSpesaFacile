@@ -16,7 +16,7 @@ use RuntimeException;
 use Throwable;
 
 /**
- * Login con Google / Facebook / Amazon per l'app mobile.
+ * Login con Google / Amazon per l'app mobile.
  *
  * 1. L'app apre nel browser di sistema /auth/{provider}/redirect?code_challenge=… (PKCE, S256).
  * 2. Il provider riporta l'utente su /auth/{provider}/callback: troviamo o creiamo l'utente.

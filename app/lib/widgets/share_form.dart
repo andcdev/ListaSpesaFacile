@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 
 import '../l10n/l10n.dart';
+import 'permission_picker.dart';
 
-/// Campo email + permesso di modifica, usato sia per la condivisione di una lista sia per quella globale.
+/// Campo email + permesso (solo lettura oppure lettura e modifica), per la condivisione di una lista e per quella
+/// di tutte le liste.
 class ShareForm extends StatefulWidget {
   const ShareForm({super.key, required this.onShare});
 
@@ -64,12 +66,17 @@ class _ShareFormState extends State<ShareForm> {
             ),
           ),
         ),
-        SwitchListTile(
-          contentPadding: EdgeInsets.zero,
-          value: _canEdit,
-          onChanged: (v) => setState(() => _canEdit = v),
-          title: Text(context.l10n.canEdit),
-          subtitle: Text(_canEdit ? context.l10n.canEditSubtitle : context.l10n.readOnly),
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          child: Row(
+            children: [
+              Text(context.l10n.permission),
+              const SizedBox(width: 12),
+              Expanded(
+                child: PermissionPicker(canEdit: _canEdit, onChanged: (v) => setState(() => _canEdit = v)),
+              ),
+            ],
+          ),
         ),
       ],
     );

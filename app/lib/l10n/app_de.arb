@@ -17,7 +17,6 @@
   "tomorrow": "Morgen",
   "yesterday": "Gestern",
   "canEdit": "Darf bearbeiten",
-  "readOnly": "Nur lesen",
   "userCanEdit": "darf bearbeiten",
   "userReadOnly": "nur lesen",
   "invalidEmail": "Gib eine gültige E-Mail-Adresse ein",
@@ -52,7 +51,7 @@
   "server": "Server",
   "serverAddress": "Serveradresse",
   "socialNotActiveTitle": "Anmeldung mit {provider} noch nicht aktiv",
-  "socialNotActiveBody": "Der Server ist noch nicht mit {provider} verbunden. Der Serveradministrator muss die App bei {provider} registrieren und ID und Secret in die Datei .env eintragen (siehe README, \"Accesso con Google, Facebook e Amazon\").\n\nBis dahin kannst du dich mit E-Mail und Passwort registrieren.",
+  "socialNotActiveBody": "Der Server ist noch nicht mit {provider} verbunden. Der Serveradministrator muss die App bei {provider} registrieren und ID und Secret in die Datei .env eintragen (siehe README, \"Accesso con Google e Amazon\").\n\nBis dahin kannst du dich mit E-Mail und Passwort registrieren.",
   "or": "oder",
   "continueWith": "Weiter mit {provider}",
   "socialOpenFailed": "Anmeldung mit {provider} kann nicht geöffnet werden.",
@@ -135,7 +134,6 @@
   "durationMinutes": "{count, plural, =1{1 Minute} other{{count} Minuten}}",
   "durationMoments": "wenigen Augenblicken",
   "listAnd": "{head} und {last}",
-  "canEditSubtitle": "Fügt Artikel hinzu, hakt sie ab und löscht sie",
   "listSharedWith": "Liste geteilt mit {email}",
   "removeUserQuestion": "{name} entfernen?",
   "removeUserInfo": "Die Person sieht diese Liste nicht mehr.",
@@ -277,7 +275,7 @@
   "privacyPolicy": "Datenschutzerklärung",
   "newsletterConsent": "Ich möchte den Newsletter von Lista Spesa Facile erhalten",
   "newsletterOptional": "Optional: Du kannst es jederzeit im Profilmenü ändern",
-  "socialPrivacyNotice": "Wenn du mit Google oder Facebook fortfährst, akzeptierst du die ",
+  "socialPrivacyNotice": "Wenn du mit Google oder Amazon fortfährst, akzeptierst du die ",
   "newsletter": "Newsletter",
   "myPrices": "Meine Preise",
   "myPrice": "Mein Preis",
@@ -336,5 +334,8 @@
   "allergenSesame": "Sesam",
   "allergenSulphites": "Sulfite",
   "allergenLupin": "Lupinen",
-  "allergenMolluscs": "Weichtiere"
+  "allergenMolluscs": "Weichtiere",
+  "permission": "Berechtigung",
+  "permissionRead": "Nur lesen",
+  "permissionReadWrite": "Lesen und bearbeiten"
 }

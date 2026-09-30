@@ -65,7 +65,7 @@ class ServerConfig {
 
   final RealtimeConfig realtime;
 
-  /// Provider di login social attivi sul server: google, facebook, amazon.
+  /// Provider di login social attivi sul server: google, amazon.
   final List<String> socialProviders;
 
   /// Il server invia notifiche push (Firebase configurato).
@@ -404,12 +404,20 @@ class ApiClient {
   Future<List<AppUser>> addShare(int listId, String email, {bool canEdit = true}) async =>
       _list(await _send('POST', '/lists/$listId/shares', {'email': email, 'can_edit': canEdit}), AppUser.fromJson);
 
+  /// Cambia il permesso di chi ha già la lista (solo il proprietario).
+  Future<List<AppUser>> updateShare(int listId, int userId, {required bool canEdit}) async =>
+      _list(await _send('PATCH', '/lists/$listId/shares/$userId', {'can_edit': canEdit}), AppUser.fromJson);
+
   Future<void> removeShare(int listId, int userId) => _send('DELETE', '/lists/$listId/shares/$userId');
 
   Future<GlobalShares> globalShares() async => _globalShares(await _send('GET', '/global-shares'));
 
   Future<GlobalShares> addGlobalShare(String email, {bool canEdit = true}) async =>
       _globalShares(await _send('POST', '/global-shares', {'email': email, 'can_edit': canEdit}));
+
+  /// Cambia il permesso su tutte le mie liste per chi le riceve già.
+  Future<GlobalShares> updateGlobalShare(int userId, {required bool canEdit}) async =>
+      _globalShares(await _send('PATCH', '/global-shares/$userId', {'can_edit': canEdit}));
 
   Future<void> removeGlobalShare(int userId) => _send('DELETE', '/global-shares/$userId');
 

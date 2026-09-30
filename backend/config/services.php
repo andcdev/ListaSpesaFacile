@@ -43,18 +43,12 @@ return [
         'scheme' => env('REVERB_PUBLIC_SCHEME', env('REVERB_SCHEME', 'http')),
     ],
 
-    // Accesso con Google, Facebook e Amazon (flusso OAuth gestito dal server, vedi SocialAuthController).
+    // Accesso con Google e Amazon (flusso OAuth gestito dal server, vedi SocialAuthController).
     // Un provider è attivo solo se ha client_id e client_secret.
     'google' => [
         'client_id' => env('GOOGLE_CLIENT_ID'),
         'client_secret' => env('GOOGLE_CLIENT_SECRET'),
         'redirect' => env('APP_URL').'/auth/google/callback',
-    ],
-
-    'facebook' => [
-        'client_id' => env('FACEBOOK_CLIENT_ID'),
-        'client_secret' => env('FACEBOOK_CLIENT_SECRET'),
-        'redirect' => env('APP_URL').'/auth/facebook/callback',
     ],
 
     'amazon' => [
