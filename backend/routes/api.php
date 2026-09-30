@@ -15,6 +15,7 @@ use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\PasswordResetController;
 use App\Http\Controllers\Api\ProductSuggestionController;
 use App\Http\Controllers\Api\ShoppingListController;
+use App\Http\Controllers\Api\SupermarketController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/config', ConfigController::class);
@@ -40,6 +41,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::apiResource('lists', ShoppingListController::class)->parameters(['lists' => 'list']);
     Route::get('/products/suggestions', ProductSuggestionController::class);
+    Route::get('/supermarkets', [SupermarketController::class, 'index']);
+    Route::get('/lists/{list}/price-comparison', [SupermarketController::class, 'compare']);
 
     Route::scopeBindings()->group(function () {
         Route::delete('/lists/{list}/items/checked', [ListItemController::class, 'destroyChecked']);

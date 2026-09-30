@@ -60,6 +60,15 @@ class ListDetailController extends ChangeNotifier {
 
   int get missingCount => _items.values.where((i) => i.missing).length;
 
+  /// Articoli con un prezzo indicativo (i non trovati non contano).
+  Iterable<ListItem> get _priced => _items.values.where((i) => i.price != null && !i.missing);
+
+  int get pricedCount => _priced.length;
+
+  /// Totale stimato nella catena scelta; null se la lista non ha una catena nota o nessun articolo ha un prezzo.
+  double? get estimatedTotal =>
+      list?.supermarketChain == null || _priced.isEmpty ? null : _priced.fold<double>(0, (sum, i) => sum + i.price!);
+
   bool get canEdit => list?.canEdit ?? false;
 
   /// L'utente può abbandonare la lista se gli è stata condivisa singolarmente.
@@ -127,7 +136,11 @@ class ListDetailController extends ChangeNotifier {
           _items.remove(id);
         }
       case 'list.updated':
-        list = list?.withMeta(e.data['list'] as Map<String, dynamic>);
+        final meta = e.data['list'] as Map<String, dynamic>;
+        final supermarketChanged = meta.containsKey('supermarket') && meta['supermarket'] != list?.supermarket;
+        list = list?.withMeta(meta);
+        // Supermercato cambiato: i prezzi di tutti gli articoli sono diversi.
+        if (supermarketChanged) load(silent: true);
       case 'list.deleted':
         gone = true;
       case RealtimeClient.presenceChanged:

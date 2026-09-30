@@ -25,6 +25,7 @@ class ListItem {
     this.quantity,
     this.amount,
     this.unit,
+    this.price,
     this.status = ItemStatus.todo,
     this.position = 0,
     this.createdBy,
@@ -55,6 +56,9 @@ class ListItem {
   /// Peso o volume, es. 500 g, 1,5 l.
   final double? amount;
   final String? unit;
+
+  /// Prezzo indicativo nella catena scelta per la lista (quantità e peso compresi), null se non si conosce.
+  final double? price;
   final ItemStatus status;
   final int position;
   final String? createdBy;
@@ -86,6 +90,7 @@ class ListItem {
     quantity: json['quantity'] as String?,
     amount: (json['amount'] as num?)?.toDouble(),
     unit: json['unit'] as String?,
+    price: (json['price'] as num?)?.toDouble(),
     status: ItemStatus.parse(json['status'] as String?, checked: json['checked'] as bool? ?? false),
     position: json['position'] as int? ?? 0,
     createdBy: json['created_by'] as String?,
@@ -104,6 +109,7 @@ class ListItem {
     quantity: quantity,
     amount: amount,
     unit: unit,
+    price: price,
     status: status ?? this.status,
     position: position,
     createdBy: createdBy,

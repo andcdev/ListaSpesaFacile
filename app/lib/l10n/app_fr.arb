@@ -261,5 +261,16 @@
   "recognizedEmoji": "Reconnu : {emoji}",
   "fromName": "d'après le nom",
   "useRecognizedEmoji": "Utiliser celui reconnu d'après le nom",
-  "imageLinkOptional": "Lien vers une image (facultatif)"
+  "imageLinkOptional": "Lien vers une image (facultatif)",
+  "supermarketLabel": "Supermarché (facultatif)",
+  "supermarketHint": "ex. Esselunga, Coop, Lidl",
+  "supermarketHelper": "S'il s'agit d'une enseigne connue, la liste affiche des prix indicatifs",
+  "estimatedTotal": "Total estimé chez {chain}*",
+  "pricesIndicativeNote": "* Prix indicatifs selon l'enseigne : ils peuvent varier d'un magasin à l'autre et selon les promotions.",
+  "pricedOf": "Prix pour {priced} produits sur {total}",
+  "noPricesForChain": "Aucun prix disponible chez {chain} pour ces produits",
+  "compareChains": "Comparer les enseignes",
+  "currentChain": "choisie",
+  "noChainPrices": "Il n'y a pas encore de prix pour les produits de cette liste.",
+  "close": "Fermer"
 }

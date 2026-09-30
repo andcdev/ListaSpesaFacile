@@ -4,11 +4,13 @@ import 'package:provider/provider.dart';
 
 import '../l10n/l10n.dart';
 import '../models/shopping_list.dart';
+import '../models/supermarket.dart';
 import '../services/api_client.dart';
 import '../state/lists_controller.dart';
 import '../widgets/ui.dart';
 
-/// Creazione (list == null) o modifica di nome, data/ora, note e promemoria di una lista.
+/// Creazione (list == null) o modifica di nome, data/ora, supermercato, note e promemoria di una lista.
+/// Se il supermercato è una catena nota, la lista mostra i prezzi indicativi di quella catena.
 /// Alla creazione si possono indicare subito i destinatari con il loro permesso; il proprietario
 /// decide anche se chi può modificare la lista può cambiarne il nome.
 class ListFormScreen extends StatefulWidget {
@@ -24,6 +26,10 @@ class _ListFormScreenState extends State<ListFormScreen> {
   final _form = GlobalKey<FormState>();
   late final _name = TextEditingController(text: widget.list?.name);
   late final _notes = TextEditingController(text: widget.list?.notes);
+  late String _supermarket = widget.list?.supermarket ?? '';
+
+  /// Catene note, suggerite mentre si scrive il supermercato.
+  List<Supermarket> _chains = const [];
   final _recipientEmail = TextEditingController();
   late DateTime _date;
   late TimeOfDay _time;
@@ -47,6 +53,16 @@ class _ListFormScreenState extends State<ListFormScreen> {
     final initial = widget.list?.scheduledAt ?? _defaultSchedule();
     _date = DateTime(initial.year, initial.month, initial.day);
     _time = TimeOfDay.fromDateTime(initial);
+    _loadChains();
+  }
+
+  Future<void> _loadChains() async {
+    try {
+      final chains = await context.read<ApiClient>().supermarkets();
+      if (mounted) setState(() => _chains = chains);
+    } catch (_) {
+      // Senza suggerimenti il supermercato si scrive comunque.
+    }
   }
 
   /// Proposta: la prossima ora piena.
@@ -123,6 +139,7 @@ class _ListFormScreenState extends State<ListFormScreen> {
     setState(() => _busy = true);
     final lists = context.read<ListsController>();
     final notes = _notes.text.trim().isEmpty ? null : _notes.text.trim();
+    final supermarket = _supermarket.trim().isEmpty ? null : _supermarket.trim();
     try {
       if (_editing) {
         await lists.update(
@@ -130,6 +147,7 @@ class _ListFormScreenState extends State<ListFormScreen> {
           name: _name.text.trim(),
           scheduledAt: _scheduledAt,
           notes: notes,
+          supermarket: supermarket,
           reminderMinutes: _reminderMinutes,
           reminderTarget: _reminderTarget,
           membersCanRename: _isOwner ? _membersCanRename : null,
@@ -140,6 +158,7 @@ class _ListFormScreenState extends State<ListFormScreen> {
           name: _name.text.trim(),
           scheduledAt: _scheduledAt,
           notes: notes,
+          supermarket: supermarket,
           reminderMinutes: _reminderMinutes,
           reminderTarget: _reminderTarget,
           membersCanRename: _membersCanRename,
@@ -197,6 +216,56 @@ class _ListFormScreenState extends State<ListFormScreen> {
                     ),
                   ),
                 ],
+              ),
+              const SizedBox(height: 16),
+              Autocomplete<Supermarket>(
+                initialValue: TextEditingValue(text: _supermarket),
+                displayStringForOption: (s) => s.name,
+                optionsBuilder: (value) {
+                  final query = value.text.trim().toLowerCase();
+                  return _chains.where((s) => query.isEmpty || s.name.toLowerCase().contains(query));
+                },
+                onSelected: (s) => _supermarket = s.name,
+                fieldViewBuilder: (context, controller, focusNode, onSubmitted) => TextFormField(
+                  controller: controller,
+                  focusNode: focusNode,
+                  onChanged: (v) => _supermarket = v,
+                  onFieldSubmitted: (_) => onSubmitted(),
+                  maxLength: 100,
+                  textCapitalization: TextCapitalization.words,
+                  decoration: InputDecoration(
+                    labelText: l.supermarketLabel,
+                    hintText: l.supermarketHint,
+                    helperText: l.supermarketHelper,
+                    helperMaxLines: 2,
+                    counterText: '',
+                    prefixIcon: const Icon(Icons.storefront_outlined),
+                  ),
+                ),
+                optionsViewBuilder: (context, onSelected, options) => Align(
+                  alignment: Alignment.topLeft,
+                  child: Material(
+                    elevation: 4,
+                    borderRadius: BorderRadius.circular(16),
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(maxHeight: 260, maxWidth: 360),
+                      child: ListView(
+                        padding: EdgeInsets.zero,
+                        shrinkWrap: true,
+                        children: [
+                          for (final s in options)
+                            ListTile(
+                              dense: true,
+                              title: Text(s.name),
+                              subtitle: s.description == null ? null : Text(s.description!),
+                              trailing: s.hasPrices ? const Icon(Icons.euro, size: 18) : null,
+                              onTap: () => onSelected(s),
+                            ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
               ),
               const SizedBox(height: 16),
               TextFormField(

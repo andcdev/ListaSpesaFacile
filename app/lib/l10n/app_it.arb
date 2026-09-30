@@ -569,5 +569,40 @@
   },
   "fromName": "dal nome",
   "useRecognizedEmoji": "Usa quella riconosciuta dal nome",
-  "imageLinkOptional": "Link a un'immagine (facoltativo)"
+  "imageLinkOptional": "Link a un'immagine (facoltativo)",
+  "supermarketLabel": "Supermercato (facoltativo)",
+  "supermarketHint": "es. Esselunga, Coop, Lidl",
+  "supermarketHelper": "Se è una catena nota, la lista mostra i prezzi indicativi",
+  "estimatedTotal": "Totale stimato da {chain}*",
+  "@estimatedTotal": {
+    "placeholders": {
+      "chain": {
+        "type": "String"
+      }
+    }
+  },
+  "pricesIndicativeNote": "* Prezzi indicativi in base alla catena: possono variare da un punto vendita all'altro e per le offerte.",
+  "pricedOf": "Prezzo per {priced} di {total} prodotti",
+  "@pricedOf": {
+    "placeholders": {
+      "priced": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "noPricesForChain": "Nessun prezzo disponibile da {chain} per questi prodotti",
+  "@noPricesForChain": {
+    "placeholders": {
+      "chain": {
+        "type": "String"
+      }
+    }
+  },
+  "compareChains": "Confronta catene",
+  "currentChain": "scelta",
+  "noChainPrices": "Non ci sono ancora prezzi per i prodotti di questa lista.",
+  "close": "Chiudi"
 }
