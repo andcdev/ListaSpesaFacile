@@ -4,6 +4,7 @@
 
 return [
     'errors' => [
+        'unknown_supermarket' => 'Wähle zuerst einen Supermarkt einer bekannten Kette.',
         'social_only' => 'Dieses Konto meldet sich mit :providers an.',
         'invalid_credentials' => 'Ungültige Anmeldedaten.',
         'social_code_invalid' => 'Anmeldung ungültig oder abgelaufen. Bitte erneut versuchen.',

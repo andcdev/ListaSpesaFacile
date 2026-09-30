@@ -24,6 +24,10 @@ class ShoppingListResource extends JsonResource
             'notes' => $this->notes,
             // Supermercato come scritto dall'utente e catena riconosciuta (solo nel dettaglio): senza catena niente prezzi.
             'supermarket' => $this->supermarket,
+            // Zona del supermercato: i prezzi segnalati lì hanno la precedenza.
+            'country' => $this->country ?? 'IT',
+            'city' => $this->city,
+            'locality' => $this->locality,
             'supermarket_chain' => $this->whenLoaded('items', fn () => $this->supermarketChain()?->only(['id', 'name', 'description'])),
             'scheduled_at' => $this->scheduled_at->toIso8601String(),
             // Foto della lista: GET /api/lists/{id}/image?v={image_version}; null se non c'è.

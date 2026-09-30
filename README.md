@@ -70,8 +70,20 @@ Sorgente modificabile: [`docs/architettura.svg`](docs/architettura.svg).
   alla distribuzione. Se il supermercato non è una catena nota non compare nessun prezzo. Il prezzo si ricalcola
   cambiando supermercato o aggiungendo e modificando un prodotto; i non trovati non contano nel totale.
   **Confronta catene** apre un popup con una riga per catena (nome, descrizione, totale): toccandola si vedono i
-  prezzi articolo per articolo. Catene e prezzi sono sul server (`supermarkets`, `supermarket_prices`) e i prezzi
-  si caricano da CSV (vedi *Prezzi delle catene*).
+  prezzi articolo per articolo.
+  Con il supermercato si indica la **zona** (paese, città, località): vale prima il prezzo segnalato nella stessa
+  località, poi nella stessa città, poi nel resto del paese (a parità di zona il più recente); i prezzi di un altro
+  paese non contano. **Correggi il prezzo**: toccando il prezzo di un articolo (o "€" se manca, o *Prezzo* nel
+  menu) si vede da dove viene (chi l'ha segnalato, giorno e ora, zona) con le segnalazioni precedenti, e chiunque
+  veda la lista può correggerlo: il nuovo prezzo vale per tutti quelli che fanno la spesa in quella catena. Di chi
+  segnala si mostrano nome e ora; l'email resta sul server e non viene mai mostrata (eliminando l'account, nome ed
+  email spariscono dalle segnalazioni). Base di partenza: i prezzi di **Open Prices** (prezzi fotografati nei
+  negozi dagli utenti di Open Food Facts), importati ogni notte; poi il listino caricato da CSV.
+- **Prodotti di marca**: scrivendo un prodotto compaiono, dopo una breve pausa, i prodotti di marca di **Open Food
+  Facts** con foto e formato ("latte parm" → Latte intero Parmalat, 1 L). Toccandone uno si compilano nome, marca,
+  foto e peso o volume, e il prezzo è quello di quel prodotto, se c'è. **Foto automatica**: aggiungendo o
+  rinominando un articolo senza foto il server ne cerca una su Open Food Facts (le foto dal telefono e i link
+  scelti a mano non vengono mai sostituiti).
 - **Condivisione**
   - *per lista*: con uno o più utenti registrati (tramite email), con permesso di modifica o sola lettura;
   - *globale*: tutte le tue liste, comprese quelle future, con uno o più utenti.
@@ -311,14 +323,14 @@ Tutte le rotte sono sotto `/api`. Le rotte protette richiedono `Authorization: B
 | DELETE | `/me/avatar` | Rimuove la foto profilo |
 | GET | `/users/{id}/avatar?v=` | Foto profilo (te stesso o chi ha una lista in comune con te) |
 | GET | `/lists` | Liste accessibili, ordinate per `scheduled_at` |
-| POST | `/lists` | `name, scheduled_at, notes?, supermarket?, reminder_minutes?, reminder_target?, members_can_rename?, shares?: [{email, can_edit?}]` |
-| GET | `/lists/{id}` | Lista con articoli e condivisioni; `supermarket_chain` = catena riconosciuta (null = niente prezzi), `price` di ogni articolo |
+| POST | `/lists` | `name, scheduled_at, notes?, supermarket?, country?, city?, locality?, reminder_minutes?, reminder_target?, members_can_rename?, shares?: [{email, can_edit?}]` |
+| GET | `/lists/{id}` | Lista con articoli e condivisioni; `supermarket_chain` = catena riconosciuta (null = niente prezzi); per ogni articolo `price` e `price_info` (`source`: `user`, `open_prices`, `catalog`; `reporter`, `observed_at`, `city`, `locality`) |
 | PATCH | `/lists/{id}` | Modifica (proprietario o permesso di modifica), anche `reminder_minutes` (`null` = nessuno) e `reminder_target` (`owner`, `members`, `all`). Il nome solo se `can_rename`; `members_can_rename` solo il proprietario |
 | DELETE | `/lists/{id}` | Elimina (solo proprietario) |
 | GET | `/lists/{id}/image?v=` | Foto della lista (chi ha accesso; `v` = `image_version` della lista) |
 | POST | `/lists/{id}/image` | `image` multipart (jpg, png, webp, max 8 MB; permesso di modifica) |
 | DELETE | `/lists/{id}/image` | Rimuove la foto |
-| POST | `/lists/{id}/items` | `name, quantity?, amount?, unit?, category?, custom_icon?, image_url?` (reparto e icona riconosciuti dal nome se `category` manca) |
+| POST | `/lists/{id}/items` | `name, quantity?, amount?, unit?, category?, custom_icon?, image_url?, barcode?, brand?` (reparto e icona riconosciuti dal nome se `category` manca) |
 | PATCH | `/lists/{id}/items/{item}` | `name?, quantity?, amount?, unit?, category?, status?, custom_icon?, image_url?, checked?, position?` (`status`: `todo`, `taken`, `missing`) |
 | DELETE | `/lists/{id}/items/{item}` | Elimina articolo |
 | DELETE | `/lists/{id}/items/checked` | Elimina gli articoli presi |
@@ -334,6 +346,9 @@ Tutte le rotte sono sotto `/api`. Le rotte protette richiedono `Authorization: B
 | DELETE | `/global-shares/received/{user}` | Rinuncia alle liste di `user` |
 | GET | `/lists/{id}/messages?before=` | Chat: 50 messaggi dal più recente + `has_more` + `delivered` (`{user_id: ultimo messaggio ricevuto}`) |
 | POST | `/lists/{id}/messages/delivered` | `up_to`: il telefono ha ricevuto i messaggi fino a questo id (spunte blu) |
+| GET | `/products/search?q=&country=` | Prodotti di marca da Open Food Facts: `barcode, name, brand, quantity, amount, unit, image_url` |
+| GET | `/lists/{id}/items/{item}/prices` | Prezzo mostrato e segnalazioni precedenti nella catena della lista (nome e ora, mai l'email) |
+| POST | `/lists/{id}/items/{item}/prices` | `price, per? (pz, kg, l), city?, locality?, country?`: rettifica (chiunque veda la lista) |
 | GET | `/supermarkets` | Catene note (`name, description, has_prices`) |
 | GET | `/lists/{id}/price-comparison` | Costo della lista in ogni catena con prezzi: `total, priced_count, items_count, current, items[{name, price}]` |
 | GET | `/products/suggestions` | Prodotti da suggerire: già usati nelle liste accessibili (con `times`), poi i più comuni |
@@ -368,6 +383,15 @@ catena sconosciuta viene creata.
 docker compose exec app php artisan prices:import storage/app/prezzi.csv            # aggiunge o aggiorna
 docker compose exec app php artisan prices:import storage/app/prezzi.csv --replace  # sostituisce i prezzi delle catene nel file
 ```
+
+I prezzi di **Open Prices** si importano ogni notte alle 4:30 (container `scheduler`); a mano:
+
+```bash
+docker compose exec app php artisan prices:sync-open-prices
+```
+
+Ricerche e foto di Open Food Facts restano in cache un giorno; con `OPENFOODFACTS_ENABLED=false` nel `.env` il
+server non contatta Open Food Facts (niente suggerimenti di marca, foto automatiche né import).
 
 ### Canali ed eventi WebSocket
 

@@ -1,3 +1,5 @@
+import 'supermarket.dart';
+
 /// Stato di un articolo: da prendere, preso (nel carrello) o non preso (non trovato / esaurito).
 enum ItemStatus {
   todo('todo'),
@@ -17,6 +19,8 @@ class ListItem {
     required this.id,
     required this.listId,
     required this.name,
+    this.barcode,
+    this.brand,
     this.category = 'altro',
     this.icon = '🛒',
     this.customIcon,
@@ -26,6 +30,7 @@ class ListItem {
     this.amount,
     this.unit,
     this.price,
+    this.priceInfo,
     this.status = ItemStatus.todo,
     this.position = 0,
     this.createdBy,
@@ -35,6 +40,10 @@ class ListItem {
   final int id;
   final int listId;
   final String name;
+
+  /// Prodotto di marca scelto tra i suggerimenti (null = scritto a mano).
+  final String? barcode;
+  final String? brand;
 
   /// Reparto riconosciuto dal server (o scelto a mano) e icona mostrata (emoji).
   final String category;
@@ -59,6 +68,9 @@ class ListItem {
 
   /// Prezzo indicativo nella catena scelta per la lista (quantità e peso compresi), null se non si conosce.
   final double? price;
+
+  /// Da dove viene il prezzo: chi l'ha segnalato, quando e dove.
+  final PriceInfo? priceInfo;
   final ItemStatus status;
   final int position;
   final String? createdBy;
@@ -82,6 +94,8 @@ class ListItem {
     id: json['id'] as int,
     listId: json['shopping_list_id'] as int,
     name: json['name'] as String,
+    barcode: json['barcode'] as String?,
+    brand: json['brand'] as String?,
     category: json['category'] as String? ?? 'altro',
     icon: json['icon'] as String? ?? '🛒',
     customIcon: json['custom_icon'] as String?,
@@ -91,6 +105,7 @@ class ListItem {
     amount: (json['amount'] as num?)?.toDouble(),
     unit: json['unit'] as String?,
     price: (json['price'] as num?)?.toDouble(),
+    priceInfo: json['price_info'] == null ? null : PriceInfo.fromJson(json['price_info'] as Map<String, dynamic>),
     status: ItemStatus.parse(json['status'] as String?, checked: json['checked'] as bool? ?? false),
     position: json['position'] as int? ?? 0,
     createdBy: json['created_by'] as String?,
@@ -101,6 +116,8 @@ class ListItem {
     id: id,
     listId: listId,
     name: name,
+    barcode: barcode,
+    brand: brand,
     category: category,
     icon: icon,
     customIcon: customIcon,
@@ -110,6 +127,7 @@ class ListItem {
     amount: amount,
     unit: unit,
     price: price,
+    priceInfo: priceInfo,
     status: status ?? this.status,
     position: position,
     createdBy: createdBy,

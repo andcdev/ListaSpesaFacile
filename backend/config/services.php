@@ -73,4 +73,12 @@ return [
     // Indirizzo con cui il server riapre l'app al termine del login social (schema registrato nell'app).
     'social_app_callback' => env('SOCIAL_APP_CALLBACK', 'listaspesafacile://auth'),
 
+    // Open Food Facts (prodotti di marca e foto) e Open Prices (prezzi di partenza). Spento nei test, che lo
+    // riaccendono con le risposte finte.
+    'openfoodfacts' => [
+        'enabled' => (bool) env('OPENFOODFACTS_ENABLED', true),
+        // Paesi (ISO, separati da virgole) dei negozi da cui importare i prezzi di Open Prices.
+        'price_countries' => array_filter(explode(',', (string) env('OPEN_PRICES_COUNTRIES', 'IT'))),
+    ],
+
 ];

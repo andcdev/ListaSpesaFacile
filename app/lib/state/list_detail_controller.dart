@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 
+import '../models/branded_product.dart';
 import '../models/list_item.dart';
 import '../models/product_suggestion.dart';
 import '../models/shopping_list.dart';
@@ -137,10 +138,16 @@ class ListDetailController extends ChangeNotifier {
         }
       case 'list.updated':
         final meta = e.data['list'] as Map<String, dynamic>;
-        final supermarketChanged = meta.containsKey('supermarket') && meta['supermarket'] != list?.supermarket;
+        final old = list;
         list = list?.withMeta(meta);
-        // Supermercato cambiato: i prezzi di tutti gli articoli sono diversi.
-        if (supermarketChanged) load(silent: true);
+        // Supermercato o zona cambiati: i prezzi di tutti gli articoli sono diversi.
+        final pricesChanged =
+            old != null &&
+            (old.supermarket != list!.supermarket ||
+                old.country != list!.country ||
+                old.city != list!.city ||
+                old.locality != list!.locality);
+        if (pricesChanged) load(silent: true);
       case 'list.deleted':
         gone = true;
       case RealtimeClient.presenceChanged:
@@ -171,8 +178,16 @@ class ListDetailController extends ChangeNotifier {
   // ── Azioni (ottimistiche: l'interfaccia si aggiorna subito) ─────
 
   /// [imagePath]: foto del prodotto scelta prima di aggiungerlo, caricata subito dopo.
-  Future<void> addItem(String name, {String? quantity, double? amount, String? unit, String? imagePath}) async {
-    final item = await api.addItem(listId, name, quantity: quantity, amount: amount, unit: unit);
+  /// [product]: prodotto di marca scelto tra i suggerimenti di Open Food Facts.
+  Future<void> addItem(
+    String name, {
+    String? quantity,
+    double? amount,
+    String? unit,
+    String? imagePath,
+    BrandedProduct? product,
+  }) async {
+    final item = await api.addItem(listId, name, quantity: quantity, amount: amount, unit: unit, product: product);
     _items[item.id] = item;
     // Il prodotto appena usato diventa un suggerimento (in cima tra quelli con lo stesso inizio).
     final key = normalizeProductName(name);
@@ -234,6 +249,22 @@ class ListDetailController extends ChangeNotifier {
       'custom_icon': customIcon,
       'image_url': imageUrl,
     });
+    _items[saved.id] = saved;
+    _notify();
+  }
+
+  /// Prodotti di marca per quanto scritto, nel paese della lista.
+  Future<List<BrandedProduct>> searchProducts(String text) => api.searchProducts(text, country: list?.country ?? 'IT');
+
+  /// Rettifica del prezzo nella catena della lista: il nuovo prezzo arriva con l'articolo aggiornato.
+  Future<void> reportPrice(
+    ListItem item, {
+    required double price,
+    required String per,
+    String? city,
+    String? locality,
+  }) async {
+    final saved = await api.reportPrice(listId, item.id, price: price, per: per, city: city, locality: locality);
     _items[saved.id] = saved;
     _notify();
   }

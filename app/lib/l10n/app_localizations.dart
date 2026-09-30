@@ -1100,7 +1100,7 @@ abstract class AppLocalizations {
   /// No description provided for @deletedUser.
   ///
   /// In it, this message translates to:
-  /// **'Utente eliminato'**
+  /// **'Utente'**
   String get deletedUser;
 
   /// No description provided for @messageReceived.
@@ -1738,6 +1738,126 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Chiudi'**
   String get close;
+
+  /// No description provided for @country.
+  ///
+  /// In it, this message translates to:
+  /// **'Paese'**
+  String get country;
+
+  /// No description provided for @cityLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Città'**
+  String get cityLabel;
+
+  /// No description provided for @cityHint.
+  ///
+  /// In it, this message translates to:
+  /// **'es. Milano'**
+  String get cityHint;
+
+  /// No description provided for @localityLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Località o quartiere (facoltativo)'**
+  String get localityLabel;
+
+  /// No description provided for @localityHint.
+  ///
+  /// In it, this message translates to:
+  /// **'es. Città Studi'**
+  String get localityHint;
+
+  /// No description provided for @zoneHelper.
+  ///
+  /// In it, this message translates to:
+  /// **'I prezzi segnalati in questa zona hanno la precedenza'**
+  String get zoneHelper;
+
+  /// No description provided for @perPiece.
+  ///
+  /// In it, this message translates to:
+  /// **'a confezione'**
+  String get perPiece;
+
+  /// No description provided for @perKg.
+  ///
+  /// In it, this message translates to:
+  /// **'al kg'**
+  String get perKg;
+
+  /// No description provided for @perLitre.
+  ///
+  /// In it, this message translates to:
+  /// **'al litro'**
+  String get perLitre;
+
+  /// No description provided for @listPrice.
+  ///
+  /// In it, this message translates to:
+  /// **'Listino indicativo'**
+  String get listPrice;
+
+  /// No description provided for @priceMenu.
+  ///
+  /// In it, this message translates to:
+  /// **'Prezzo'**
+  String get priceMenu;
+
+  /// No description provided for @priceLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Prezzo'**
+  String get priceLabel;
+
+  /// No description provided for @addPrice.
+  ///
+  /// In it, this message translates to:
+  /// **'Aggiungi il prezzo'**
+  String get addPrice;
+
+  /// No description provided for @correctPrice.
+  ///
+  /// In it, this message translates to:
+  /// **'Correggi il prezzo'**
+  String get correctPrice;
+
+  /// No description provided for @priceCorrected.
+  ///
+  /// In it, this message translates to:
+  /// **'Prezzo aggiornato: grazie!'**
+  String get priceCorrected;
+
+  /// No description provided for @noPriceYet.
+  ///
+  /// In it, this message translates to:
+  /// **'Nessun prezzo ancora per questo prodotto in questa catena.'**
+  String get noPriceYet;
+
+  /// No description provided for @chooseKnownSupermarket.
+  ///
+  /// In it, this message translates to:
+  /// **'Per i prezzi scegli nella lista il supermercato di una catena conosciuta.'**
+  String get chooseKnownSupermarket;
+
+  /// No description provided for @previousReports.
+  ///
+  /// In it, this message translates to:
+  /// **'Segnalazioni precedenti'**
+  String get previousReports;
+
+  /// No description provided for @invalidPrice.
+  ///
+  /// In it, this message translates to:
+  /// **'Scrivi un prezzo, es. 1,29'**
+  String get invalidPrice;
+
+  /// No description provided for @priceReportPrivacy.
+  ///
+  /// In it, this message translates to:
+  /// **'Il prezzo varrà per tutti quelli che fanno la spesa in questa catena. Gli altri vedranno il tuo nome e l\'ora, non la tua email.'**
+  String get priceReportPrivacy;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

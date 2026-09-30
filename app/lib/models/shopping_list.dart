@@ -26,6 +26,9 @@ class ShoppingList {
     this.notes,
     this.supermarket,
     this.supermarketChain,
+    this.country = 'IT',
+    this.city,
+    this.locality,
     this.imageVersion,
     this.reminderMinutes,
     this.reminderTarget = ReminderTarget.all,
@@ -46,6 +49,11 @@ class ShoppingList {
 
   /// Catena riconosciuta dal server (solo nel dettaglio): se è null la lista non mostra prezzi.
   final Supermarket? supermarketChain;
+
+  /// Zona del supermercato (paese ISO, città, località): i prezzi segnalati lì hanno la precedenza.
+  final String country;
+  final String? city;
+  final String? locality;
 
   /// Versione della foto della lista (null se non c'è): vedi ApiClient.listImageUrl.
   final String? imageVersion;
@@ -93,6 +101,9 @@ class ShoppingList {
       supermarketChain: json['supermarket_chain'] == null
           ? null
           : Supermarket.fromJson(json['supermarket_chain'] as Map<String, dynamic>),
+      country: json['country'] as String? ?? 'IT',
+      city: json['city'] as String?,
+      locality: json['locality'] as String?,
       imageVersion: json['image_version'] as String?,
       scheduledAt: DateTime.parse(json['scheduled_at'] as String).toLocal(),
       reminderMinutes: json['reminder_minutes'] as int?,
@@ -117,6 +128,9 @@ class ShoppingList {
     // Un supermercato diverso cambia i prezzi: il controller ricarica la lista e la catena arriva con il dettaglio.
     supermarket: json.containsKey('supermarket') ? json['supermarket'] as String? : supermarket,
     supermarketChain: !json.containsKey('supermarket') || json['supermarket'] == supermarket ? supermarketChain : null,
+    country: json['country'] as String? ?? country,
+    city: json.containsKey('city') ? json['city'] as String? : city,
+    locality: json.containsKey('locality') ? json['locality'] as String? : locality,
     imageVersion: json.containsKey('image_version') ? json['image_version'] as String? : imageVersion,
     scheduledAt: json['scheduled_at'] == null ? scheduledAt : DateTime.parse(json['scheduled_at'] as String).toLocal(),
     reminderMinutes: json.containsKey('reminder_minutes') ? json['reminder_minutes'] as int? : reminderMinutes,

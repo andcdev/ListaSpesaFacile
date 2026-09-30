@@ -7,6 +7,7 @@ import 'package:http/http.dart' as http;
 import '../l10n/l10n.dart';
 import '../models/app_notification.dart';
 import '../models/app_user.dart';
+import '../models/branded_product.dart';
 import '../models/chat_message.dart';
 import '../models/list_item.dart';
 import '../models/product_suggestion.dart';
@@ -242,6 +243,9 @@ class ApiClient {
     required DateTime scheduledAt,
     String? notes,
     String? supermarket,
+    String country = 'IT',
+    String? city,
+    String? locality,
     int? reminderMinutes,
     ReminderTarget reminderTarget = ReminderTarget.all,
     bool membersCanRename = false,
@@ -252,6 +256,9 @@ class ApiClient {
       'scheduled_at': scheduledAt.toUtc().toIso8601String(),
       'notes': notes,
       'supermarket': supermarket,
+      'country': country,
+      'city': city,
+      'locality': locality,
       'reminder_minutes': reminderMinutes,
       'reminder_target': reminderTarget.value,
       'members_can_rename': membersCanRename,
@@ -267,6 +274,9 @@ class ApiClient {
     required DateTime scheduledAt,
     String? notes,
     String? supermarket,
+    String country = 'IT',
+    String? city,
+    String? locality,
     int? reminderMinutes,
     ReminderTarget reminderTarget = ReminderTarget.all,
     bool? membersCanRename,
@@ -276,6 +286,9 @@ class ApiClient {
       'scheduled_at': scheduledAt.toUtc().toIso8601String(),
       'notes': notes,
       'supermarket': supermarket,
+      'country': country,
+      'city': city,
+      'locality': locality,
       'reminder_minutes': reminderMinutes,
       'reminder_target': reminderTarget.value,
       'members_can_rename': ?membersCanRename,
@@ -315,12 +328,51 @@ class ApiClient {
   // ── Articoli ────────────────────────────────────────────────────
 
   /// Il server riconosce reparto e icona dal nome. [amount] e [unit] (g, kg, l…) vanno insieme.
-  Future<ListItem> addItem(int listId, String name, {String? quantity, double? amount, String? unit}) async => _data(
+  /// [product]: prodotto di marca scelto tra i suggerimenti (codice a barre, marca e foto).
+  Future<ListItem> addItem(
+    int listId,
+    String name, {
+    String? quantity,
+    double? amount,
+    String? unit,
+    BrandedProduct? product,
+  }) async => _data(
     await _send('POST', '/lists/$listId/items', {
       'name': name,
       'quantity': quantity,
       'amount': ?amount,
       if (amount != null) 'unit': unit,
+      if (product != null) ...{'barcode': product.barcode, 'brand': product.brand, 'image_url': ?product.imageUrl},
+    }),
+    ListItem.fromJson,
+  );
+
+  /// Prodotti di marca che corrispondono a quanto scritto (Open Food Facts), nel paese della lista.
+  Future<List<BrandedProduct>> searchProducts(String text, {String country = 'IT'}) async => _list(
+    await _send('GET', '/products/search?q=${Uri.encodeQueryComponent(text)}&country=$country'),
+    BrandedProduct.fromJson,
+  );
+
+  /// Prezzo mostrato per l'articolo e segnalazioni precedenti nella catena della lista.
+  Future<ItemPrices> itemPrices(int listId, int itemId) async {
+    final json = await _send('GET', '/lists/$listId/items/$itemId/prices') as Map<String, dynamic>;
+    return ItemPrices.fromJson(json['data'] as Map<String, dynamic>);
+  }
+
+  /// Rettifica del prezzo nella catena e nella zona indicate (di chi la fa si salvano nome, email e ora).
+  Future<ListItem> reportPrice(
+    int listId,
+    int itemId, {
+    required double price,
+    required String per,
+    String? city,
+    String? locality,
+  }) async => _data(
+    await _send('POST', '/lists/$listId/items/$itemId/prices', {
+      'price': price,
+      'per': per,
+      'city': city,
+      'locality': locality,
     }),
     ListItem.fromJson,
   );

@@ -7,6 +7,7 @@ use App\Events\ListItemSaved;
 use App\Events\ListsChanged;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ListItemResource;
+use App\Jobs\FindItemImage;
 use App\Models\ListItem;
 use App\Models\ShoppingList;
 use App\Notifications\ListActivity;
@@ -36,6 +37,7 @@ class ListItemController extends Controller
 
         self::broadcastSaved($list, $item);
         ListActivity::notify($list, $request->user(), 'added', ['item' => self::label($item)]);
+        self::findImage($item);
 
         return (new ListItemResource($item->load(['creator', 'checker'])))
             ->response()
@@ -57,6 +59,19 @@ class ListItemController extends Controller
 
         $item->fill($data);
         $item->setRelation('shoppingList', $list);
+        // Rinominato senza scegliere un altro prodotto di marca: non è più quel prodotto.
+        if ($item->isDirty('name') && ! array_key_exists('barcode', $data)) {
+            $item->barcode = null;
+            $item->brand = null;
+        }
+        // Un link scelto a mano non viene più sostituito dalla foto automatica; quella automatica del nome vecchio
+        // si toglie (FindItemImage ne cerca una per il nome nuovo).
+        if ($item->isDirty('image_url')) {
+            $item->image_auto = false;
+        } elseif ($item->isDirty('name') && $item->image_auto) {
+            $item->image_url = null;
+            $item->image_auto = false;
+        }
         // Le app più vecchie mandano solo "checked".
         if ($item->isDirty('checked') && ! $item->isDirty('status')) {
             $item->status = $item->checked ? 'taken' : 'todo';
@@ -75,11 +90,15 @@ class ListItemController extends Controller
             $item->isDirty() && array_keys($item->getDirty()) !== ['position'] => 'edited',
             default => null,
         };
+        $renamed = $item->isDirty('name');
         $item->save();
 
         self::broadcastSaved($list, $item);
         if ($action !== null) {
             ListActivity::notify($list, $request->user(), $action, ['item' => self::label($item)]);
+        }
+        if ($renamed) {
+            self::findImage($item);
         }
 
         return new ListItemResource($item->load(['creator', 'checker']));
@@ -140,7 +159,20 @@ class ListItemController extends Controller
             // Emoji scelta a mano (null = torna quella riconosciuta) e link a un'immagine esterna.
             'custom_icon' => ['sometimes', 'nullable', 'string', 'max:16'],
             'image_url' => ['sometimes', 'nullable', 'url:http,https', 'max:2048'],
+            // Prodotto di marca scelto tra i suggerimenti di Open Food Facts.
+            'barcode' => ['sometimes', 'nullable', 'string', 'regex:/^\d{4,20}$/'],
+            'brand' => ['sometimes', 'nullable', 'string', 'max:100'],
         ];
+    }
+
+    /**
+     * Foto automatica da Open Food Facts, cercata dal worker della coda (arriva a tutti con "item.saved").
+     */
+    private static function findImage(ListItem $item): void
+    {
+        if (FindItemImage::wanted($item)) {
+            FindItemImage::dispatch($item->id, $item->name);
+        }
     }
 
     public static function broadcastSaved(ShoppingList $list, ListItem $item): void

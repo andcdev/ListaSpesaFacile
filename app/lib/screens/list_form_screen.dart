@@ -28,6 +28,23 @@ class _ListFormScreenState extends State<ListFormScreen> {
   late final _notes = TextEditingController(text: widget.list?.notes);
   late String _supermarket = widget.list?.supermarket ?? '';
 
+  /// Zona del supermercato: i prezzi segnalati lì hanno la precedenza.
+  late String _country = widget.list?.country ?? 'IT';
+  late final _city = TextEditingController(text: widget.list?.city);
+  late final _locality = TextEditingController(text: widget.list?.locality);
+
+  /// Paesi supportati per i prezzi (come OpenFoodFacts::COUNTRIES sul server), con la bandiera.
+  static const _countries = {
+    'IT': '🇮🇹',
+    'SM': '🇸🇲',
+    'CH': '🇨🇭',
+    'FR': '🇫🇷',
+    'DE': '🇩🇪',
+    'AT': '🇦🇹',
+    'ES': '🇪🇸',
+    'GB': '🇬🇧',
+  };
+
   /// Catene note, suggerite mentre si scrive il supermercato.
   List<Supermarket> _chains = const [];
   final _recipientEmail = TextEditingController();
@@ -75,6 +92,8 @@ class _ListFormScreenState extends State<ListFormScreen> {
   void dispose() {
     _name.dispose();
     _notes.dispose();
+    _city.dispose();
+    _locality.dispose();
     _recipientEmail.dispose();
     super.dispose();
   }
@@ -140,6 +159,8 @@ class _ListFormScreenState extends State<ListFormScreen> {
     final lists = context.read<ListsController>();
     final notes = _notes.text.trim().isEmpty ? null : _notes.text.trim();
     final supermarket = _supermarket.trim().isEmpty ? null : _supermarket.trim();
+    final city = _city.text.trim().isEmpty ? null : _city.text.trim();
+    final locality = _locality.text.trim().isEmpty ? null : _locality.text.trim();
     try {
       if (_editing) {
         await lists.update(
@@ -148,6 +169,9 @@ class _ListFormScreenState extends State<ListFormScreen> {
           scheduledAt: _scheduledAt,
           notes: notes,
           supermarket: supermarket,
+          country: _country,
+          city: city,
+          locality: locality,
           reminderMinutes: _reminderMinutes,
           reminderTarget: _reminderTarget,
           membersCanRename: _isOwner ? _membersCanRename : null,
@@ -159,6 +183,9 @@ class _ListFormScreenState extends State<ListFormScreen> {
           scheduledAt: _scheduledAt,
           notes: notes,
           supermarket: supermarket,
+          country: _country,
+          city: city,
+          locality: locality,
           reminderMinutes: _reminderMinutes,
           reminderTarget: _reminderTarget,
           membersCanRename: _membersCanRename,
@@ -265,6 +292,46 @@ class _ListFormScreenState extends State<ListFormScreen> {
                       ),
                     ),
                   ),
+                ),
+              ),
+              const SizedBox(height: 12),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(
+                    width: 104,
+                    child: DropdownButtonFormField<String>(
+                      initialValue: _country,
+                      decoration: InputDecoration(labelText: l.country),
+                      items: [
+                        for (final MapEntry(key: code, value: flag) in _countries.entries)
+                          DropdownMenuItem(value: code, child: Text('$flag $code')),
+                      ],
+                      onChanged: (v) => setState(() => _country = v ?? _country),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: TextFormField(
+                      controller: _city,
+                      maxLength: 100,
+                      textCapitalization: TextCapitalization.words,
+                      decoration: InputDecoration(labelText: l.cityLabel, hintText: l.cityHint, counterText: ''),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              TextFormField(
+                controller: _locality,
+                maxLength: 100,
+                textCapitalization: TextCapitalization.words,
+                decoration: InputDecoration(
+                  labelText: l.localityLabel,
+                  hintText: l.localityHint,
+                  helperText: l.zoneHelper,
+                  helperMaxLines: 2,
+                  counterText: '',
                 ),
               ),
               const SizedBox(height: 16),

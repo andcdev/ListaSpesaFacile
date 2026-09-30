@@ -3,7 +3,6 @@
 namespace App\Http\Resources;
 
 use App\Models\ListItem;
-use App\Support\PriceEstimator;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -21,6 +20,9 @@ class ListItemResource extends JsonResource
             'id' => $this->id,
             'shopping_list_id' => $this->shopping_list_id,
             'name' => $this->name,
+            // Prodotto di marca scelto da Open Food Facts (null = scritto a mano).
+            'barcode' => $this->barcode,
+            'brand' => $this->brand,
             'category' => $this->category,
             // Emoji mostrata: quella scelta dall'utente oppure quella riconosciuta dal nome.
             'icon' => $this->custom_icon ?? $this->icon,
@@ -31,8 +33,10 @@ class ListItemResource extends JsonResource
             'quantity' => $this->quantity,
             'amount' => $this->amount,
             'unit' => $this->unit,
-            // Prezzo indicativo nella catena scelta per la lista: null se la catena non è nota o non ha il prodotto.
-            'price' => ($chain = $this->shoppingList?->supermarketChain()) ? PriceEstimator::itemPrice($chain, $this->resource) : null,
+            // Prezzo indicativo nella catena e nella zona della lista (null se non si conosce) e da dove viene:
+            // fonte (user, open_prices, catalog), nome e ora di chi l'ha segnalato, zona. Mai l'email.
+            'price' => ($quote = $this->shoppingList?->quote($this->resource))['line'] ?? null,
+            'price_info' => $quote ? collect($quote)->except('line')->all() : null,
             'checked' => $this->checked,
             'status' => $this->status,
             'position' => $this->position,

@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\AvatarController;
 use App\Http\Controllers\Api\ConfigController;
 use App\Http\Controllers\Api\DeviceController;
 use App\Http\Controllers\Api\GlobalShareController;
+use App\Http\Controllers\Api\ItemPriceController;
 use App\Http\Controllers\Api\ListImageController;
 use App\Http\Controllers\Api\ListItemController;
 use App\Http\Controllers\Api\ListItemImageController;
@@ -13,6 +14,7 @@ use App\Http\Controllers\Api\ListMessageController;
 use App\Http\Controllers\Api\ListShareController;
 use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\PasswordResetController;
+use App\Http\Controllers\Api\ProductSearchController;
 use App\Http\Controllers\Api\ProductSuggestionController;
 use App\Http\Controllers\Api\ShoppingListController;
 use App\Http\Controllers\Api\SupermarketController;
@@ -41,6 +43,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::apiResource('lists', ShoppingListController::class)->parameters(['lists' => 'list']);
     Route::get('/products/suggestions', ProductSuggestionController::class);
+    Route::get('/products/search', ProductSearchController::class)->middleware('throttle:60,1');
     Route::get('/supermarkets', [SupermarketController::class, 'index']);
     Route::get('/lists/{list}/price-comparison', [SupermarketController::class, 'compare']);
 
@@ -53,6 +56,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/lists/{list}/items/{item}/image', [ListItemImageController::class, 'show']);
         Route::post('/lists/{list}/items/{item}/image', [ListItemImageController::class, 'store']);
         Route::delete('/lists/{list}/items/{item}/image', [ListItemImageController::class, 'destroy']);
+
+        Route::get('/lists/{list}/items/{item}/prices', [ItemPriceController::class, 'index']);
+        Route::post('/lists/{list}/items/{item}/prices', [ItemPriceController::class, 'store'])->middleware('throttle:20,1');
     });
 
     Route::get('/lists/{list}/shares', [ListShareController::class, 'index']);
