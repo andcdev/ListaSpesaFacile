@@ -65,8 +65,7 @@ import 'app_localizations_it.dart';
 /// be consistent with the languages listed in the AppLocalizations.supportedLocales
 /// property.
 abstract class AppLocalizations {
-  AppLocalizations(String locale)
-    : localeName = intl.Intl.canonicalizedLocale(locale.toString());
+  AppLocalizations(String locale) : localeName = intl.Intl.canonicalizedLocale(locale.toString());
 
   final String localeName;
 
@@ -74,8 +73,7 @@ abstract class AppLocalizations {
     return Localizations.of<AppLocalizations>(context, AppLocalizations)!;
   }
 
-  static const LocalizationsDelegate<AppLocalizations> delegate =
-      _AppLocalizationsDelegate();
+  static const LocalizationsDelegate<AppLocalizations> delegate = _AppLocalizationsDelegate();
 
   /// A list of this localizations delegate along with the default localizations
   /// delegates.
@@ -87,13 +85,12 @@ abstract class AppLocalizations {
   /// Additional delegates can be added by appending to this list in
   /// MaterialApp. This list does not have to be used at all if a custom list
   /// of delegates is preferred or required.
-  static const List<LocalizationsDelegate<dynamic>> localizationsDelegates =
-      <LocalizationsDelegate<dynamic>>[
-        delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-      ];
+  static const List<LocalizationsDelegate<dynamic>> localizationsDelegates = <LocalizationsDelegate<dynamic>>[
+    delegate,
+    GlobalMaterialLocalizations.delegate,
+    GlobalCupertinoLocalizations.delegate,
+    GlobalWidgetsLocalizations.delegate,
+  ];
 
   /// A list of this localizations delegate's supported locales.
   static const List<Locale> supportedLocales = <Locale>[
@@ -1675,10 +1672,75 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Link a un\'immagine (facoltativo)'**
   String get imageLinkOptional;
+
+  /// No description provided for @supermarketLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Supermercato (facoltativo)'**
+  String get supermarketLabel;
+
+  /// No description provided for @supermarketHint.
+  ///
+  /// In it, this message translates to:
+  /// **'es. Esselunga, Coop, Lidl'**
+  String get supermarketHint;
+
+  /// No description provided for @supermarketHelper.
+  ///
+  /// In it, this message translates to:
+  /// **'Se è una catena nota, la lista mostra i prezzi indicativi'**
+  String get supermarketHelper;
+
+  /// No description provided for @estimatedTotal.
+  ///
+  /// In it, this message translates to:
+  /// **'Totale stimato da {chain}*'**
+  String estimatedTotal(String chain);
+
+  /// No description provided for @pricesIndicativeNote.
+  ///
+  /// In it, this message translates to:
+  /// **'* Prezzi indicativi in base alla catena: possono variare da un punto vendita all\'altro e per le offerte.'**
+  String get pricesIndicativeNote;
+
+  /// No description provided for @pricedOf.
+  ///
+  /// In it, this message translates to:
+  /// **'Prezzo per {priced} di {total} prodotti'**
+  String pricedOf(int priced, int total);
+
+  /// No description provided for @noPricesForChain.
+  ///
+  /// In it, this message translates to:
+  /// **'Nessun prezzo disponibile da {chain} per questi prodotti'**
+  String noPricesForChain(String chain);
+
+  /// No description provided for @compareChains.
+  ///
+  /// In it, this message translates to:
+  /// **'Confronta catene'**
+  String get compareChains;
+
+  /// No description provided for @currentChain.
+  ///
+  /// In it, this message translates to:
+  /// **'scelta'**
+  String get currentChain;
+
+  /// No description provided for @noChainPrices.
+  ///
+  /// In it, this message translates to:
+  /// **'Non ci sono ancora prezzi per i prodotti di questa lista.'**
+  String get noChainPrices;
+
+  /// No description provided for @close.
+  ///
+  /// In it, this message translates to:
+  /// **'Chiudi'**
+  String get close;
 }
 
-class _AppLocalizationsDelegate
-    extends LocalizationsDelegate<AppLocalizations> {
+class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
   const _AppLocalizationsDelegate();
 
   @override
@@ -1687,8 +1749,7 @@ class _AppLocalizationsDelegate
   }
 
   @override
-  bool isSupported(Locale locale) =>
-      <String>['de', 'en', 'es', 'fr', 'it'].contains(locale.languageCode);
+  bool isSupported(Locale locale) => <String>['de', 'en', 'es', 'fr', 'it'].contains(locale.languageCode);
 
   @override
   bool shouldReload(_AppLocalizationsDelegate old) => false;

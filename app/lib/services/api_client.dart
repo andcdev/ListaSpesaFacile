@@ -11,6 +11,7 @@ import '../models/chat_message.dart';
 import '../models/list_item.dart';
 import '../models/product_suggestion.dart';
 import '../models/shopping_list.dart';
+import '../models/supermarket.dart';
 
 class ApiException implements Exception {
   ApiException(this.message, {this.statusCode, this.errors = const {}});
@@ -240,6 +241,7 @@ class ApiClient {
     required String name,
     required DateTime scheduledAt,
     String? notes,
+    String? supermarket,
     int? reminderMinutes,
     ReminderTarget reminderTarget = ReminderTarget.all,
     bool membersCanRename = false,
@@ -249,6 +251,7 @@ class ApiClient {
       'name': name,
       'scheduled_at': scheduledAt.toUtc().toIso8601String(),
       'notes': notes,
+      'supermarket': supermarket,
       'reminder_minutes': reminderMinutes,
       'reminder_target': reminderTarget.value,
       'members_can_rename': membersCanRename,
@@ -263,6 +266,7 @@ class ApiClient {
     required String name,
     required DateTime scheduledAt,
     String? notes,
+    String? supermarket,
     int? reminderMinutes,
     ReminderTarget reminderTarget = ReminderTarget.all,
     bool? membersCanRename,
@@ -271,6 +275,7 @@ class ApiClient {
       'name': name,
       'scheduled_at': scheduledAt.toUtc().toIso8601String(),
       'notes': notes,
+      'supermarket': supermarket,
       'reminder_minutes': reminderMinutes,
       'reminder_target': reminderTarget.value,
       'members_can_rename': ?membersCanRename,
@@ -378,6 +383,13 @@ class ApiClient {
   /// Il telefono ha ricevuto i messaggi della lista fino a [upTo]: chi li ha scritti vede le spunte blu.
   Future<void> markMessagesDelivered(int listId, int upTo) =>
       _send('POST', '/lists/$listId/messages/delivered', {'up_to': upTo});
+
+  /// Catene di supermercati note, da suggerire mentre si scrive il supermercato.
+  Future<List<Supermarket>> supermarkets() async => _list(await _send('GET', '/supermarkets'), Supermarket.fromJson);
+
+  /// Costo della lista in ogni catena che ha dei prezzi.
+  Future<List<PriceComparison>> priceComparison(int listId) async =>
+      _list(await _send('GET', '/lists/$listId/price-comparison'), PriceComparison.fromJson);
 
   /// Prodotti da suggerire mentre si scrive (già usati, poi i più comuni).
   Future<List<ProductSuggestion>> productSuggestions() async =>

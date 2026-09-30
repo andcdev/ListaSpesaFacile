@@ -22,6 +22,9 @@ class ShoppingListResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'notes' => $this->notes,
+            // Supermercato come scritto dall'utente e catena riconosciuta (solo nel dettaglio): senza catena niente prezzi.
+            'supermarket' => $this->supermarket,
+            'supermarket_chain' => $this->whenLoaded('items', fn () => $this->supermarketChain()?->only(['id', 'name', 'description'])),
             'scheduled_at' => $this->scheduled_at->toIso8601String(),
             // Foto della lista: GET /api/lists/{id}/image?v={image_version}; null se non c'è.
             'image_version' => $this->imageVersion(),

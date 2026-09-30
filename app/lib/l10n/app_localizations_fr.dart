@@ -73,8 +73,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get invalidEmail => 'Saisissez un e-mail valide';
 
   @override
-  String get enterRegisteredEmail =>
-      'Saisissez l\'e-mail d\'un utilisateur inscrit';
+  String get enterRegisteredEmail => 'Saisissez l\'e-mail d\'un utilisateur inscrit';
 
   @override
   String get atLeast8 => 'Au moins 8 caractères';
@@ -128,19 +127,16 @@ class AppLocalizationsFr extends AppLocalizations {
   String get errTimeout => 'Le serveur ne répond pas. Réessayez plus tard.';
 
   @override
-  String get errNetwork =>
-      'Impossible de joindre le serveur. Vérifiez la connexion.';
+  String get errNetwork => 'Impossible de joindre le serveur. Vérifiez la connexion.';
 
   @override
   String get errSessionExpired => 'Session expirée. Reconnectez-vous.';
 
   @override
-  String get errForbidden =>
-      'Vous n\'avez pas l\'autorisation pour cette opération.';
+  String get errForbidden => 'Vous n\'avez pas l\'autorisation pour cette opération.';
 
   @override
-  String get errNotFound =>
-      'Élément introuvable (il a peut-être été supprimé).';
+  String get errNotFound => 'Élément introuvable (il a peut-être été supprimé).';
 
   @override
   String get errTooMany => 'Trop de tentatives. Patientez une minute.';
@@ -250,8 +246,7 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get deleteListSharedInfo =>
-      'La liste disparaîtra aussi pour les utilisateurs avec qui elle est partagée.';
+  String get deleteListSharedInfo => 'La liste disparaîtra aussi pour les utilisateurs avec qui elle est partagée.';
 
   @override
   String get profilePhotoTitle => 'Photo de profil (visible dans le chat)';
@@ -329,8 +324,7 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get noLists =>
-      'Aucune liste.\nCréez-en une avec le bouton « Nouvelle liste ».';
+  String get noLists => 'Aucune liste.\nCréez-en une avec le bouton « Nouvelle liste ».';
 
   @override
   String get realtimeOn => 'Mises à jour en temps réel actives';
@@ -351,8 +345,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get listNameHint => 'ex. Courses de la semaine';
 
   @override
-  String get renameLocked =>
-      'Le propriétaire n\'autorise pas le changement de nom';
+  String get renameLocked => 'Le propriétaire n\'autorise pas le changement de nom';
 
   @override
   String get listNameRequired => 'Donnez un nom à la liste';
@@ -399,23 +392,19 @@ class AppLocalizationsFr extends AppLocalizations {
   String get userEmailOptional => 'E-mail de l\'utilisateur (facultatif)';
 
   @override
-  String get willBeNotified =>
-      'Il recevra une notification quand vous créerez la liste';
+  String get willBeNotified => 'Il recevra une notification quand vous créerez la liste';
 
   @override
   String get permissions => 'Autorisations';
 
   @override
-  String get membersCanRenameTitle =>
-      'Ceux qui peuvent modifier peuvent aussi changer le nom';
+  String get membersCanRenameTitle => 'Ceux qui peuvent modifier peuvent aussi changer le nom';
 
   @override
-  String get membersCanRenameOn =>
-      'Les utilisateurs autorisés à modifier peuvent renommer la liste';
+  String get membersCanRenameOn => 'Les utilisateurs autorisés à modifier peuvent renommer la liste';
 
   @override
-  String get membersCanRenameOff =>
-      'Vous seul pouvez changer le nom ; les autres modifient les articles';
+  String get membersCanRenameOff => 'Vous seul pouvez changer le nom ; les autres modifient les articles';
 
   @override
   String get saveChanges => 'Enregistrer';
@@ -443,34 +432,19 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String durationDays(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count jours',
-      one: '1 jour',
-    );
+    String _temp0 = intl.Intl.pluralLogic(count, locale: localeName, other: '$count jours', one: '1 jour');
     return '$_temp0';
   }
 
   @override
   String durationHours(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count heures',
-      one: '1 heure',
-    );
+    String _temp0 = intl.Intl.pluralLogic(count, locale: localeName, other: '$count heures', one: '1 heure');
     return '$_temp0';
   }
 
   @override
   String durationMinutes(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count minutes',
-      one: '1 minute',
-    );
+    String _temp0 = intl.Intl.pluralLogic(count, locale: localeName, other: '$count minutes', one: '1 minute');
     return '$_temp0';
   }
 
@@ -537,8 +511,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get stopReceiving => 'Ne plus recevoir';
 
   @override
-  String get deleteAllNotificationsQuestion =>
-      'Supprimer toutes les notifications ?';
+  String get deleteAllNotificationsQuestion => 'Supprimer toutes les notifications ?';
 
   @override
   String get markAllRead => 'Tout marquer comme lu';
@@ -562,8 +535,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get serviceChannelName => 'Connexion en arrière-plan';
 
   @override
-  String get serviceChannelDescription =>
-      'Garde l\'application connectée pour recevoir listes et messages même fermée';
+  String get serviceChannelDescription => 'Garde l\'application connectée pour recevoir listes et messages même fermée';
 
   @override
   String get serviceNotificationText => 'Prête à recevoir listes et messages';
@@ -627,12 +599,10 @@ class AppLocalizationsFr extends AppLocalizations {
       'Pour dicter, autorisez l\'application à utiliser le micro dans les réglages du téléphone.';
 
   @override
-  String get voiceNoMatch =>
-      'Je n\'ai rien entendu : touchez le micro et parlez tout de suite.';
+  String get voiceNoMatch => 'Je n\'ai rien entendu : touchez le micro et parlez tout de suite.';
 
   @override
-  String get voiceNetwork =>
-      'Reconnaissance vocale injoignable : vérifiez la connexion.';
+  String get voiceNetwork => 'Reconnaissance vocale injoignable : vérifiez la connexion.';
 
   @override
   String get voiceBusy => 'Le micro est occupé, réessayez dans un instant.';
@@ -679,15 +649,13 @@ class AppLocalizationsFr extends AppLocalizations {
   String get deleteListQuestion => 'Supprimer la liste ?';
 
   @override
-  String get deleteListInfo =>
-      'Elle sera aussi supprimée pour ceux qui la partagent.';
+  String get deleteListInfo => 'Elle sera aussi supprimée pour ceux qui la partagent.';
 
   @override
   String get leaveListQuestion => 'Quitter la liste ?';
 
   @override
-  String get leaveListInfo =>
-      'Vous ne la verrez plus jusqu\'à ce qu\'elle soit à nouveau partagée avec vous.';
+  String get leaveListInfo => 'Vous ne la verrez plus jusqu\'à ce qu\'elle soit à nouveau partagée avec vous.';
 
   @override
   String get leave => 'Quitter';
@@ -728,19 +696,16 @@ class AppLocalizationsFr extends AppLocalizations {
   String get deleteFromList => 'Supprimer de la liste';
 
   @override
-  String get deleteFromListInfo =>
-      'Différent de « pris » : l\'article disparaît pour tout le monde';
+  String get deleteFromListInfo => 'Différent de « pris » : l\'article disparaît pour tout le monde';
 
   @override
   String get sendOrExportList => 'Envoyer ou exporter la liste';
 
   @override
-  String get exportTextInfo =>
-      'Texte avec les coches, vous choisissez la discussion';
+  String get exportTextInfo => 'Texte avec les coches, vous choisissez la discussion';
 
   @override
-  String get exportPdfInfo =>
-      'À imprimer ou envoyer (aussi sur WhatsApp ou Telegram)';
+  String get exportPdfInfo => 'À imprimer ou envoyer (aussi sur WhatsApp ou Telegram)';
 
   @override
   String get otherApps => 'Autres applications';
@@ -783,8 +748,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get readOnlyAccess => 'Vous avez un accès en lecture seule';
 
   @override
-  String get emptyList =>
-      'La liste est vide.\nAjoutez le premier article ci-dessous.';
+  String get emptyList => 'La liste est vide.\nAjoutez le premier article ci-dessous.';
 
   @override
   String inCart(int checked, int total) {
@@ -924,8 +888,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get department => 'Rayon';
 
   @override
-  String get departmentHelper =>
-      'Reconnu d\'après le nom : changez-le s\'il est incorrect';
+  String get departmentHelper => 'Reconnu d\'après le nom : changez-le s\'il est incorrect';
 
   @override
   String get emojiOptional => 'Emoji (facultatif)';
@@ -943,4 +906,44 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get imageLinkOptional => 'Lien vers une image (facultatif)';
+
+  @override
+  String get supermarketLabel => 'Supermarché (facultatif)';
+
+  @override
+  String get supermarketHint => 'ex. Esselunga, Coop, Lidl';
+
+  @override
+  String get supermarketHelper => 'S\'il s\'agit d\'une enseigne connue, la liste affiche des prix indicatifs';
+
+  @override
+  String estimatedTotal(String chain) {
+    return 'Total estimé chez $chain*';
+  }
+
+  @override
+  String get pricesIndicativeNote =>
+      '* Prix indicatifs selon l\'enseigne : ils peuvent varier d\'un magasin à l\'autre et selon les promotions.';
+
+  @override
+  String pricedOf(int priced, int total) {
+    return 'Prix pour $priced produits sur $total';
+  }
+
+  @override
+  String noPricesForChain(String chain) {
+    return 'Aucun prix disponible chez $chain pour ces produits';
+  }
+
+  @override
+  String get compareChains => 'Comparer les enseignes';
+
+  @override
+  String get currentChain => 'choisie';
+
+  @override
+  String get noChainPrices => 'Il n\'y a pas encore de prix pour les produits de cette liste.';
+
+  @override
+  String get close => 'Fermer';
 }

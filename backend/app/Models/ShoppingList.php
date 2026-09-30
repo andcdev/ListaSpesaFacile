@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
-#[Fillable(['name', 'notes', 'scheduled_at', 'reminder_minutes', 'reminder_target', 'members_can_rename'])]
+#[Fillable(['name', 'notes', 'supermarket', 'scheduled_at', 'reminder_minutes', 'reminder_target', 'members_can_rename'])]
 class ShoppingList extends Model
 {
     use HasFactory;
@@ -27,6 +27,9 @@ class ShoppingList extends Model
     public const REMINDER_TARGETS = ['owner', 'members', 'all'];
 
     protected $attributes = ['members_can_rename' => false];
+
+    /** @var array{0: string|null, 1: Supermarket|null}|null supermercato scritto e catena riconosciuta */
+    private ?array $chain = null;
 
     protected function casts(): array
     {
@@ -85,6 +88,19 @@ class ShoppingList extends Model
     public function imageVersion(): ?string
     {
         return $this->image_path ? substr(md5($this->image_path), 0, 10) : null;
+    }
+
+    /**
+     * Catena di supermercati riconosciuta dal supermercato scelto, null se non è una catena nota:
+     * in quel caso la lista non ha prezzi.
+     */
+    public function supermarketChain(): ?Supermarket
+    {
+        if ($this->chain === null || $this->chain[0] !== $this->supermarket) {
+            $this->chain = [$this->supermarket, Supermarket::match($this->supermarket)];
+        }
+
+        return $this->chain[1];
     }
 
     /**

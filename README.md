@@ -63,6 +63,15 @@ Sorgente modificabile: [`docs/architettura.svg`](docs/architettura.svg).
   (mele 🍎, latte 🥛, parmigiano 🧀, detersivo 🧴…, `app/Support/ProductCatalog.php`). Il reparto si può correggere
   a mano. Nella lista gli articoli sono **raggruppati per reparto** nell'ordine del giro al supermercato
   (Frutta, Verdura, Pane…) e, dentro ogni reparto, in **ordine alfabetico** (prima quelli da prendere).
+- **Supermercato e prezzi**: alla creazione (o modifica) della lista si indica il supermercato, con i
+  suggerimenti delle catene note. Se il server lo riconosce come catena ("Esselunga di viale Piave" → Esselunga,
+  "Ipercoop" → Coop) ogni articolo mostra il **prezzo indicativo** di quella catena (moltiplicato per quantità e
+  peso o volume) e in fondo alla lista c'è il **totale stimato** con l'asterisco: i prezzi sono indicativi in base
+  alla distribuzione. Se il supermercato non è una catena nota non compare nessun prezzo. Il prezzo si ricalcola
+  cambiando supermercato o aggiungendo e modificando un prodotto; i non trovati non contano nel totale.
+  **Confronta catene** apre un popup con una riga per catena (nome, descrizione, totale): toccandola si vedono i
+  prezzi articolo per articolo. Catene e prezzi sono sul server (`supermarkets`, `supermarket_prices`) e i prezzi
+  si caricano da CSV (vedi *Prezzi delle catene*).
 - **Condivisione**
   - *per lista*: con uno o più utenti registrati (tramite email), con permesso di modifica o sola lettura;
   - *globale*: tutte le tue liste, comprese quelle future, con uno o più utenti.
@@ -302,8 +311,8 @@ Tutte le rotte sono sotto `/api`. Le rotte protette richiedono `Authorization: B
 | DELETE | `/me/avatar` | Rimuove la foto profilo |
 | GET | `/users/{id}/avatar?v=` | Foto profilo (te stesso o chi ha una lista in comune con te) |
 | GET | `/lists` | Liste accessibili, ordinate per `scheduled_at` |
-| POST | `/lists` | `name, scheduled_at, notes?, reminder_minutes?, reminder_target?, members_can_rename?, shares?: [{email, can_edit?}]` |
-| GET | `/lists/{id}` | Lista con articoli e condivisioni |
+| POST | `/lists` | `name, scheduled_at, notes?, supermarket?, reminder_minutes?, reminder_target?, members_can_rename?, shares?: [{email, can_edit?}]` |
+| GET | `/lists/{id}` | Lista con articoli e condivisioni; `supermarket_chain` = catena riconosciuta (null = niente prezzi), `price` di ogni articolo |
 | PATCH | `/lists/{id}` | Modifica (proprietario o permesso di modifica), anche `reminder_minutes` (`null` = nessuno) e `reminder_target` (`owner`, `members`, `all`). Il nome solo se `can_rename`; `members_can_rename` solo il proprietario |
 | DELETE | `/lists/{id}` | Elimina (solo proprietario) |
 | GET | `/lists/{id}/image?v=` | Foto della lista (chi ha accesso; `v` = `image_version` della lista) |
@@ -325,6 +334,8 @@ Tutte le rotte sono sotto `/api`. Le rotte protette richiedono `Authorization: B
 | DELETE | `/global-shares/received/{user}` | Rinuncia alle liste di `user` |
 | GET | `/lists/{id}/messages?before=` | Chat: 50 messaggi dal più recente + `has_more` + `delivered` (`{user_id: ultimo messaggio ricevuto}`) |
 | POST | `/lists/{id}/messages/delivered` | `up_to`: il telefono ha ricevuto i messaggi fino a questo id (spunte blu) |
+| GET | `/supermarkets` | Catene note (`name, description, has_prices`) |
+| GET | `/lists/{id}/price-comparison` | Costo della lista in ogni catena con prezzi: `total, priced_count, items_count, current, items[{name, price}]` |
 | GET | `/products/suggestions` | Prodotti da suggerire: già usati nelle liste accessibili (con `times`), poi i più comuni |
 | POST | `/lists/{id}/messages` | `body` e/o `image` (multipart, max 8 MB): chiunque abbia accesso alla lista |
 | GET | `/lists/{id}/messages/{message}/image` | Foto del messaggio (`has_image`) |
@@ -337,6 +348,26 @@ Tutte le rotte sono sotto `/api`. Le rotte protette richiedono `Authorization: B
 | POST | `/broadcasting/auth` | Autorizzazione canali WebSocket |
 
 Le date viaggiano in ISO 8601; il server le salva in UTC e l'app le mostra nel fuso del dispositivo.
+
+### Prezzi delle catene
+
+I prezzi indicativi si caricano da un CSV (virgole o punti e virgola; la prima riga può essere l'intestazione):
+
+```
+supermercato;prodotto;prezzo;per
+Esselunga;Latte;1,29;l
+Lidl;Banane;1,49;kg
+Coop;Pasta;0,89;pz
+```
+
+`per` è `pz` (a confezione), `kg` o `l`. Il prodotto è riconosciuto come negli articoli (`ProductCatalog`: "Latte"
+vale per ogni latte, "Pomodorini" per tutti i pomodori); le righe non riconosciute vengono saltate e segnalate. Una
+catena sconosciuta viene creata.
+
+```bash
+docker compose exec app php artisan prices:import storage/app/prezzi.csv            # aggiunge o aggiorna
+docker compose exec app php artisan prices:import storage/app/prezzi.csv --replace  # sostituisce i prezzi delle catene nel file
+```
 
 ### Canali ed eventi WebSocket
 

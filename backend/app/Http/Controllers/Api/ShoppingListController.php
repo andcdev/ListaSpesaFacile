@@ -128,6 +128,8 @@ class ShoppingListController extends Controller
     private function detail(ShoppingList $list): ShoppingListResource
     {
         $list->load(['owner', 'items.creator', 'items.checker', 'sharedWith']);
+        // Gli articoli usano la catena della lista per il prezzo: stessa istanza, una sola ricerca.
+        $list->items->each->setRelation('shoppingList', $list);
 
         return new ShoppingListResource($list);
     }
@@ -142,6 +144,8 @@ class ShoppingListController extends Controller
         $data = $request->validate([
             'name' => [$required, 'string', 'max:255'],
             'notes' => ['sometimes', 'nullable', 'string', 'max:5000'],
+            // Supermercato dove si fa la spesa: se è una catena nota la lista mostra i prezzi indicativi.
+            'supermarket' => ['sometimes', 'nullable', 'string', 'max:100'],
             'scheduled_at' => [$required, 'date'],
             // Minuti di anticipo del promemoria (null = nessuno), fino a 30 giorni.
             'reminder_minutes' => ['sometimes', 'nullable', 'integer', 'min:1', 'max:43200'],

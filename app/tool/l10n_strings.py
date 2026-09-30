@@ -650,6 +650,43 @@ S = {
                            'Usar el reconocido por el nombre'),
     'imageLinkOptional': ("Link a un'immagine (facoltativo)", 'Image link (optional)', "Lien vers une image "
                           "(facultatif)", 'Link zu einem Bild (optional)', 'Enlace a una imagen (opcional)'),
+
+    # ── Supermercato e prezzi ───────────────────────────────────────
+    'supermarketLabel': ('Supermercato (facoltativo)', 'Supermarket (optional)', 'Supermarché (facultatif)',
+                         'Supermarkt (optional)', 'Supermercado (opcional)'),
+    'supermarketHint': ('es. Esselunga, Coop, Lidl', 'e.g. Esselunga, Coop, Lidl', 'ex. Esselunga, Coop, Lidl',
+                        'z. B. Esselunga, Coop, Lidl', 'p. ej. Esselunga, Coop, Lidl'),
+    'supermarketHelper': ('Se è una catena nota, la lista mostra i prezzi indicativi',
+                          'If it is a known chain, the list shows indicative prices',
+                          "S'il s'agit d'une enseigne connue, la liste affiche des prix indicatifs",
+                          'Bei einer bekannten Kette zeigt die Liste Richtpreise an',
+                          'Si es una cadena conocida, la lista muestra precios orientativos'),
+    'estimatedTotal': ('Totale stimato da {chain}*', 'Estimated total at {chain}*', 'Total estimé chez {chain}*',
+                       'Geschätzte Summe bei {chain}*', 'Total estimado en {chain}*', {'chain': 'String'}),
+    'pricesIndicativeNote': ('* Prezzi indicativi in base alla catena: possono variare da un punto vendita all\'altro '
+                             'e per le offerte.',
+                             '* Indicative prices based on the chain: they may vary between stores and with offers.',
+                             "* Prix indicatifs selon l'enseigne : ils peuvent varier d'un magasin à l'autre et selon "
+                             'les promotions.',
+                             '* Richtpreise je nach Kette: Sie können je nach Filiale und Angeboten abweichen.',
+                             '* Precios orientativos según la cadena: pueden variar entre tiendas y con las ofertas.'),
+    'pricedOf': ('Prezzo per {priced} di {total} prodotti', 'Price for {priced} of {total} products',
+                 'Prix pour {priced} produits sur {total}', 'Preis für {priced} von {total} Produkten',
+                 'Precio de {priced} de {total} productos', {'priced': 'int', 'total': 'int'}),
+    'noPricesForChain': ('Nessun prezzo disponibile da {chain} per questi prodotti',
+                         'No prices available at {chain} for these products',
+                         'Aucun prix disponible chez {chain} pour ces produits',
+                         'Keine Preise bei {chain} für diese Produkte',
+                         'No hay precios en {chain} para estos productos', {'chain': 'String'}),
+    'compareChains': ('Confronta catene', 'Compare chains', 'Comparer les enseignes', 'Ketten vergleichen',
+                      'Comparar cadenas'),
+    'currentChain': ('scelta', 'chosen', 'choisie', 'gewählt', 'elegida'),
+    'noChainPrices': ('Non ci sono ancora prezzi per i prodotti di questa lista.',
+                      'There are no prices for the products in this list yet.',
+                      "Il n'y a pas encore de prix pour les produits de cette liste.",
+                      'Für die Produkte dieser Liste gibt es noch keine Preise.',
+                      'Todavía no hay precios para los productos de esta lista.'),
+    'close': ('Chiudi', 'Close', 'Fermer', 'Schließen', 'Cerrar'),
 }
 
 

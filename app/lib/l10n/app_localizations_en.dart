@@ -219,8 +219,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'We sent you a 6-digit code (check your spam folder too). Enter it and choose a new password.';
 
   @override
-  String get resetInfo =>
-      'Enter your account\'s email: we\'ll send you a code to choose a new password.';
+  String get resetInfo => 'Enter your account\'s email: we\'ll send you a code to choose a new password.';
 
   @override
   String get resetCodeLabel => 'Code received by email';
@@ -246,8 +245,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get deleteListSharedInfo =>
-      'The list will also disappear for the users it is shared with.';
+  String get deleteListSharedInfo => 'The list will also disappear for the users it is shared with.';
 
   @override
   String get profilePhotoTitle => 'Profile photo (shown in the chat)';
@@ -405,8 +403,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get membersCanRenameOn => 'Users who can edit can rename the list';
 
   @override
-  String get membersCanRenameOff =>
-      'Only you can rename it; the others edit the items';
+  String get membersCanRenameOff => 'Only you can rename it; the others edit the items';
 
   @override
   String get saveChanges => 'Save changes';
@@ -434,34 +431,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String durationDays(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count days',
-      one: '1 day',
-    );
+    String _temp0 = intl.Intl.pluralLogic(count, locale: localeName, other: '$count days', one: '1 day');
     return '$_temp0';
   }
 
   @override
   String durationHours(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count hours',
-      one: '1 hour',
-    );
+    String _temp0 = intl.Intl.pluralLogic(count, locale: localeName, other: '$count hours', one: '1 hour');
     return '$_temp0';
   }
 
   @override
   String durationMinutes(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count minutes',
-      one: '1 minute',
-    );
+    String _temp0 = intl.Intl.pluralLogic(count, locale: localeName, other: '$count minutes', one: '1 minute');
     return '$_temp0';
   }
 
@@ -496,8 +478,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get nobodyYet => 'Nobody yet.';
 
   @override
-  String get globalShareHint =>
-      'To share all your lists with someone, use \"Share all lists\" on the main screen.';
+  String get globalShareHint => 'To share all your lists with someone, use \"Share all lists\" on the main screen.';
 
   @override
   String allListsSharedWith(String email) {
@@ -613,16 +594,13 @@ class AppLocalizationsEn extends AppLocalizations {
       'Speech recognition is not available on this phone: install or enable the Google app (Google speech recognition).';
 
   @override
-  String get voiceMicPermission =>
-      'To dictate, allow the app to use the microphone in the phone settings.';
+  String get voiceMicPermission => 'To dictate, allow the app to use the microphone in the phone settings.';
 
   @override
-  String get voiceNoMatch =>
-      'I didn\'t hear anything: tap the microphone and speak right away.';
+  String get voiceNoMatch => 'I didn\'t hear anything: tap the microphone and speak right away.';
 
   @override
-  String get voiceNetwork =>
-      'Speech recognition unreachable: check your connection.';
+  String get voiceNetwork => 'Speech recognition unreachable: check your connection.';
 
   @override
   String get voiceBusy => 'The microphone is busy, try again in a moment.';
@@ -669,15 +647,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get deleteListQuestion => 'Delete the list?';
 
   @override
-  String get deleteListInfo =>
-      'It will also be deleted for everyone sharing it.';
+  String get deleteListInfo => 'It will also be deleted for everyone sharing it.';
 
   @override
   String get leaveListQuestion => 'Leave the list?';
 
   @override
-  String get leaveListInfo =>
-      'You won\'t see it again until it is shared with you again.';
+  String get leaveListInfo => 'You won\'t see it again until it is shared with you again.';
 
   @override
   String get leave => 'Leave';
@@ -718,8 +694,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get deleteFromList => 'Delete from the list';
 
   @override
-  String get deleteFromListInfo =>
-      'Not the same as \"taken\": the item disappears for everyone';
+  String get deleteFromListInfo => 'Not the same as \"taken\": the item disappears for everyone';
 
   @override
   String get sendOrExportList => 'Send or export the list';
@@ -905,8 +880,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get department => 'Aisle';
 
   @override
-  String get departmentHelper =>
-      'Recognized from the name: change it if it\'s wrong';
+  String get departmentHelper => 'Recognized from the name: change it if it\'s wrong';
 
   @override
   String get emojiOptional => 'Emoji (optional)';
@@ -924,4 +898,44 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get imageLinkOptional => 'Image link (optional)';
+
+  @override
+  String get supermarketLabel => 'Supermarket (optional)';
+
+  @override
+  String get supermarketHint => 'e.g. Esselunga, Coop, Lidl';
+
+  @override
+  String get supermarketHelper => 'If it is a known chain, the list shows indicative prices';
+
+  @override
+  String estimatedTotal(String chain) {
+    return 'Estimated total at $chain*';
+  }
+
+  @override
+  String get pricesIndicativeNote =>
+      '* Indicative prices based on the chain: they may vary between stores and with offers.';
+
+  @override
+  String pricedOf(int priced, int total) {
+    return 'Price for $priced of $total products';
+  }
+
+  @override
+  String noPricesForChain(String chain) {
+    return 'No prices available at $chain for these products';
+  }
+
+  @override
+  String get compareChains => 'Compare chains';
+
+  @override
+  String get currentChain => 'chosen';
+
+  @override
+  String get noChainPrices => 'There are no prices for the products in this list yet.';
+
+  @override
+  String get close => 'Close';
 }

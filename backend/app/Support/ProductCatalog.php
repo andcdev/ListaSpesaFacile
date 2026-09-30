@@ -183,12 +183,33 @@ class ProductCatalog
      */
     public static function detect(string $name): array
     {
+        $found = self::find($name);
+
+        return $found
+            ? self::result($found[1])
+            : ['category' => self::DEFAULT_CATEGORY, 'icon' => self::CATEGORIES[self::DEFAULT_CATEGORY][1]];
+    }
+
+    /**
+     * Prodotto riconosciuto dal nome ("Latte intero 1 l" → "latte", "Pomodorini" → "pomodor"), null se sconosciuto:
+     * è la chiave con cui si cercano i prezzi delle catene.
+     */
+    public static function productKey(string $name): ?string
+    {
+        return self::find($name)[0] ?? null;
+    }
+
+    /**
+     * @return array{0: string, 1: array{0: string, 1: string}}|null [radice o frase riconosciuta, [reparto, icona]]
+     */
+    private static function find(string $name): ?array
+    {
         $normalized = ' '.trim((string) preg_replace('/[^a-z0-9]+/', ' ', Str::lower(Str::ascii($name)))).' ';
 
         // Espressioni di più parole (e le radici che contengono spazi).
         foreach ([...self::PHRASES, ...array_filter(self::PRODUCTS, fn ($stem) => str_contains($stem, ' '), ARRAY_FILTER_USE_KEY)] as $phrase => $match) {
             if (str_contains($normalized, ' '.$phrase)) {
-                return self::result($match);
+                return [$phrase, $match];
             }
         }
 
@@ -200,20 +221,20 @@ class ProductCatalog
                 $length = strlen($stem);
                 $matches = $length < 4 ? $word === $stem : str_starts_with($word, $stem);
                 if ($matches && $length > $bestLength) {
-                    [$best, $bestLength] = [$match, $length];
+                    [$best, $bestLength] = [[$stem, $match], $length];
                 }
             }
             if ($best) {
-                return self::result($best);
+                return $best;
             }
         }
 
         // Prodotti comuni scritti in un'altra lingua ("Milk", "Lait", "Milch", "Leche" → Latte).
         if ($italian = self::italianName($normalized)) {
-            return self::detect($italian);
+            return self::find($italian);
         }
 
-        return ['category' => self::DEFAULT_CATEGORY, 'icon' => self::CATEGORIES[self::DEFAULT_CATEGORY][1]];
+        return null;
     }
 
     /** @var array<string, string>|null nome tradotto (normalizzato) => nome italiano */

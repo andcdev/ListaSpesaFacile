@@ -3,6 +3,7 @@
 namespace App\Http\Resources;
 
 use App\Models\ListItem;
+use App\Support\PriceEstimator;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -30,6 +31,8 @@ class ListItemResource extends JsonResource
             'quantity' => $this->quantity,
             'amount' => $this->amount,
             'unit' => $this->unit,
+            // Prezzo indicativo nella catena scelta per la lista: null se la catena non è nota o non ha il prodotto.
+            'price' => ($chain = $this->shoppingList?->supermarketChain()) ? PriceEstimator::itemPrice($chain, $this->resource) : null,
             'checked' => $this->checked,
             'status' => $this->status,
             'position' => $this->position,

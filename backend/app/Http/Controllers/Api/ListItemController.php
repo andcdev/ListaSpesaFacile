@@ -32,6 +32,7 @@ class ListItemController extends Controller
         $item->position = (int) $list->items()->max('position') + 1;
         $item->created_by = $request->user()->id;
         $list->items()->save($item);
+        $item->setRelation('shoppingList', $list);
 
         self::broadcastSaved($list, $item);
         ListActivity::notify($list, $request->user(), 'added', ['item' => self::label($item)]);
@@ -55,6 +56,7 @@ class ListItemController extends Controller
         ]);
 
         $item->fill($data);
+        $item->setRelation('shoppingList', $list);
         // Le app più vecchie mandano solo "checked".
         if ($item->isDirty('checked') && ! $item->isDirty('status')) {
             $item->status = $item->checked ? 'taken' : 'todo';
