@@ -16,7 +16,7 @@ use RuntimeException;
 use Throwable;
 
 /**
- * Login con Google / Facebook / Amazon per l'app mobile.
+ * Login con Google / Amazon per l'app mobile.
  *
  * 1. L'app apre nel browser di sistema /auth/{provider}/redirect?code_challenge=… (PKCE, S256).
  * 2. Il provider riporta l'utente su /auth/{provider}/callback: troviamo o creiamo l'utente.
@@ -111,8 +111,10 @@ class SocialAuthController extends Controller
                 'email' => $email,
                 'locale' => app()->getLocale(),
             ]), function (User $user) {
-                // Email già verificata dal provider.
+                // Email già verificata dal provider. L'informativa privacy è accettata continuando con il provider
+                // (la schermata di accesso lo dice sotto i pulsanti).
                 $user->email_verified_at = now();
+                $user->privacy_accepted_at = now();
                 $user->save();
             });
 

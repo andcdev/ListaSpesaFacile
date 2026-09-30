@@ -18,6 +18,7 @@ import '../widgets/ui.dart';
 import 'global_share_screen.dart';
 import 'list_detail_screen.dart';
 import 'list_form_screen.dart';
+import 'my_prices_screen.dart';
 import 'notifications_screen.dart';
 
 class ListsScreen extends StatefulWidget {
@@ -221,6 +222,16 @@ class _ListsScreenState extends State<ListsScreen> {
             icon: UserAvatar(initials: initialsOf(me?.name ?? ''), radius: 17, image: avatar),
             onSelected: (value) async {
               if (value == 'avatar') await _changeAvatar();
+              if (value == 'myPrices' && context.mounted) {
+                await Navigator.push(context, MaterialPageRoute(builder: (_) => const MyPricesScreen()));
+              }
+              if (value == 'newsletter') {
+                try {
+                  await auth.setNewsletter(!(me?.newsletter ?? false));
+                } catch (e) {
+                  if (context.mounted) showError(context, e);
+                }
+              }
               if (value == 'appearance') await _chooseAppearance();
               if (value == 'language' && context.mounted) await chooseLanguage(context);
               if (value == 'logout' &&
@@ -244,6 +255,8 @@ class _ListsScreenState extends State<ListsScreen> {
                 value: 'avatar',
                 child: Text(me?.avatarVersion == null ? l.addProfilePhoto : l.changeProfilePhoto),
               ),
+              PopupMenuItem(value: 'myPrices', child: Text(l.myPrices)),
+              CheckedPopupMenuItem(value: 'newsletter', checked: me?.newsletter ?? false, child: Text(l.newsletter)),
               PopupMenuItem(
                 value: 'appearance',
                 child: Text(l.backgroundValue(_themeLabel(l, context.read<AppearanceController>().mode))),

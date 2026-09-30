@@ -8,6 +8,7 @@ import 'package:provider/provider.dart';
 import '../l10n/l10n.dart';
 import '../models/branded_product.dart';
 import '../models/list_item.dart';
+import '../models/user_price.dart';
 import '../models/product_suggestion.dart';
 import '../services/api_client.dart';
 import '../services/list_export.dart';
@@ -19,9 +20,10 @@ import '../state/chat_controller.dart';
 import '../state/list_detail_controller.dart';
 import '../state/lists_controller.dart';
 import '../widgets/chat_panel.dart';
-import '../widgets/item_price_sheet.dart';
+import '../widgets/photo_gallery.dart';
 import '../widgets/photo_picker.dart';
-import '../widgets/price_comparison.dart';
+import '../widgets/prices.dart';
+import '../widgets/product_info_sheet.dart';
 import '../theme/app_theme.dart';
 import '../widgets/ui.dart';
 import '../widgets/voice_input.dart';
@@ -175,16 +177,29 @@ class _ListDetailScreenState extends State<ListDetailScreen> {
       confirm(context, title: context.l10n.deleteItemQuestion(item.name), message: context.l10n.deleteItemInfo);
 
   /// Tenendo premuto un articolo: tutte le azioni, con "Elimina" ben separato da "Preso".
-  /// Scheda del prezzo: da dove viene, segnalazioni precedenti e rettifica.
-  Future<void> _openPrice(ListDetailController detail, ListItem item) => showItemPriceSheet(
-    context,
-    api: context.read<ApiClient>(),
-    list: detail.list!,
-    item: item,
-    onPropose: (c) =>
-        detail.reportPrice(item, price: c.price, per: c.per, province: c.province, city: c.city, locality: c.locality),
-    onVote: (report, approve) => detail.votePrice(item, report, approve: approve),
-  );
+  /// Scheda "Info" del prodotto (da Open Food Facts).
+  void _openInfo(ListDetailController detail, ListItem item) =>
+      showProductInfo(context, item: item, info: detail.productInfo(item));
+
+  /// Il mio prezzo per il prodotto: si salva nella sezione "I miei prezzi" e lo vede solo l'utente.
+  Future<void> _addMyPrice(ListDetailController detail, ListItem item) async {
+    final price = await showMyPriceDialog(
+      context,
+      initial: UserPrice(
+        id: 0,
+        productName: item.name,
+        price: 0,
+        barcode: item.barcode,
+        brand: item.brand,
+        supermarket: detail.list?.supermarket,
+      ),
+    );
+    if (price == null || !mounted) return;
+    await _run(() async {
+      await context.read<ApiClient>().addMyPrice(price);
+      if (mounted) showMessage(context, context.l10n.myPriceSaved);
+    });
+  }
 
   Future<void> _itemActions(ListDetailController detail, ListItem item) async {
     final error = Theme.of(context).colorScheme.error;
@@ -220,12 +235,16 @@ class _ListDetailScreenState extends State<ListDetailScreen> {
               title: Text(item.imageVersion == null ? l.addPhoto : l.changePhoto),
               onTap: () => Navigator.pop(context, 'photo'),
             ),
-            if (detail.list?.supermarketChain != null)
-              ListTile(
-                leading: const Icon(Icons.euro),
-                title: Text(l.priceMenu),
-                onTap: () => Navigator.pop(context, 'price'),
-              ),
+            ListTile(
+              leading: const Icon(Icons.info_outline),
+              title: Text(l.info),
+              onTap: () => Navigator.pop(context, 'info'),
+            ),
+            ListTile(
+              leading: const Icon(Icons.euro),
+              title: Text(l.myPrice),
+              onTap: () => Navigator.pop(context, 'myPrice'),
+            ),
             const Divider(),
             ListTile(
               leading: Icon(Icons.delete_outline, color: error),
@@ -247,8 +266,10 @@ class _ListDetailScreenState extends State<ListDetailScreen> {
         await _editItem(detail, item);
       case 'photo':
         await _itemPhotoMenu(detail, item);
-      case 'price':
-        await _openPrice(detail, item);
+      case 'info':
+        _openInfo(detail, item);
+      case 'myPrice':
+        await _addMyPrice(detail, item);
       case 'delete':
         await _deleteItem(detail, item);
     }
@@ -511,7 +532,6 @@ class _ListDetailScreenState extends State<ListDetailScreen> {
             ),
             for (final item in group.items) _itemTile(detail, item),
           ],
-          if (items.isNotEmpty) _PriceSummary(detail: detail),
           if (items.isNotEmpty)
             Padding(
               padding: const EdgeInsets.all(16),
@@ -595,46 +615,6 @@ class _ListDetailScreenState extends State<ListDetailScreen> {
                   ),
                 ),
               ),
-              // Prezzo nella catena scelta (quantità e peso compresi): il più confermato della zona, oppure la mia
-              // proposta in attesa (con la clessidra). Toccandolo si conferma o se ne propone un altro; il pallino
-              // dice che ci sono prezzi di altri da confermare. Senza prezzo, un "€" per aggiungerlo.
-              if (detail.list?.supermarketChain != null)
-                Badge(
-                  isLabelVisible: item.pendingPrices > 0,
-                  smallSize: 8,
-                  child: item.shownPrice != null
-                      ? InkWell(
-                          borderRadius: BorderRadius.circular(8),
-                          onTap: () => _openPrice(detail, item),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                if (item.myPrice != null)
-                                  Padding(
-                                    padding: const EdgeInsets.only(right: 2),
-                                    child: Icon(Icons.hourglass_top, size: 14, color: scheme.onSurfaceVariant),
-                                  ),
-                                Text(
-                                  formatPrice(context, item.shownPrice!, item.currency),
-                                  style: theme.textTheme.bodyMedium?.copyWith(
-                                    fontWeight: FontWeight.w600,
-                                    color: item.status == ItemStatus.todo ? null : scheme.onSurfaceVariant,
-                                    decoration: item.missing ? TextDecoration.lineThrough : null,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        )
-                      : IconButton(
-                          visualDensity: VisualDensity.compact,
-                          tooltip: l.addPrice,
-                          icon: Icon(Icons.euro, size: 18, color: scheme.onSurfaceVariant),
-                          onPressed: () => _openPrice(detail, item),
-                        ),
-                ),
               Opacity(
                 opacity: item.status == ItemStatus.todo ? 1 : 0.5,
                 child: _ItemImage(item: item, listId: detail.listId),
@@ -808,7 +788,21 @@ class _ItemImage extends StatelessWidget {
     final image = itemImageProvider(context.read<ApiClient>(), item, listId);
     if (image == null) return emoji;
     return GestureDetector(
-      onTap: () => showPhoto(context, image, caption: '${item.icon}  ${item.name}'),
+      // Galleria: la foto dell'articolo e poi quelle del prodotto su Open Food Facts (ingredienti, valori…).
+      onTap: () => showPhotoGallery(
+        context,
+        [image],
+        caption: '${item.icon}  ${item.name}',
+        more: context
+            .read<ListDetailController>()
+            .productInfo(item)
+            .then(
+              (info) => [
+                for (final url in info?.images ?? const <String>[])
+                  if (url != item.imageUrl) NetworkImage(url),
+              ],
+            ),
+      ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(14),
         child: Image(image: image, width: 44, height: 44, fit: BoxFit.cover, errorBuilder: (_, _, _) => emoji),
@@ -823,71 +817,6 @@ ImageProvider? itemImageProvider(ApiClient api, ListItem item, int listId) {
     return NetworkImage(api.itemImageUrl(listId, item.id, item.imageVersion!), headers: api.authHeaders);
   }
   return item.imageUrl == null ? null : NetworkImage(item.imageUrl!);
-}
-
-/// In fondo alla lista: totale stimato nella catena scelta (se è una catena nota e ci sono prezzi), con l'asterisco
-/// dei prezzi indicativi, e il pulsante per confrontare il costo della lista nelle altre catene.
-class _PriceSummary extends StatelessWidget {
-  const _PriceSummary({required this.detail});
-
-  final ListDetailController detail;
-
-  @override
-  Widget build(BuildContext context) {
-    final l = context.l10n;
-    final theme = Theme.of(context);
-    final muted = theme.colorScheme.onSurfaceVariant;
-    final chain = detail.list!.supermarketChain;
-    final total = detail.estimatedTotal;
-    final activeCount = detail.items.where((i) => !i.missing).length;
-    final compare = TextButton.icon(
-      onPressed: () => showPriceComparison(context, detail.listId),
-      icon: const Icon(Icons.compare_arrows),
-      label: Text(l.compareChains),
-    );
-    if (chain == null) {
-      return Padding(
-        padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-        child: Center(child: compare),
-      );
-    }
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-      child: Card(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(16, 12, 8, 4),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              if (total == null)
-                Text(l.noPricesForChain(chain.name), style: theme.textTheme.bodyMedium?.copyWith(color: muted))
-              else ...[
-                Row(
-                  children: [
-                    const Icon(Icons.storefront_outlined),
-                    const SizedBox(width: 8),
-                    Expanded(child: Text(l.estimatedTotal(chain.name), style: theme.textTheme.titleMedium)),
-                    Padding(
-                      padding: const EdgeInsets.only(right: 8),
-                      child: Text(
-                        formatPrice(context, total, detail.currency),
-                        style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
-                      ),
-                    ),
-                  ],
-                ),
-                if (detail.pricedCount < activeCount)
-                  Text(l.pricedOf(detail.pricedCount, activeCount), style: theme.textTheme.bodySmall),
-                const SizedBox(height: 6),
-                Text(l.pricesIndicativeNote, style: theme.textTheme.bodySmall?.copyWith(color: muted)),
-              ],
-              Align(alignment: Alignment.centerRight, child: compare),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
 }
 
 /// Riga sotto il nome della lista: giorno e ora, chi la sta guardando (canale presence) e, finché scrive

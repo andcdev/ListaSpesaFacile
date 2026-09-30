@@ -8,7 +8,7 @@ import '../widgets/password_field.dart';
 import '../widgets/ui.dart';
 
 /// Recupero della password in due passi: email → codice di 6 cifre ricevuto via email + nuova password.
-/// Al termine si è già dentro l'app. Serve anche a chi si era registrato con Google o Facebook
+/// Al termine si è già dentro l'app. Serve anche a chi si era registrato con Google o Amazon
 /// e vuole accedere con email e password.
 class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({super.key, this.email = ''});

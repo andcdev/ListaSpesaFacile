@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Support\PriceBook;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -13,7 +12,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
-#[Fillable(['name', 'notes', 'supermarket', 'country', 'province', 'city', 'locality', 'scheduled_at', 'reminder_minutes', 'reminder_target', 'members_can_rename'])]
+#[Fillable(['name', 'notes', 'supermarket', 'scheduled_at', 'reminder_minutes', 'reminder_target', 'members_can_rename'])]
 class ShoppingList extends Model
 {
     use HasFactory;
@@ -27,13 +26,7 @@ class ShoppingList extends Model
     /** Destinatari del promemoria: solo il proprietario, solo gli utenti con cui è condivisa, tutti. */
     public const REMINDER_TARGETS = ['owner', 'members', 'all'];
 
-    protected $attributes = ['members_can_rename' => false, 'country' => 'IT'];
-
-    /** @var array{0: string|null, 1: Supermarket|null, 2: string|null}|null supermercato scritto, catena riconosciuta, paese */
-    private ?array $chain = null;
-
-    /** Prezzi degli articoli già letti in questa richiesta. */
-    private ?PriceBook $prices = null;
+    protected $attributes = ['members_can_rename' => false];
 
     protected function casts(): array
     {
@@ -92,83 +85,6 @@ class ShoppingList extends Model
     public function imageVersion(): ?string
     {
         return $this->image_path ? substr(md5($this->image_path), 0, 10) : null;
-    }
-
-    /**
-     * Catena di supermercati riconosciuta dal supermercato scelto, null se non è una catena nota:
-     * in quel caso la lista non ha prezzi.
-     */
-    public function supermarketChain(): ?Supermarket
-    {
-        if ($this->chain === null || $this->chain[0] !== $this->supermarket || $this->chain[2] !== $this->country) {
-            // Solo le catene del paese della lista: "Coop" in Italia è la Coop italiana.
-            $this->chain = [
-                $this->supermarket,
-                $this->supermarket === null ? null : Supermarket::match($this->supermarket, Supermarket::forCountry($this->country ?? 'IT')),
-                $this->country,
-            ];
-        }
-
-        return $this->chain[1];
-    }
-
-    /**
-     * Zona del supermercato: stato (ISO), provincia, città o paese, località. I prezzi segnalati lì hanno la precedenza.
-     *
-     * @return array{0: string, 1: string|null, 2: string|null, 3: string|null}
-     */
-    public function zone(): array
-    {
-        return [$this->country ?? 'IT', $this->province, $this->city, $this->locality];
-    }
-
-    /**
-     * Prezzo indicativo dell'articolo nella catena e nella zona della lista (vedi PriceBook), null se non si conosce.
-     *
-     * @return array<string, mixed>|null
-     */
-    public function quote(ListItem $item): ?array
-    {
-        return ($chain = $this->supermarketChain()) ? $this->priceBook($item, $chain)->quote($chain, $item) : null;
-    }
-
-    /**
-     * Rettifica dell'utente per l'articolo ancora in attesa di conferma (la vede solo lui), null se non ce n'è.
-     *
-     * @return array<string, mixed>|null
-     */
-    public function myPendingPrice(ListItem $item, int $userId): ?array
-    {
-        return ($chain = $this->supermarketChain()) ? $this->priceBook($item, $chain)->myPending($chain, $item, $userId) : null;
-    }
-
-    /**
-     * Rettifiche di altri utenti per l'articolo in attesa di una conferma.
-     */
-    public function pendingPrices(ListItem $item, ?int $exceptUserId): int
-    {
-        return ($chain = $this->supermarketChain()) ? $this->priceBook($item, $chain)->pendingCount($chain, $item, $exceptUserId) : 0;
-    }
-
-    /**
-     * I prezzi di tutti gli articoli caricati si leggono insieme, una volta sola.
-     */
-    private function priceBook(ListItem $item, Supermarket $chain): PriceBook
-    {
-        if (! $this->prices?->covers($item, $this->zone(), $chain->id)) {
-            $items = $this->relationLoaded('items') && $this->items->contains($item) ? $this->items : collect([$item]);
-            $this->prices = PriceBook::forList($this, $items, [$chain->id]);
-        }
-
-        return $this->prices;
-    }
-
-    /**
-     * Dimentica i prezzi letti (dopo una nuova segnalazione).
-     */
-    public function forgetPrices(): void
-    {
-        $this->prices = null;
     }
 
     /**

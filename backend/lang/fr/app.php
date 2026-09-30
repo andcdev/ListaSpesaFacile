@@ -4,8 +4,6 @@
 
 return [
     'errors' => [
-        'own_price_vote' => 'Vous ne pouvez pas confirmer un prix que vous avez proposé.',
-        'unknown_supermarket' => "Choisissez d'abord un supermarché d'une enseigne connue.",
         'social_only' => 'Ce compte se connecte avec :providers.',
         'invalid_credentials' => 'Identifiants incorrects.',
         'social_code_invalid' => 'Connexion invalide ou expirée. Réessayez.',

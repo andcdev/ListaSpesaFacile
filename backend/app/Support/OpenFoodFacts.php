@@ -10,7 +10,7 @@ use Throwable;
 
 /**
  * Prodotti di marca da Open Food Facts (search.openfoodfacts.org): suggerimenti mentre si scrive ("latte parm" →
- * Latte intero Parmalat 1 L, con foto) e foto di un articolo scritto a mano.
+ * Latte intero Parmalat 1 L, con foto) e scheda del prodotto (menu Info).
  *
  * Le risposte restano in cache un giorno: la stessa ricerca fatta da più utenti interroga il servizio una volta.
  * Se il servizio non risponde si torna una lista vuota: la lista della spesa funziona comunque.
@@ -19,7 +19,7 @@ class OpenFoodFacts
 {
     public const SEARCH_URL = 'https://search.openfoodfacts.org/search';
 
-    /** Paesi che si possono scegliere per una lista (ISO) → tag di Open Food Facts. Sono quelli con prezzi su Open Prices. */
+    /** Paesi (ISO) → tag di Open Food Facts, per cercare i prodotti venduti nel paese del telefono. */
     public const COUNTRIES = [
         'IT' => 'en:italy', 'SM' => 'en:san-marino', 'VA' => 'en:vatican-city', 'CH' => 'en:switzerland', 'FR' => 'en:france',
         'MC' => 'en:monaco', 'DE' => 'en:germany', 'AT' => 'en:austria', 'ES' => 'en:spain', 'PT' => 'en:portugal',
@@ -35,21 +35,18 @@ class OpenFoodFacts
         'NZ' => 'en:new-zealand', 'BD' => 'en:bangladesh', 'KZ' => 'en:kazakhstan',
     ];
 
-    /** Valuta dei paesi fuori dall'euro (gli altri paesi di COUNTRIES usano l'euro). */
-    public const CURRENCIES = [
-        'CH' => 'CHF', 'GB' => 'GBP', 'DK' => 'DKK', 'SE' => 'SEK', 'NO' => 'NOK', 'IS' => 'ISK', 'PL' => 'PLN',
-        'CZ' => 'CZK', 'HU' => 'HUF', 'RO' => 'RON', 'UA' => 'UAH', 'RU' => 'RUB', 'AL' => 'ALL', 'BA' => 'BAM',
-        'RS' => 'RSD', 'TR' => 'TRY', 'IL' => 'ILS', 'MA' => 'MAD', 'TN' => 'TND', 'US' => 'USD', 'CA' => 'CAD',
-        'MX' => 'MXN', 'BR' => 'BRL', 'AR' => 'ARS', 'JP' => 'JPY', 'IN' => 'INR', 'SG' => 'SGD', 'TW' => 'TWD',
-        'MY' => 'MYR', 'TH' => 'THB', 'AU' => 'AUD', 'NZ' => 'NZD', 'BD' => 'BDT', 'KZ' => 'KZT',
-    ];
-
     /**
-     * Valuta dei prezzi segnalati in un paese: "IT" → "EUR", "CH" → "CHF".
+     * Paese in cui cercare i prodotti per chi usa l'app in una lingua: italiano → Italia; inglese → ovunque.
      */
-    public static function currency(string $country): string
+    public static function countryForLocale(?string $locale): ?string
     {
-        return self::CURRENCIES[$country] ?? 'EUR';
+        return match ($locale) {
+            'fr' => 'FR',
+            'de' => 'DE',
+            'es' => 'ES',
+            'en' => null,
+            default => 'IT',
+        };
     }
 
     /**
@@ -57,7 +54,7 @@ class OpenFoodFacts
      *
      * @return array<int, array{barcode: string, name: string, brand: string|null, quantity: string|null, amount: float|null, unit: string|null, image_url: string|null}>
      */
-    public static function search(string $text, string $country = 'IT', int $limit = 8): array
+    public static function search(string $text, ?string $country = 'IT', int $limit = 8): array
     {
         $words = self::words($text);
         if ($words === [] || mb_strlen(implode('', $words)) < 3) {
@@ -65,7 +62,7 @@ class OpenFoodFacts
         }
         $last = array_pop($words);
         $terms = [...$words, mb_strlen($last) >= 3 ? "($last OR $last*)" : $last];
-        if ($tag = self::COUNTRIES[$country] ?? null) {
+        if ($country !== null && ($tag = self::COUNTRIES[$country] ?? null)) {
             $terms[] = "countries_tags:\"$tag\"";
         }
         $query = implode(' AND ', $terms);
@@ -74,7 +71,7 @@ class OpenFoodFacts
 
         $products = [];
         foreach ($hits as $hit) {
-            $product = self::product($hit);
+            $product = self::fromHit($hit);
             $key = Str::lower($product['name'].'|'.$product['brand'].'|'.$product['quantity']);
             if ($product['name'] !== '' && ! isset($products[$key])) {
                 $products[$key] = $product;
@@ -84,18 +81,111 @@ class OpenFoodFacts
         return array_slice(array_values($products), 0, $limit);
     }
 
+    public const PRODUCT_URL = 'https://world.openfoodfacts.org/api/v2/product/';
+
+    /** Valori nutrizionali per 100 g o 100 ml mostrati nell'app. */
+    public const NUTRIMENTS = [
+        'energy-kcal', 'fat', 'saturated-fat', 'carbohydrates', 'sugars', 'fiber', 'proteins', 'salt',
+    ];
+
     /**
-     * Foto per un articolo scritto a mano ("Latte intero" → la foto del primo latte intero trovato), null se non c'è.
+     * Scheda del prodotto: foto, valori nutrizionali, ingredienti, allergeni, tracce e se è adatto a celiaci,
+     * vegetariani e vegani (true = sì, false = no, null = non si sa). Null se il prodotto non c'è.
+     *
+     * @return array<string, mixed>|null
      */
-    public static function imageFor(string $name, string $country = 'IT'): ?string
+    public static function product(string $barcode): ?array
     {
-        foreach (self::search($name, $country, 20) as $product) {
-            if ($product['image_url']) {
-                return $product['image_url'];
+        if (! config('services.openfoodfacts.enabled') || ! preg_match('/^\d{4,20}$/', $barcode)) {
+            return null;
+        }
+        $data = Cache::remember('off:product:'.$barcode, now()->addDay(), function () use ($barcode) {
+            try {
+                $response = Http::withUserAgent(self::userAgent())
+                    ->timeout(8)
+                    ->get(self::PRODUCT_URL.$barcode.'.json', ['fields' => implode(',', [
+                        'code', 'product_name', 'product_name_it', 'brands', 'quantity', 'image_front_url',
+                        'image_ingredients_url', 'image_nutrition_url', 'image_packaging_url', 'nutriments',
+                        'ingredients_text_it', 'ingredients_text', 'allergens_tags', 'traces_tags', 'labels_tags',
+                        'ingredients_analysis_tags', 'nutriscore_grade', 'nova_group', 'categories_tags',
+                    ])]);
+
+                return $response->successful() && $response->json('status') === 1 ? (array) $response->json('product') : [];
+            } catch (Throwable $e) {
+                Log::warning('Open Food Facts non raggiungibile: '.$e->getMessage());
+
+                return null;
+            }
+        });
+
+        return $data ? self::describe($data) : null;
+    }
+
+    /**
+     * Scheda di un articolo: il suo prodotto di marca, oppure il prodotto più simile al nome (matched_by = "name").
+     *
+     * @return array<string, mixed>|null
+     */
+    public static function productFor(?string $barcode, string $name, ?string $country): ?array
+    {
+        if ($barcode && ($product = self::product($barcode))) {
+            return [...$product, 'matched_by' => 'barcode'];
+        }
+        foreach (self::search($name, $country, 5) as $hit) {
+            if ($hit['barcode'] !== '' && ($product = self::product($hit['barcode']))) {
+                return [...$product, 'matched_by' => 'name'];
             }
         }
 
         return null;
+    }
+
+    /**
+     * @param  array<string, mixed>  $p
+     * @return array<string, mixed>
+     */
+    private static function describe(array $p): array
+    {
+        $tags = fn (string $key) => array_values(array_map(
+            fn ($t) => Str::after((string) $t, ':'),
+            array_filter((array) ($p[$key] ?? []), fn ($t) => is_string($t)),
+        ));
+        $allergens = $tags('allergens_tags');
+        $labels = $tags('labels_tags');
+        $analysis = $tags('ingredients_analysis_tags');
+        $status = fn (string $yes, string $no) => in_array($yes, $analysis, true) || in_array($yes, $labels, true)
+            ? true
+            : (in_array($no, $analysis, true) ? false : null);
+        $nutriments = (array) ($p['nutriments'] ?? []);
+
+        return [
+            'barcode' => (string) ($p['code'] ?? ''),
+            'name' => trim((string) ($p['product_name_it'] ?? '') ?: (string) ($p['product_name'] ?? '')),
+            'brand' => trim(Str::before((string) ($p['brands'] ?? ''), ',')) ?: null,
+            'quantity' => $p['quantity'] ?? null,
+            // Prima la confezione, poi ingredienti, tabella nutrizionale e imballaggio.
+            'images' => array_values(array_filter([
+                $p['image_front_url'] ?? null, $p['image_ingredients_url'] ?? null,
+                $p['image_nutrition_url'] ?? null, $p['image_packaging_url'] ?? null,
+            ])),
+            'nutriments' => collect(self::NUTRIMENTS)
+                ->mapWithKeys(fn (string $n) => [$n => is_numeric($nutriments[$n.'_100g'] ?? null) ? round((float) $nutriments[$n.'_100g'], 2) : null])
+                ->all(),
+            'ingredients' => trim((string) ($p['ingredients_text_it'] ?? '') ?: (string) ($p['ingredients_text'] ?? '')) ?: null,
+            'allergens' => $allergens,
+            'traces' => $tags('traces_tags'),
+            // Celiaci: senza glutine se lo dice l'etichetta, no se il glutine è tra gli allergeni.
+            'gluten_free' => in_array('no-gluten', $labels, true) || in_array('gluten-free', $labels, true)
+                ? true
+                : (in_array('gluten', $allergens, true) ? false : null),
+            'lactose_free' => in_array('no-lactose', $labels, true) || in_array('lactose-free', $labels, true) ? true : null,
+            'vegetarian' => $status('vegetarian', 'non-vegetarian'),
+            'vegan' => $status('vegan', 'non-vegan'),
+            'palm_oil_free' => in_array('palm-oil-free', $analysis, true) ? true : (in_array('palm-oil', $analysis, true) ? false : null),
+            'nutriscore' => in_array($p['nutriscore_grade'] ?? null, ['a', 'b', 'c', 'd', 'e'], true) ? $p['nutriscore_grade'] : null,
+            'nova' => is_numeric($p['nova_group'] ?? null) ? (int) $p['nova_group'] : null,
+            'url' => 'https://world.openfoodfacts.org/product/'.($p['code'] ?? ''),
+        ];
     }
 
     /**
@@ -128,7 +218,7 @@ class OpenFoodFacts
      * @param  array<string, mixed>  $hit
      * @return array{barcode: string, name: string, brand: string|null, quantity: string|null, amount: float|null, unit: string|null, image_url: string|null}
      */
-    private static function product(array $hit): array
+    private static function fromHit(array $hit): array
     {
         $brands = array_values(array_filter(array_map('trim', (array) ($hit['brands'] ?? []))));
         $brand = $brands[0] ?? null;

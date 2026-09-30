@@ -16,7 +16,7 @@ use Throwable;
 /**
  * Eliminazione dell'account dal sito (listaspesafacile.com/elimina-account), come chiede Google Play:
  * email → codice di 6 cifre via email → codice → account eliminato. Funziona anche per chi è entrato con
- * Google, Facebook o Amazon e non ha una password, e prova che chi chiede ha accesso a quella casella.
+ * Google o Amazon e non ha una password, e prova che chi chiede ha accesso a quella casella.
  */
 class AccountDeletionController extends Controller
 {

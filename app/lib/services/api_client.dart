@@ -10,9 +10,11 @@ import '../models/app_user.dart';
 import '../models/branded_product.dart';
 import '../models/chat_message.dart';
 import '../models/list_item.dart';
+import '../models/product_info.dart';
 import '../models/product_suggestion.dart';
 import '../models/shopping_list.dart';
 import '../models/supermarket.dart';
+import '../models/user_price.dart';
 
 class ApiException implements Exception {
   ApiException(this.message, {this.statusCode, this.errors = const {}});
@@ -63,7 +65,7 @@ class ServerConfig {
 
   final RealtimeConfig realtime;
 
-  /// Provider di login social attivi sul server: google, facebook, amazon.
+  /// Provider di login social attivi sul server: google, amazon.
   final List<String> socialProviders;
 
   /// Il server invia notifiche push (Firebase configurato).
@@ -138,13 +140,22 @@ class ApiClient {
     return (json['token'] as String, AppUser.fromJson(json['user'] as Map<String, dynamic>));
   }
 
-  Future<(String, AppUser)> register(String name, String email, String password) async {
+  /// [privacy]: informativa privacy accettata (obbligatoria); [newsletter]: consenso facoltativo.
+  Future<(String, AppUser)> register(
+    String name,
+    String email,
+    String password, {
+    required bool privacy,
+    bool newsletter = false,
+  }) async {
     final json = await _send('POST', '/register', {
       'name': name,
       'email': email,
       'password': password,
       'password_confirmation': password,
       'device_name': _deviceName,
+      'privacy': privacy,
+      'newsletter': newsletter,
     });
     return (json['token'] as String, AppUser.fromJson(json['user'] as Map<String, dynamic>));
   }
@@ -180,6 +191,10 @@ class ApiClient {
   Future<AppUser> deleteAvatar() async => _data(await _send('DELETE', '/me/avatar'), AppUser.fromJson);
 
   Future<AppUser> me() async => AppUser.fromJson((await _send('GET', '/me'))['data'] as Map<String, dynamic>);
+
+  /// Consenso alla newsletter, dal menu del profilo.
+  Future<AppUser> setNewsletter(bool enabled) async =>
+      _data(await _send('PATCH', '/me', {'newsletter': enabled}), AppUser.fromJson);
 
   Future<void> logout() => _send('POST', '/logout');
 
@@ -243,10 +258,6 @@ class ApiClient {
     required DateTime scheduledAt,
     String? notes,
     String? supermarket,
-    String country = 'IT',
-    String? province,
-    String? city,
-    String? locality,
     int? reminderMinutes,
     ReminderTarget reminderTarget = ReminderTarget.all,
     bool membersCanRename = false,
@@ -257,10 +268,6 @@ class ApiClient {
       'scheduled_at': scheduledAt.toUtc().toIso8601String(),
       'notes': notes,
       'supermarket': supermarket,
-      'country': country,
-      'province': province,
-      'city': city,
-      'locality': locality,
       'reminder_minutes': reminderMinutes,
       'reminder_target': reminderTarget.value,
       'members_can_rename': membersCanRename,
@@ -276,10 +283,6 @@ class ApiClient {
     required DateTime scheduledAt,
     String? notes,
     String? supermarket,
-    String country = 'IT',
-    String? province,
-    String? city,
-    String? locality,
     int? reminderMinutes,
     ReminderTarget reminderTarget = ReminderTarget.all,
     bool? membersCanRename,
@@ -289,10 +292,6 @@ class ApiClient {
       'scheduled_at': scheduledAt.toUtc().toIso8601String(),
       'notes': notes,
       'supermarket': supermarket,
-      'country': country,
-      'province': province,
-      'city': city,
-      'locality': locality,
       'reminder_minutes': reminderMinutes,
       'reminder_target': reminderTarget.value,
       'members_can_rename': ?membersCanRename,
@@ -351,46 +350,30 @@ class ApiClient {
     ListItem.fromJson,
   );
 
-  /// Prodotti di marca che corrispondono a quanto scritto (Open Food Facts), nel paese della lista.
-  Future<List<BrandedProduct>> searchProducts(String text, {String country = 'IT'}) async => _list(
-    await _send('GET', '/products/search?q=${Uri.encodeQueryComponent(text)}&country=$country'),
-    BrandedProduct.fromJson,
-  );
+  /// Prodotti di marca che corrispondono a quanto scritto (Open Food Facts, nel paese della lingua dell'app).
+  Future<List<BrandedProduct>> searchProducts(String text) async =>
+      _list(await _send('GET', '/products/search?q=${Uri.encodeQueryComponent(text)}'), BrandedProduct.fromJson);
 
-  /// Prezzo mostrato per l'articolo e segnalazioni precedenti nella catena della lista.
-  Future<ItemPrices> itemPrices(int listId, int itemId) async {
-    final json = await _send('GET', '/lists/$listId/items/$itemId/prices') as Map<String, dynamic>;
-    return ItemPrices.fromJson(json['data'] as Map<String, dynamic>);
+  /// Scheda del prodotto di un articolo (foto, valori nutrizionali, ingredienti, allergeni…); null se non si trova.
+  Future<ProductInfo?> productInfo(int listId, int itemId) async {
+    final data = (await _send('GET', '/lists/$listId/items/$itemId/info') as Map<String, dynamic>)['data'];
+    return data == null ? null : ProductInfo.fromJson(data as Map<String, dynamic>);
   }
 
-  /// Proposta di un prezzo nella catena e nella zona indicate (di chi la fa si salvano nome, email e ora): la vedono
-  /// gli altri dopo la conferma di altri utenti. Se c'è già lo stesso prezzo nella stessa città vale come conferma.
-  Future<ListItem> reportPrice(
-    int listId,
-    int itemId, {
-    required double price,
-    required String per,
-    String? province,
-    String? city,
-    String? locality,
-  }) async => _data(
-    await _send('POST', '/lists/$listId/items/$itemId/prices', {
-      'price': price,
-      'per': per,
-      'province': province,
-      'city': city,
-      'locality': locality,
-    }),
-    ListItem.fromJson,
+  // ── I miei prezzi (li vede solo l'utente) ───────────────────────
+
+  Future<List<UserPrice>> myPrices({String? query}) async => _list(
+    await _send('GET', '/me/prices${query == null || query.isEmpty ? '' : '?q=${Uri.encodeQueryComponent(query)}'}'),
+    UserPrice.fromJson,
   );
 
-  /// Conferma (approve = true) o smentita di un prezzo: tornano i prezzi aggiornati.
-  Future<ItemPrices> votePrice(int listId, int itemId, int reportId, {required bool approve}) async {
-    final json = await _send('POST', '/lists/$listId/items/$itemId/prices/$reportId/vote', {
-      'approve': approve,
-    }) as Map<String, dynamic>;
-    return ItemPrices.fromJson(json['data'] as Map<String, dynamic>);
-  }
+  Future<UserPrice> addMyPrice(UserPrice price) async =>
+      _data(await _send('POST', '/me/prices', price.toJson()), UserPrice.fromJson);
+
+  Future<UserPrice> updateMyPrice(int id, UserPrice price) async =>
+      _data(await _send('PATCH', '/me/prices/$id', price.toJson()), UserPrice.fromJson);
+
+  Future<void> deleteMyPrice(int id) => _send('DELETE', '/me/prices/$id');
 
   Future<ListItem> updateItem(int listId, int itemId, Map<String, dynamic> changes) async =>
       _data(await _send('PATCH', '/lists/$listId/items/$itemId', changes), ListItem.fromJson);
@@ -421,12 +404,20 @@ class ApiClient {
   Future<List<AppUser>> addShare(int listId, String email, {bool canEdit = true}) async =>
       _list(await _send('POST', '/lists/$listId/shares', {'email': email, 'can_edit': canEdit}), AppUser.fromJson);
 
+  /// Cambia il permesso di chi ha già la lista (solo il proprietario).
+  Future<List<AppUser>> updateShare(int listId, int userId, {required bool canEdit}) async =>
+      _list(await _send('PATCH', '/lists/$listId/shares/$userId', {'can_edit': canEdit}), AppUser.fromJson);
+
   Future<void> removeShare(int listId, int userId) => _send('DELETE', '/lists/$listId/shares/$userId');
 
   Future<GlobalShares> globalShares() async => _globalShares(await _send('GET', '/global-shares'));
 
   Future<GlobalShares> addGlobalShare(String email, {bool canEdit = true}) async =>
       _globalShares(await _send('POST', '/global-shares', {'email': email, 'can_edit': canEdit}));
+
+  /// Cambia il permesso su tutte le mie liste per chi le riceve già.
+  Future<GlobalShares> updateGlobalShare(int userId, {required bool canEdit}) async =>
+      _globalShares(await _send('PATCH', '/global-shares/$userId', {'can_edit': canEdit}));
 
   Future<void> removeGlobalShare(int userId) => _send('DELETE', '/global-shares/$userId');
 
@@ -452,12 +443,7 @@ class ApiClient {
       _send('POST', '/lists/$listId/messages/delivered', {'up_to': upTo});
 
   /// Catene di supermercati note, da suggerire mentre si scrive il supermercato.
-  Future<List<Supermarket>> supermarkets({String country = 'IT'}) async =>
-      _list(await _send('GET', '/supermarkets?country=$country'), Supermarket.fromJson);
-
-  /// Costo della lista in ogni catena che ha dei prezzi.
-  Future<List<PriceComparison>> priceComparison(int listId) async =>
-      _list(await _send('GET', '/lists/$listId/price-comparison'), PriceComparison.fromJson);
+  Future<List<Supermarket>> supermarkets() async => _list(await _send('GET', '/supermarkets'), Supermarket.fromJson);
 
   /// Prodotti da suggerire mentre si scrive (già usati, poi i più comuni).
   Future<List<ProductSuggestion>> productSuggestions() async =>

@@ -6,7 +6,6 @@ use App\Events\ListMessageDeleted;
 use App\Events\ListsChanged;
 use App\Events\ShoppingListDeleted;
 use App\Models\ListMessage;
-use App\Models\PriceReport;
 use App\Models\ShoppingList;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
@@ -40,9 +39,6 @@ class AccountDeleter
         $shared = ShoppingList::whereHas('sharedWith', fn ($q) => $q->whereKey($user->id))->get();
         $audiences = $shared->map(fn (ShoppingList $list) => [$list->audienceIds(), $list->id]);
         $globalOwners = $user->globalShareOwners()->pluck('users.id')->all();
-
-        // I prezzi che ha segnalato restano utili a tutti, ma senza nome né email.
-        PriceReport::where('user_id', $user->id)->update(['reporter_name' => null, 'reporter_email' => null, 'user_id' => null]);
 
         // Nessuna chiave esterna verso users per questi: vanno tolti a mano.
         $user->tokens()->delete();

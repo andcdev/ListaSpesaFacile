@@ -20,6 +20,8 @@ class ProductSearchController extends Controller
             'country' => ['sometimes', Rule::in(array_keys(OpenFoodFacts::COUNTRIES))],
         ]);
 
-        return response()->json(['data' => OpenFoodFacts::search($data['q'], $data['country'] ?? 'IT')]);
+        $country = $data['country'] ?? OpenFoodFacts::countryForLocale($request->user()->locale);
+
+        return response()->json(['data' => OpenFoodFacts::search($data['q'], $country)]);
     }
 }

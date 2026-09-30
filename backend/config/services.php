@@ -43,18 +43,12 @@ return [
         'scheme' => env('REVERB_PUBLIC_SCHEME', env('REVERB_SCHEME', 'http')),
     ],
 
-    // Accesso con Google, Facebook e Amazon (flusso OAuth gestito dal server, vedi SocialAuthController).
+    // Accesso con Google e Amazon (flusso OAuth gestito dal server, vedi SocialAuthController).
     // Un provider è attivo solo se ha client_id e client_secret.
     'google' => [
         'client_id' => env('GOOGLE_CLIENT_ID'),
         'client_secret' => env('GOOGLE_CLIENT_SECRET'),
         'redirect' => env('APP_URL').'/auth/google/callback',
-    ],
-
-    'facebook' => [
-        'client_id' => env('FACEBOOK_CLIENT_ID'),
-        'client_secret' => env('FACEBOOK_CLIENT_SECRET'),
-        'redirect' => env('APP_URL').'/auth/facebook/callback',
     ],
 
     'amazon' => [
@@ -73,12 +67,10 @@ return [
     // Indirizzo con cui il server riapre l'app al termine del login social (schema registrato nell'app).
     'social_app_callback' => env('SOCIAL_APP_CALLBACK', 'listaspesafacile://auth'),
 
-    // Open Food Facts (prodotti di marca e foto) e Open Prices (prezzi di partenza). Spento nei test, che lo
-    // riaccendono con le risposte finte.
+    // Open Food Facts (prodotti di marca, foto e informazioni). Spento nei test, che lo riaccendono con le risposte
+    // finte.
     'openfoodfacts' => [
         'enabled' => (bool) env('OPENFOODFACTS_ENABLED', true),
-        // Paesi (ISO, separati da virgole) dei negozi da cui importare i prezzi di Open Prices; vuoto = tutto il mondo.
-        'price_countries' => array_values(array_filter(explode(',', (string) env('OPEN_PRICES_COUNTRIES', '')))),
     ],
 
 ];

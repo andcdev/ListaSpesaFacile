@@ -15,7 +15,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Storage;
 use Laravel\Sanctum\HasApiTokens;
 
-#[Fillable(['name', 'email', 'password', 'locale'])]
+#[Fillable(['name', 'email', 'password', 'locale', 'privacy_accepted_at', 'newsletter', 'newsletter_consented_at'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable implements HasLocalePreference
 {
@@ -60,7 +60,20 @@ class User extends Authenticatable implements HasLocalePreference
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'privacy_accepted_at' => 'datetime',
+            'newsletter' => 'boolean',
+            'newsletter_consented_at' => 'datetime',
         ];
+    }
+
+    /**
+     * I prezzi che l'utente si è annotato (li vede solo lui).
+     *
+     * @return HasMany<UserPrice, $this>
+     */
+    public function prices(): HasMany
+    {
+        return $this->hasMany(UserPrice::class);
     }
 
     /**
@@ -84,7 +97,7 @@ class User extends Authenticatable implements HasLocalePreference
     }
 
     /**
-     * Account Google / Facebook / Amazon collegati.
+     * Account Google / Amazon collegati (anche Facebook, per chi lo usava prima).
      *
      * @return HasMany<SocialAccount, $this>
      */

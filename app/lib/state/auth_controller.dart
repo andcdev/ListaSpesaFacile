@@ -89,9 +89,27 @@ class AuthController extends ChangeNotifier {
     await _signedIn(token, user);
   }
 
-  Future<void> register(String name, String email, String password) async {
-    final (token, user) = await api.register(name.trim(), email.trim(), password);
+  Future<void> register(
+    String name,
+    String email,
+    String password, {
+    required bool privacy,
+    bool newsletter = false,
+  }) async {
+    final (token, user) = await api.register(
+      name.trim(),
+      email.trim(),
+      password,
+      privacy: privacy,
+      newsletter: newsletter,
+    );
     await _signedIn(token, user);
+  }
+
+  /// Consenso alla newsletter (menu del profilo).
+  Future<void> setNewsletter(bool enabled) async {
+    user = await api.setNewsletter(enabled);
+    notifyListeners();
   }
 
   /// Foto profilo (dalla galleria o dalla fotocamera), mostrata agli altri accanto ai messaggi della chat.
@@ -114,7 +132,7 @@ class AuthController extends ChangeNotifier {
     await _signedIn(token, user);
   }
 
-  /// Accesso o registrazione con Google / Facebook / Amazon. false se l'utente ha annullato.
+  /// Accesso o registrazione con Google / Amazon. false se l'utente ha annullato.
   Future<bool> loginWithSocial(String provider) async {
     final result = await socialLogin.signIn(provider);
     if (result == null) return false;

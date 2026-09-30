@@ -14,7 +14,6 @@ use App\Notifications\ListCreated;
 use App\Notifications\ListDeleted;
 use App\Notifications\ListShared;
 use App\Support\Notifier;
-use App\Support\OpenFoodFacts;
 use App\Support\Realtime;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
@@ -145,13 +144,8 @@ class ShoppingListController extends Controller
         $data = $request->validate([
             'name' => [$required, 'string', 'max:255'],
             'notes' => ['sometimes', 'nullable', 'string', 'max:5000'],
-            // Supermercato dove si fa la spesa: se è una catena nota la lista mostra i prezzi indicativi.
+            // Supermercato dove si fa la spesa (testo libero, con i suggerimenti delle catene note).
             'supermarket' => ['sometimes', 'nullable', 'string', 'max:100'],
-            // Zona del supermercato (stato ISO, provincia, città o paese, località): i prezzi di lì hanno la precedenza.
-            'country' => ['sometimes', 'string', Rule::in(array_keys(OpenFoodFacts::COUNTRIES))],
-            'province' => ['sometimes', 'nullable', 'string', 'max:100'],
-            'city' => ['sometimes', 'nullable', 'string', 'max:100'],
-            'locality' => ['sometimes', 'nullable', 'string', 'max:100'],
             'scheduled_at' => [$required, 'date'],
             // Minuti di anticipo del promemoria (null = nessuno), fino a 30 giorni.
             'reminder_minutes' => ['sometimes', 'nullable', 'integer', 'min:1', 'max:43200'],

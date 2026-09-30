@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../l10n/l10n.dart';
 import '../models/app_user.dart';
 import '../services/api_client.dart';
+import '../widgets/permission_picker.dart';
 import '../widgets/share_form.dart';
 import '../widgets/ui.dart';
 
@@ -41,6 +42,16 @@ class _GlobalShareScreenState extends State<GlobalShareScreen> {
     if (!mounted) return;
     setState(() => _shares = shares);
     showMessage(context, context.l10n.allListsSharedWith(email));
+  }
+
+  /// Solo lettura oppure lettura e modifica, su tutte le mie liste, per chi le riceve già.
+  Future<void> _setPermission(AppUser user, bool canEdit) async {
+    try {
+      final shares = await _api.updateGlobalShare(user.id, canEdit: canEdit);
+      if (mounted) setState(() => _shares = shares);
+    } catch (e) {
+      if (mounted) showError(context, e);
+    }
   }
 
   Future<void> _remove(AppUser user) async {
@@ -88,6 +99,7 @@ class _GlobalShareScreenState extends State<GlobalShareScreen> {
                     for (final u in shares.sharedWith)
                       _UserTile(
                         user: u,
+                        onPermission: (v) => _setPermission(u, v),
                         trailing: IconButton(
                           icon: const Icon(Icons.person_remove_outlined),
                           tooltip: l.remove,
@@ -116,10 +128,13 @@ class _GlobalShareScreenState extends State<GlobalShareScreen> {
 }
 
 class _UserTile extends StatelessWidget {
-  const _UserTile({required this.user, required this.trailing});
+  const _UserTile({required this.user, required this.trailing, this.onPermission});
 
   final AppUser user;
   final Widget trailing;
+
+  /// Solo per chi riceve le mie liste: si può cambiare il permesso. Per le liste ricevute si mostra e basta.
+  final ValueChanged<bool>? onPermission;
 
   @override
   Widget build(BuildContext context) {
@@ -131,7 +146,15 @@ class _UserTile extends StatelessWidget {
         image: avatarImage(context.read<ApiClient>(), user),
       ),
       title: Text(user.name),
-      subtitle: Text('${user.email} · ${user.canEdit == false ? context.l10n.userReadOnly : context.l10n.userCanEdit}'),
+      subtitle: onPermission == null
+          ? Text('${user.email} · ${user.canEdit == false ? context.l10n.userReadOnly : context.l10n.userCanEdit}')
+          : Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(user.email, overflow: TextOverflow.ellipsis),
+                PermissionPicker(canEdit: user.canEdit != false, onChanged: onPermission),
+              ],
+            ),
       trailing: trailing,
     );
   }

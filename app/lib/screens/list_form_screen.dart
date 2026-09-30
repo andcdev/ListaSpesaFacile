@@ -7,10 +7,10 @@ import '../models/shopping_list.dart';
 import '../models/supermarket.dart';
 import '../services/api_client.dart';
 import '../state/lists_controller.dart';
+import '../widgets/permission_picker.dart';
 import '../widgets/ui.dart';
 
 /// Creazione (list == null) o modifica di nome, data/ora, supermercato, note e promemoria di una lista.
-/// Se il supermercato è una catena nota, la lista mostra i prezzi indicativi di quella catena.
 /// Alla creazione si possono indicare subito i destinatari con il loro permesso; il proprietario
 /// decide anche se chi può modificare la lista può cambiarne il nome.
 class ListFormScreen extends StatefulWidget {
@@ -27,23 +27,6 @@ class _ListFormScreenState extends State<ListFormScreen> {
   late final _name = TextEditingController(text: widget.list?.name);
   late final _notes = TextEditingController(text: widget.list?.notes);
   late String _supermarket = widget.list?.supermarket ?? '';
-
-  /// Zona del supermercato: i prezzi segnalati lì hanno la precedenza.
-  late String _country = widget.list?.country ?? 'IT';
-  late final _province = TextEditingController(text: widget.list?.province);
-  late final _city = TextEditingController(text: widget.list?.city);
-  late final _locality = TextEditingController(text: widget.list?.locality);
-
-  /// Paesi che si possono scegliere (come OpenFoodFacts::COUNTRIES sul server): quelli con prezzi su Open Prices.
-  static const _countries = [
-    'IT', 'SM', 'VA', 'CH', 'FR', 'MC', 'DE', 'AT', 'ES', 'PT', 'GB', 'IE', 'BE', 'NL', 'LU', 'DK', 'SE', 'NO', 'FI', //
-    'IS', 'PL', 'CZ', 'SK', 'HU', 'SI', 'HR', 'RO', 'BG', 'GR', 'CY', 'MT', 'EE', 'LV', 'LT', 'UA', 'RU', 'AL', 'BA', //
-    'RS', 'TR', 'IL', 'MA', 'TN', 'US', 'CA', 'MX', 'BR', 'AR', 'JP', 'IN', 'SG', 'TW', 'MY', 'TH', 'AU', 'NZ', 'BD', //
-    'KZ',
-  ];
-
-  /// "IT" → 🇮🇹 (le due lettere come simboli regionali).
-  static String _flag(String code) => String.fromCharCodes(code.codeUnits.map((c) => 0x1F1E6 + c - 0x41));
 
   /// Catene note, suggerite mentre si scrive il supermercato.
   List<Supermarket> _chains = const [];
@@ -73,10 +56,9 @@ class _ListFormScreenState extends State<ListFormScreen> {
     _loadChains();
   }
 
-  /// Catene del paese scelto (si ricaricano cambiando paese).
   Future<void> _loadChains() async {
     try {
-      final chains = await context.read<ApiClient>().supermarkets(country: _country);
+      final chains = await context.read<ApiClient>().supermarkets();
       if (mounted) setState(() => _chains = chains);
     } catch (_) {
       // Senza suggerimenti il supermercato si scrive comunque.
@@ -93,9 +75,6 @@ class _ListFormScreenState extends State<ListFormScreen> {
   void dispose() {
     _name.dispose();
     _notes.dispose();
-    _province.dispose();
-    _city.dispose();
-    _locality.dispose();
     _recipientEmail.dispose();
     super.dispose();
   }
@@ -161,9 +140,6 @@ class _ListFormScreenState extends State<ListFormScreen> {
     final lists = context.read<ListsController>();
     final notes = _notes.text.trim().isEmpty ? null : _notes.text.trim();
     final supermarket = _supermarket.trim().isEmpty ? null : _supermarket.trim();
-    final province = _province.text.trim().isEmpty ? null : _province.text.trim();
-    final city = _city.text.trim().isEmpty ? null : _city.text.trim();
-    final locality = _locality.text.trim().isEmpty ? null : _locality.text.trim();
     try {
       if (_editing) {
         await lists.update(
@@ -172,10 +148,6 @@ class _ListFormScreenState extends State<ListFormScreen> {
           scheduledAt: _scheduledAt,
           notes: notes,
           supermarket: supermarket,
-          country: _country,
-          province: province,
-          city: city,
-          locality: locality,
           reminderMinutes: _reminderMinutes,
           reminderTarget: _reminderTarget,
           membersCanRename: _isOwner ? _membersCanRename : null,
@@ -187,10 +159,6 @@ class _ListFormScreenState extends State<ListFormScreen> {
           scheduledAt: _scheduledAt,
           notes: notes,
           supermarket: supermarket,
-          country: _country,
-          province: province,
-          city: city,
-          locality: locality,
           reminderMinutes: _reminderMinutes,
           reminderTarget: _reminderTarget,
           membersCanRename: _membersCanRename,
@@ -214,7 +182,8 @@ class _ListFormScreenState extends State<ListFormScreen> {
         child: Form(
           key: _form,
           child: ListView(
-            padding: const EdgeInsets.all(16),
+            // In fondo anche lo spazio della barra di navigazione di Android, che altrimenti copre "Crea lista".
+            padding: EdgeInsets.fromLTRB(16, 16, 16, 24 + MediaQuery.viewPaddingOf(context).bottom),
             children: [
               TextFormField(
                 controller: _name,
@@ -290,7 +259,6 @@ class _ListFormScreenState extends State<ListFormScreen> {
                               dense: true,
                               title: Text(s.name),
                               subtitle: s.description == null ? null : Text(s.description!),
-                              trailing: s.hasPrices ? const Icon(Icons.euro, size: 18) : null,
                               onTap: () => onSelected(s),
                             ),
                         ],
@@ -298,73 +266,6 @@ class _ListFormScreenState extends State<ListFormScreen> {
                     ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 12),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(
-                    width: 104,
-                    child: DropdownButtonFormField<String>(
-                      initialValue: _country,
-                      decoration: InputDecoration(labelText: l.country),
-                      menuMaxHeight: 400,
-                      items: [
-                        for (final code in _countries)
-                          DropdownMenuItem(value: code, child: Text('${_flag(code)} $code')),
-                      ],
-                      onChanged: (v) {
-                        setState(() => _country = v ?? _country);
-                        _loadChains();
-                      },
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: TextFormField(
-                      controller: _city,
-                      maxLength: 100,
-                      textCapitalization: TextCapitalization.words,
-                      decoration: InputDecoration(labelText: l.cityLabel, hintText: l.cityHint, counterText: ''),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(
-                    width: 104,
-                    child: TextFormField(
-                      controller: _province,
-                      maxLength: 100,
-                      textCapitalization: TextCapitalization.characters,
-                      decoration: InputDecoration(
-                        labelText: l.provinceLabel,
-                        hintText: l.provinceHint,
-                        counterText: '',
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: TextFormField(
-                      controller: _locality,
-                      maxLength: 100,
-                      textCapitalization: TextCapitalization.words,
-                      decoration: InputDecoration(
-                        labelText: l.localityLabel,
-                        hintText: l.localityHint,
-                        counterText: '',
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              Padding(
-                padding: const EdgeInsets.only(top: 4, left: 12),
-                child: Text(l.zoneHelper, style: Theme.of(context).textTheme.bodySmall),
               ),
               const SizedBox(height: 16),
               TextFormField(
@@ -432,20 +333,14 @@ class _ListFormScreenState extends State<ListFormScreen> {
                     contentPadding: EdgeInsets.zero,
                     leading: UserAvatar(initials: r.email[0].toUpperCase()),
                     title: Text(r.email, overflow: TextOverflow.ellipsis),
-                    subtitle: Text(r.canEdit ? l.canEdit : l.readOnly),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Switch(
-                          value: r.canEdit,
-                          onChanged: (v) => setState(() => _recipients[i] = ShareRequest(r.email, canEdit: v)),
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.close),
-                          tooltip: l.remove,
-                          onPressed: () => setState(() => _recipients.removeAt(i)),
-                        ),
-                      ],
+                    subtitle: PermissionPicker(
+                      canEdit: r.canEdit,
+                      onChanged: (v) => setState(() => _recipients[i] = ShareRequest(r.email, canEdit: v)),
+                    ),
+                    trailing: IconButton(
+                      icon: const Icon(Icons.close),
+                      tooltip: l.remove,
+                      onPressed: () => setState(() => _recipients.removeAt(i)),
                     ),
                   ),
               ],

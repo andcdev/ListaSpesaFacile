@@ -81,6 +81,50 @@ class SharingTest extends TestCase
         $this->getJson('/api/lists')->assertJsonCount(0, 'data');
     }
 
+    public function test_owner_changes_the_permission_of_a_list_share(): void
+    {
+        $list = ShoppingList::factory()->create();
+        $mario = User::factory()->create();
+        $list->sharedWith()->attach($mario->id, ['can_edit' => true]);
+        Sanctum::actingAs($list->owner);
+
+        $this->patchJson("/api/lists/{$list->id}/shares/{$mario->id}", ['can_edit' => false])
+            ->assertOk()
+            ->assertJsonPath('data.0.can_edit', false);
+
+        // Ora Mario legge ma non modifica.
+        Sanctum::actingAs($mario);
+        $this->getJson("/api/lists/{$list->id}")->assertOk()->assertJsonPath('data.permission', 'view');
+        $this->postJson("/api/lists/{$list->id}/items", ['name' => 'Pane'])->assertForbidden();
+        // E non può cambiarsi il permesso da solo.
+        $this->patchJson("/api/lists/{$list->id}/shares/{$mario->id}", ['can_edit' => true])->assertForbidden();
+
+        Sanctum::actingAs($list->owner);
+        $this->patchJson("/api/lists/{$list->id}/shares/{$mario->id}", ['can_edit' => true])->assertJsonPath('data.0.can_edit', true);
+        $this->patchJson("/api/lists/{$list->id}/shares/{$mario->id}", [])->assertJsonValidationErrors('can_edit');
+        // Chi non ha la lista non si può modificare.
+        $this->patchJson("/api/lists/{$list->id}/shares/".User::factory()->create()->id, ['can_edit' => true])->assertNotFound();
+    }
+
+    public function test_owner_changes_the_permission_of_a_global_share(): void
+    {
+        $owner = User::factory()->create();
+        $anna = User::factory()->create();
+        $list = ShoppingList::factory()->for($owner, 'owner')->create();
+        $owner->globalShareRecipients()->attach($anna->id, ['can_edit' => true]);
+        Sanctum::actingAs($owner);
+
+        $this->patchJson("/api/global-shares/{$anna->id}", ['can_edit' => false])
+            ->assertOk()
+            ->assertJsonPath('shared_with.0.can_edit', false);
+
+        Sanctum::actingAs($anna);
+        $this->getJson("/api/lists/{$list->id}")->assertJsonPath('data.permission', 'view');
+
+        Sanctum::actingAs($owner);
+        $this->patchJson('/api/global-shares/'.User::factory()->create()->id, ['can_edit' => true])->assertNotFound();
+    }
+
     public function test_presence_channel_authorization(): void
     {
         config(['broadcasting.default' => 'reverb', 'broadcasting.connections.reverb' => [

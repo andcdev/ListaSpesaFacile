@@ -22,7 +22,7 @@ class SocialAuthTest extends TestCase
     {
         parent::setUp();
 
-        foreach (['google', 'facebook', 'amazon'] as $provider) {
+        foreach (['google', 'amazon'] as $provider) {
             config(["services.$provider.client_id" => 'id', "services.$provider.client_secret" => 'secret']);
         }
     }
@@ -48,15 +48,15 @@ class SocialAuthTest extends TestCase
     {
         $existing = User::factory()->create(['email' => 'giulia@example.com']);
 
-        foreach (['facebook' => 'fb-9', 'amazon' => 'amzn1.account.X'] as $provider => $id) {
+        foreach (['google' => 'g-9', 'amazon' => 'amzn1.account.X'] as $provider => $id) {
             $params = $this->loginVia($provider, $this->socialUser($id, 'giulia@example.com'));
             $this->postJson('/api/auth/social/exchange', ['code' => $params['code'], 'code_verifier' => self::VERIFIER])
                 ->assertOk()
                 ->assertJsonPath('user.id', $existing->id);
         }
 
-        // Secondo accesso Facebook: riconosciuto dall'id anche se l'email è cambiata.
-        $params = $this->loginVia('facebook', $this->socialUser('fb-9', 'nuova@example.com'));
+        // Secondo accesso con Google: riconosciuto dall'id anche se l'email è cambiata.
+        $params = $this->loginVia('google', $this->socialUser('g-9', 'nuova@example.com'));
         $this->postJson('/api/auth/social/exchange', ['code' => $params['code'], 'code_verifier' => self::VERIFIER])
             ->assertJsonPath('user.id', $existing->id);
 
@@ -80,7 +80,7 @@ class SocialAuthTest extends TestCase
 
     public function test_provider_without_email_is_rejected(): void
     {
-        $params = $this->loginVia('facebook', $this->socialUser('fb-1', null));
+        $params = $this->loginVia('amazon', $this->socialUser('amzn1.account.1', null));
 
         $this->assertArrayNotHasKey('code', $params);
         $this->assertStringContainsString('email', $params['error']);
@@ -101,8 +101,16 @@ class SocialAuthTest extends TestCase
     {
         config(['services.amazon.client_id' => null]);
 
-        $this->getJson('/api/config')->assertJsonPath('social_providers', ['google', 'facebook']);
+        $this->getJson('/api/config')->assertJsonPath('social_providers', ['google']);
         $this->get('/auth/amazon/redirect?code_challenge='.$this->challenge())->assertNotFound();
+    }
+
+    public function test_facebook_login_is_no_longer_available(): void
+    {
+        config(['services.facebook.client_id' => 'id', 'services.facebook.client_secret' => 'secret']);
+
+        $this->getJson('/api/config')->assertJsonPath('social_providers', ['google', 'amazon']);
+        $this->get('/auth/facebook/redirect?code_challenge='.$this->challenge())->assertNotFound();
     }
 
     public function test_password_login_for_social_only_account_explains_how_to_sign_in(): void

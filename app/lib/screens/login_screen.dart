@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -157,13 +158,13 @@ class ServerSettingsTile extends StatelessWidget {
   }
 }
 
-/// "oppure" + i pulsanti Continua con Google / Facebook (sempre visibili) e Amazon (se attivo sul server).
+/// "oppure" + i pulsanti Continua con Google e Amazon (sempre visibili: se il server non li ha configurati lo spiegano).
 /// Accede o crea l'account al primo utilizzo; usata sia nell'accesso sia nella registrazione.
 class SocialLoginSection extends StatefulWidget {
   const SocialLoginSection({super.key});
 
   /// Mostrati anche se il server non li ha ancora configurati (toccandoli si spiega cosa manca).
-  static const alwaysShown = ['google', 'facebook'];
+  static const alwaysShown = ['google', 'amazon'];
 
   @override
   State<SocialLoginSection> createState() => _SocialLoginSectionState();
@@ -225,39 +226,52 @@ class _SocialLoginSectionState extends State<SocialLoginSection> {
               onPressed: _busy ? null : () => _signIn(provider, enabled: enabled.contains(provider)),
             ),
           ),
+        // Con Google o Amazon l'account si crea al primo accesso: l'informativa si accetta continuando.
+        Text.rich(
+          TextSpan(
+            text: context.l10n.socialPrivacyNotice,
+            children: [
+              TextSpan(
+                text: context.l10n.privacyPolicy,
+                style: TextStyle(color: Theme.of(context).colorScheme.primary, decoration: TextDecoration.underline),
+                recognizer: TapGestureRecognizer()..onTap = openPrivacyPolicy,
+              ),
+            ],
+          ),
+          textAlign: TextAlign.center,
+          style: Theme.of(context).textTheme.bodySmall,
+        ),
       ],
     );
   }
 }
 
-/// "Continua con Google / Facebook / Amazon": accede o crea l'account al primo utilizzo.
+/// "Continua con Google / Amazon" con il logo ufficiale: accede o crea l'account al primo utilizzo.
 class SocialButton extends StatelessWidget {
   const SocialButton({super.key, required this.provider, required this.onPressed});
 
   final String provider;
   final VoidCallback? onPressed;
 
-  static const _style = {
-    'google': (letter: 'G', color: Color(0xFF4285F4)),
-    'facebook': (letter: 'f', color: Color(0xFF1877F2)),
-    'amazon': (letter: 'a', color: Color(0xFFFF9900)),
-  };
+  /// Logo ufficiale del provider (assets/logos/).
+  static const _logos = {'google': 'assets/logos/google.png', 'amazon': 'assets/logos/amazon.png'};
 
   @override
   Widget build(BuildContext context) {
-    final style = _style[provider] ?? (letter: provider[0].toUpperCase(), color: Colors.grey);
+    final logo = _logos[provider];
     return OutlinedButton(
       onPressed: onPressed,
       style: OutlinedButton.styleFrom(minimumSize: const Size.fromHeight(48)),
       child: Row(
         children: [
-          CircleAvatar(
-            radius: 12,
-            backgroundColor: style.color,
-            child: Text(
-              style.letter,
-              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
-            ),
+          SizedBox.square(
+            dimension: 24,
+            child: logo == null
+                ? const Icon(Icons.login, size: 20)
+                : ClipRRect(
+                    borderRadius: BorderRadius.circular(4),
+                    child: Image.asset(logo, fit: BoxFit.contain, filterQuality: FilterQuality.medium),
+                  ),
           ),
           Expanded(
             child: Text(

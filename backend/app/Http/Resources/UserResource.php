@@ -22,6 +22,8 @@ class UserResource extends JsonResource
             'email' => $this->email,
             // Foto profilo: GET /api/users/{id}/avatar?v={avatar_version}; null = nessuna (l'app mostra le iniziali).
             'avatar_version' => $this->avatarVersion(),
+            // Solo per sé stessi: consenso alla newsletter.
+            'newsletter' => $this->when($request->user()?->is($this->resource), fn () => (bool) $this->newsletter),
             'can_edit' => $this->whenPivotLoaded('shopping_list_user', fn () => (bool) $this->pivot->can_edit,
                 $this->whenPivotLoaded('global_shares', fn () => (bool) $this->pivot->can_edit)),
         ];

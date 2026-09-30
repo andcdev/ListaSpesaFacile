@@ -60,6 +60,22 @@ class GlobalShareController extends Controller
         return $this->index($request);
     }
 
+    /**
+     * Cambia il permesso su tutte le mie liste per chi le riceve già: sola lettura oppure lettura e modifica.
+     */
+    public function update(Request $request, User $user): JsonResponse
+    {
+        $owner = $request->user();
+        $data = $request->validate(['can_edit' => ['required', 'boolean']]);
+
+        abort_unless($owner->globalShareRecipients()->whereKey($user->id)->exists(), 404);
+        $owner->globalShareRecipients()->updateExistingPivot($user->id, ['can_edit' => (bool) $data['can_edit']]);
+
+        Realtime::broadcast(new ListsChanged([$owner->id, $user->id]));
+
+        return $this->index($request);
+    }
+
     public function destroy(Request $request, User $user): JsonResponse
     {
         $owner = $request->user();

@@ -68,7 +68,7 @@
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_channel_id"
             android:value="lista_spesa" />
-        <!-- Ritorno nell'app al termine del login con Google / Facebook / Amazon (listaspesafacile://auth). -->
+        <!-- Ritorno nell'app al termine del login con Google / Amazon (listaspesafacile://auth). -->
         <activity
             android:name="com.linusu.flutter_web_auth_2.CallbackActivity"
             android:exported="true"

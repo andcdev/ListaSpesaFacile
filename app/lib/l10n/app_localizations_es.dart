@@ -61,9 +61,6 @@ class AppLocalizationsEs extends AppLocalizations {
   String get canEdit => 'Puede editar';
 
   @override
-  String get readOnly => 'Solo lectura';
-
-  @override
   String get userCanEdit => 'puede editar';
 
   @override
@@ -177,7 +174,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String socialNotActiveBody(String provider) {
-    return 'El servidor aún no está conectado a $provider. Quien gestiona el servidor debe registrar la app en $provider e introducir el ID y el secret en el archivo .env (ver el README, \"Accesso con Google, Facebook e Amazon\").\n\nMientras tanto puedes registrarte con correo y contraseña.';
+    return 'El servidor aún no está conectado a $provider. Quien gestiona el servidor debe registrar la app en $provider e introducir el ID y el secret en el archivo .env (ver el README, \"Accesso con Google e Amazon\").\n\nMientras tanto puedes registrarte con correo y contraseña.';
   }
 
   @override
@@ -454,9 +451,6 @@ class AppLocalizationsEs extends AppLocalizations {
   String listAnd(String head, String last) {
     return '$head y $last';
   }
-
-  @override
-  String get canEditSubtitle => 'Añade, marca y elimina artículos';
 
   @override
   String listSharedWith(String email) {
@@ -913,56 +907,10 @@ class AppLocalizationsEs extends AppLocalizations {
   String get supermarketHint => 'p. ej. Esselunga, Coop, Lidl';
 
   @override
-  String get supermarketHelper => 'Si es una cadena conocida, la lista muestra precios orientativos';
-
-  @override
-  String estimatedTotal(String chain) {
-    return 'Total estimado en $chain*';
-  }
-
-  @override
-  String get pricesIndicativeNote =>
-      '* Precios orientativos según la cadena: pueden variar entre tiendas y con las ofertas.';
-
-  @override
-  String pricedOf(int priced, int total) {
-    return 'Precio de $priced de $total productos';
-  }
-
-  @override
-  String noPricesForChain(String chain) {
-    return 'No hay precios en $chain para estos productos';
-  }
-
-  @override
-  String get compareChains => 'Comparar cadenas';
-
-  @override
-  String get currentChain => 'elegida';
-
-  @override
-  String get noChainPrices => 'Todavía no hay precios para los productos de esta lista.';
+  String get supermarketHelper => 'Dónde haces la compra (opcional)';
 
   @override
   String get close => 'Cerrar';
-
-  @override
-  String get country => 'País';
-
-  @override
-  String get cityLabel => 'Ciudad o pueblo';
-
-  @override
-  String get cityHint => 'p. ej. Milán';
-
-  @override
-  String get localityLabel => 'Barrio o localidad (opcional)';
-
-  @override
-  String get localityHint => 'p. ej. Città Studi';
-
-  @override
-  String get zoneHelper => 'Se muestra el precio más confirmado de la zona más cercana';
 
   @override
   String get perPiece => 'por envase';
@@ -974,80 +922,220 @@ class AppLocalizationsEs extends AppLocalizations {
   String get perLitre => 'el litro';
 
   @override
-  String get priceMenu => 'Precio';
-
-  @override
   String get priceLabel => 'Precio';
-
-  @override
-  String get provinceLabel => 'Provincia';
-
-  @override
-  String get provinceHint => 'p. ej. Madrid';
-
-  @override
-  String get proposeOtherPrice => 'Proponer otro precio';
-
-  @override
-  String get priceProposed => 'Precio propuesto: los demás lo verán cuando alguien lo confirme.';
-
-  @override
-  String get priceConfirmed => 'Precio confirmado: ¡gracias!';
-
-  @override
-  String get priceDisputed => 'Marcado como incorrecto: ¡gracias!';
-
-  @override
-  String confirmations(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count confirmaciones',
-      one: '1 confirmación',
-      zero: 'Ninguna confirmación',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String get confirmPrice => 'Confirmo';
-
-  @override
-  String get notRightPrice => 'No es correcto';
-
-  @override
-  String yourProposal(String price) {
-    return 'Tu propuesta: $price';
-  }
-
-  @override
-  String get waitingConfirmation => 'Pendiente de confirmación: por ahora solo la ves tú';
-
-  @override
-  String get otherPrices => 'Otros precios';
-
-  @override
-  String get toBeConfirmed => 'por confirmar';
-
-  @override
-  String get disputed => 'desmentido';
-
-  @override
-  String get proposedByYou => 'propuesto por ti';
-
-  @override
-  String get addPrice => 'Añadir el precio';
-
-  @override
-  String get noPriceYet => 'Todavía no hay precio para este producto en esta cadena.';
-
-  @override
-  String get chooseKnownSupermarket => 'Para los precios, elige en la lista un supermercado de una cadena conocida.';
 
   @override
   String get invalidPrice => 'Escribe un precio, p. ej. 1,29';
 
   @override
-  String get priceReportPrivacy =>
-      'Los demás verán el precio cuando otros usuarios lo confirmen. Verán tu nombre y la hora, no tu correo.';
+  String get privacyRequired => 'Debes aceptar la política de privacidad para registrarte';
+
+  @override
+  String get acceptPrivacyPrefix => 'He leído y acepto la ';
+
+  @override
+  String get acceptPrivacySuffix => '';
+
+  @override
+  String get privacyPolicy => 'política de privacidad';
+
+  @override
+  String get newsletterConsent => 'Quiero recibir la newsletter de Lista Spesa Facile';
+
+  @override
+  String get newsletterOptional => 'Opcional: puedes cambiarlo cuando quieras desde el menú del perfil';
+
+  @override
+  String get socialPrivacyNotice => 'Al continuar con Google o Amazon aceptas la ';
+
+  @override
+  String get newsletter => 'Newsletter';
+
+  @override
+  String get myPrices => 'Mis precios';
+
+  @override
+  String get myPrice => 'Mi precio';
+
+  @override
+  String get addMyPrice => 'Añadir precio';
+
+  @override
+  String get editMyPrice => 'Editar precio';
+
+  @override
+  String get productRequired => 'Escribe el producto';
+
+  @override
+  String get noteOptional => 'Nota (opcional)';
+
+  @override
+  String get myPricesPrivate => 'Solo tú ves tus precios.';
+
+  @override
+  String get myPriceSaved => 'Precio guardado en «Mis precios»';
+
+  @override
+  String get searchMyPrices => 'Buscar producto o supermercado';
+
+  @override
+  String get noMyPrices => 'Ningún precio. Añádelo aquí o desde el menú ⋮ de un producto de la lista.';
+
+  @override
+  String get noMyPricesFound => 'No se han encontrado precios.';
+
+  @override
+  String deleteMyPriceQuestion(String product) {
+    return '¿Eliminar el precio de $product?';
+  }
+
+  @override
+  String get info => 'Info';
+
+  @override
+  String get noProductInfo => 'No se ha encontrado información en Open Food Facts para este producto.';
+
+  @override
+  String get similarProductNotice => 'Producto similar encontrado por el nombre: puede que no sea exactamente el tuyo.';
+
+  @override
+  String get barcode => 'Código de barras';
+
+  @override
+  String get copy => 'Copiar';
+
+  @override
+  String get copied => 'Copiado';
+
+  @override
+  String get forCoeliacs => 'Celíacos';
+
+  @override
+  String get glutenFree => 'sin gluten';
+
+  @override
+  String get containsGluten => 'contiene gluten';
+
+  @override
+  String get vegetarian => 'Vegetariano';
+
+  @override
+  String get vegan => 'Vegano';
+
+  @override
+  String get yes => 'sí';
+
+  @override
+  String get no => 'no';
+
+  @override
+  String get palmOil => 'Aceite de palma';
+
+  @override
+  String get palmOilFree => 'sin';
+
+  @override
+  String get containsPalmOil => 'contiene';
+
+  @override
+  String get lactose => 'Lactosa';
+
+  @override
+  String get lactoseFree => 'sin lactosa';
+
+  @override
+  String get notIndicated => 'no indicado';
+
+  @override
+  String get nutritionPer100 => 'Valores nutricionales por 100 g';
+
+  @override
+  String get nutrientFat => 'Grasas';
+
+  @override
+  String get nutrientSaturatedFat => 'de las cuales saturadas';
+
+  @override
+  String get nutrientCarbohydrates => 'Hidratos de carbono';
+
+  @override
+  String get nutrientSugars => 'de los cuales azúcares';
+
+  @override
+  String get nutrientFiber => 'Fibra';
+
+  @override
+  String get nutrientProteins => 'Proteínas';
+
+  @override
+  String get nutrientSalt => 'Sal';
+
+  @override
+  String get allergens => 'Alérgenos';
+
+  @override
+  String mayContainTraces(String list) {
+    return 'Puede contener trazas de: $list';
+  }
+
+  @override
+  String get ingredients => 'Ingredientes';
+
+  @override
+  String get openFoodFactsPage => 'Ver en Open Food Facts';
+
+  @override
+  String get openFoodFactsSource =>
+      'Datos de Open Food Facts (licencia ODbL): pueden estar incompletos, revisa siempre la etiqueta.';
+
+  @override
+  String get allergenGluten => 'Gluten';
+
+  @override
+  String get allergenCrustaceans => 'Crustáceos';
+
+  @override
+  String get allergenEggs => 'Huevos';
+
+  @override
+  String get allergenFish => 'Pescado';
+
+  @override
+  String get allergenPeanuts => 'Cacahuetes';
+
+  @override
+  String get allergenSoybeans => 'Soja';
+
+  @override
+  String get allergenMilk => 'Leche';
+
+  @override
+  String get allergenNuts => 'Frutos de cáscara';
+
+  @override
+  String get allergenCelery => 'Apio';
+
+  @override
+  String get allergenMustard => 'Mostaza';
+
+  @override
+  String get allergenSesame => 'Sésamo';
+
+  @override
+  String get allergenSulphites => 'Sulfitos';
+
+  @override
+  String get allergenLupin => 'Altramuces';
+
+  @override
+  String get allergenMolluscs => 'Moluscos';
+
+  @override
+  String get permission => 'Permiso';
+
+  @override
+  String get permissionRead => 'Solo lectura';
+
+  @override
+  String get permissionReadWrite => 'Lectura y edición';
 }

@@ -59,6 +59,23 @@ class ListShareController extends Controller
     }
 
     /**
+     * Cambia il permesso di chi ha già la lista (solo il proprietario): sola lettura oppure lettura e modifica.
+     */
+    public function update(Request $request, ShoppingList $list, User $user): AnonymousResourceCollection
+    {
+        $this->authorize('share', $list);
+        $data = $request->validate(['can_edit' => ['required', 'boolean']]);
+
+        abort_unless($list->sharedWith()->whereKey($user->id)->exists(), 404);
+        $list->sharedWith()->updateExistingPivot($user->id, ['can_edit' => (bool) $data['can_edit']]);
+
+        // L'app di chi riceve la lista si aggiorna subito (può o non può più modificare).
+        Realtime::broadcast(new ListsChanged($list->audienceIds(), $list->id));
+
+        return $this->index($list);
+    }
+
+    /**
      * Revoca la condivisione (proprietario) oppure abbandona la lista (utente condiviso).
      */
     public function destroy(Request $request, ShoppingList $list, User $user): JsonResponse

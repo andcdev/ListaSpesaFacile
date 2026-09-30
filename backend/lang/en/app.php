@@ -4,8 +4,6 @@
 
 return [
     'errors' => [
-        'own_price_vote' => "You can't confirm a price you proposed yourself.",
-        'unknown_supermarket' => 'First choose a supermarket from a known chain.',
         'social_only' => 'This account signs in with :providers.',
         'invalid_credentials' => 'Invalid email or password.',
         'social_code_invalid' => 'Sign-in invalid or expired. Please try again.',

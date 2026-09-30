@@ -58,18 +58,18 @@ void main() {
   test('annullamento restituisce null senza chiamare il server', () async {
     final login = SocialLogin(api, authenticator: (_, _) async => throw PlatformException(code: 'CANCELED'));
 
-    expect(await login.signIn('facebook'), isNull);
+    expect(await login.signIn('amazon'), isNull);
     expect(requests, isEmpty);
   });
 
   test('errore restituito dal server viene mostrato all\'utente', () async {
     final login = SocialLogin(
       api,
-      authenticator: (_, _) async => 'listaspesafacile://auth?error=Il+tuo+account+Facebook+non+condivide+l%27email',
+      authenticator: (_, _) async => 'listaspesafacile://auth?error=Il+tuo+account+Amazon+non+condivide+l%27email',
     );
 
     await expectLater(
-      login.signIn('facebook'),
+      login.signIn('amazon'),
       throwsA(isA<ApiException>().having((e) => e.message, 'message', contains('non condivide'))),
     );
   });
