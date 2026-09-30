@@ -19,12 +19,23 @@ class AuthController extends Controller
     {
         $data = $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:users,email'],
+            // Indirizzo valido secondo lo standard, senza forme strane (es. "mario@localhost", spazi, punti doppi).
+            'email' => ['required', 'string', 'lowercase', 'email:rfc,strict', 'regex:/^[^@\s]+@[^@\s]+\.[a-z]{2,}$/i', 'max:255', 'unique:users,email'],
             'password' => ['required', 'confirmed', Password::defaults()],
             'device_name' => ['nullable', 'string', 'max:255'],
+            // Informativa privacy da accettare; newsletter facoltativa.
+            'privacy' => ['accepted'],
+            'newsletter' => ['sometimes', 'boolean'],
         ]);
 
-        $user = User::create([...$data, 'locale' => app()->getLocale()]);
+        $newsletter = (bool) ($data['newsletter'] ?? false);
+        $user = User::create([
+            ...collect($data)->only(['name', 'email', 'password'])->all(),
+            'locale' => app()->getLocale(),
+            'privacy_accepted_at' => now(),
+            'newsletter' => $newsletter,
+            'newsletter_consented_at' => $newsletter ? now() : null,
+        ]);
 
         return $this->tokenResponse($user, $data['device_name'] ?? 'app', 201);
     }
@@ -97,6 +108,20 @@ class AuthController extends Controller
     public function me(Request $request): UserResource
     {
         return new UserResource($request->user());
+    }
+
+    /**
+     * Consenso alla newsletter, dal menu del profilo.
+     */
+    public function update(Request $request): UserResource
+    {
+        $data = $request->validate(['newsletter' => ['required', 'boolean']]);
+        $user = $request->user();
+        $user->newsletter = (bool) $data['newsletter'];
+        $user->newsletter_consented_at = $user->newsletter ? now() : null;
+        $user->save();
+
+        return new UserResource($user);
     }
 
     private function tokenResponse(User $user, string $deviceName, int $status = 200): JsonResponse

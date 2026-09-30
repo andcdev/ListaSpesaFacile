@@ -14,8 +14,11 @@ Sorgente modificabile: [`docs/architettura.svg`](docs/architettura.svg).
 
 ## Funzionalità
 
-- **Account**: registrazione e accesso con email e password, oppure con **Google, Facebook o Amazon**
-  (token Sanctum salvato in modo sicuro sul dispositivo). I pulsanti Google e Facebook sono sempre visibili:
+- **Account**: registrazione e accesso con email e password, oppure con **Google, Facebook o Amazon**. Alla
+  registrazione l'email deve essere valida (nome@dominio.estensione) e si accetta l'**informativa privacy**
+  (obbligatoria, con data salvata); il consenso alla **newsletter** è facoltativo e si cambia dal menu del profilo.
+  Con Google o Facebook l'informativa si accetta continuando (è scritto sotto i pulsanti). Il token Sanctum è
+  salvato in modo sicuro sul dispositivo. I pulsanti Google e Facebook sono sempre visibili:
   se il server non è ancora configurato, toccandoli l'app spiega cosa manca (vedi sotto).
 - **Aspetto** (stile "Mercato", `app/lib/theme/app_theme.dart`): fondo crema con i disegni dei prodotti ripetuti
   (`app/assets/backgrounds/`, versione chiara e scura) sotto tutte le pagine, card bianche arrotondate, titoli
@@ -63,30 +66,19 @@ Sorgente modificabile: [`docs/architettura.svg`](docs/architettura.svg).
   (mele 🍎, latte 🥛, parmigiano 🧀, detersivo 🧴…, `app/Support/ProductCatalog.php`). Il reparto si può correggere
   a mano. Nella lista gli articoli sono **raggruppati per reparto** nell'ordine del giro al supermercato
   (Frutta, Verdura, Pane…) e, dentro ogni reparto, in **ordine alfabetico** (prima quelli da prendere).
-- **Supermercato e prezzi**: alla creazione (o modifica) della lista si indica il supermercato, con i
-  suggerimenti delle catene note. Se il server lo riconosce come catena ("Esselunga di viale Piave" → Esselunga,
-  "Ipercoop" → Coop) ogni articolo mostra il **prezzo indicativo** di quella catena (moltiplicato per quantità e
-  peso o volume) e in fondo alla lista c'è il **totale stimato** con l'asterisco: i prezzi sono indicativi in base
-  alla distribuzione. Se il supermercato non è una catena nota non compare nessun prezzo. Il prezzo si ricalcola
-  cambiando supermercato o aggiungendo e modificando un prodotto; i non trovati non contano nel totale.
-  **Confronta catene** apre un popup con una riga per catena (nome, descrizione, totale): toccandola si vedono i
-  prezzi articolo per articolo.
-  Con il supermercato si indica la **zona** (stato, provincia, città o paese, località). Si mostra il prezzo della
-  zona più vicina (stessa località, stessa città, stessa provincia, resto dello stato; i prezzi di un altro stato
-  non contano) con **più conferme** e, a parità, il più recente. Il prezzo cambia quindi con la catena e con la
-  zona di vendita. Toccando il prezzo di un articolo (o "€" se manca, o *Prezzo* nel menu) si vede da dove viene
-  (chi l'ha proposto, giorno e ora, zona, conferme) insieme agli altri prezzi della zona: si può **confermare** quello
-  giusto (*Confermo*), smentire quello sbagliato (*Non è giusto*) o **proporre un altro prezzo**. Un prezzo proposto
-  lo vede subito solo chi l'ha scritto (con la clessidra); gli altri lo vedono dopo la conferma di altri utenti
-  (`PRICE_APPROVALS_REQUIRED`, di norma 1). Proporre lo stesso prezzo già presente in città vale come conferma; un
-  prezzo con più smentite che conferme viene scartato. Il pallino sul prezzo dice che ci sono proposte da
-  confermare. Di chi propone si mostrano nome e ora; l'email resta sul server e non viene mai mostrata (eliminando
-  l'account, nome ed email spariscono dai prezzi). Base di partenza: i prezzi di **Open Prices** (fotografati nei
-  negozi dagli utenti di Open Food Facts, in tutto il mondo e in ogni valuta), importati ogni notte e già
-  confermati; anche questi si possono confermare o smentire.
+- **Supermercato**: alla creazione (o modifica) della lista si può indicare il supermercato, con i suggerimenti delle
+  catene note; è solo informativo (nella lista non compaiono prezzi né totali).
+- **I miei prezzi** (menu del profilo): i prezzi che ti annoti per i prodotti (a confezione, al kg o al litro, con
+  supermercato e nota). Li vedi solo tu: si cercano, si aggiungono, si modificano toccandoli e si eliminano scorrendo
+  verso sinistra. Si aggiungono anche dal menu ⋮ di un prodotto della lista (*Il mio prezzo*).
+- **Info prodotto** (menu ⋮ → *Info*): codice a barre, foto, se è adatto a celiaci (senza glutine), vegetariani e
+  vegani, olio di palma, calorie e valori nutrizionali per 100 g, allergeni e tracce, ingredienti, Nutri-Score e
+  NOVA, da **Open Food Facts**. Per un prodotto scritto a mano si mostra il prodotto più simile al nome, con un avviso.
+- **Galleria**: toccando la foto di un prodotto si apre la galleria (si scorre di lato, si ingrandisce con due
+  dita) con la sua foto e quelle del prodotto su Open Food Facts (confezione, ingredienti, tabella nutrizionale).
 - **Prodotti di marca**: scrivendo un prodotto compaiono, dopo una breve pausa, i prodotti di marca di **Open Food
   Facts** con foto e formato ("latte parm" → Latte intero Parmalat, 1 L). Toccandone uno si compilano nome, marca,
-  foto e peso o volume, e il prezzo è quello di quel prodotto, se c'è. **Foto automatica**: aggiungendo o
+  foto e peso o volume. **Foto automatica**: aggiungendo o
   rinominando un articolo senza foto il server ne cerca una su Open Food Facts (le foto dal telefono e i link
   scelti a mano non vengono mai sostituiti).
 - **Condivisione**
@@ -317,19 +309,20 @@ Tutte le rotte sono sotto `/api`. Le rotte protette richiedono `Authorization: B
 | Metodo | Rotta | Descrizione |
 |---|---|---|
 | GET | `/config` | Parametri pubblici del WebSocket e provider social attivi |
-| POST | `/register` | `name, email, password, password_confirmation` → `{token, user}` |
+| POST | `/register` | `name, email, password, password_confirmation, privacy` (accettata), `newsletter?` → `{token, user}` |
 | POST | `/login` | `email, password` → `{token, user}` |
 | POST | `/auth/social/exchange` | `code, code_verifier` → `{token, user}` (ultimo passo del login social) |
 | POST | `/forgot-password` | `email`: invia il codice di 6 cifre (stessa risposta anche se l'email non esiste) |
 | POST | `/reset-password` | `email, code, password, password_confirmation` → `{token, user}` |
 | POST | `/logout` | Revoca il token corrente |
-| GET | `/me` | Utente corrente (con `avatar_version`) |
+| GET | `/me` | Utente corrente (con `avatar_version` e `newsletter`) |
+| PATCH | `/me` | `newsletter`: consenso alla newsletter |
 | POST | `/me/avatar` | `image` multipart (jpg, png, webp, max 4 MB): foto profilo |
 | DELETE | `/me/avatar` | Rimuove la foto profilo |
 | GET | `/users/{id}/avatar?v=` | Foto profilo (te stesso o chi ha una lista in comune con te) |
 | GET | `/lists` | Liste accessibili, ordinate per `scheduled_at` |
-| POST | `/lists` | `name, scheduled_at, notes?, supermarket?, country?, province?, city?, locality?, reminder_minutes?, reminder_target?, members_can_rename?, shares?: [{email, can_edit?}]` |
-| GET | `/lists/{id}` | Lista con articoli e condivisioni; `supermarket_chain` = catena riconosciuta (null = niente prezzi); per ogni articolo `price` e `price_info` (il più confermato della zona: `source` `user` o `open_prices`, `currency`, `approvals`, `reporter`, `observed_at`, zona), `my_price` (la propria proposta in attesa) e `pending_prices` |
+| POST | `/lists` | `name, scheduled_at, notes?, supermarket?, reminder_minutes?, reminder_target?, members_can_rename?, shares?: [{email, can_edit?}]` |
+| GET | `/lists/{id}` | Lista con articoli e condivisioni |
 | PATCH | `/lists/{id}` | Modifica (proprietario o permesso di modifica), anche `reminder_minutes` (`null` = nessuno) e `reminder_target` (`owner`, `members`, `all`). Il nome solo se `can_rename`; `members_can_rename` solo il proprietario |
 | DELETE | `/lists/{id}` | Elimina (solo proprietario) |
 | GET | `/lists/{id}/image?v=` | Foto della lista (chi ha accesso; `v` = `image_version` della lista) |
@@ -352,11 +345,12 @@ Tutte le rotte sono sotto `/api`. Le rotte protette richiedono `Authorization: B
 | GET | `/lists/{id}/messages?before=` | Chat: 50 messaggi dal più recente + `has_more` + `delivered` (`{user_id: ultimo messaggio ricevuto}`) |
 | POST | `/lists/{id}/messages/delivered` | `up_to`: il telefono ha ricevuto i messaggi fino a questo id (spunte blu) |
 | GET | `/products/search?q=&country=` | Prodotti di marca da Open Food Facts: `barcode, name, brand, quantity, amount, unit, image_url` |
-| GET | `/lists/{id}/items/{item}/prices` | `current`, `mine` e i prezzi della catena nello stato della lista, con `status`, `approvals`, `my_vote` (nome e ora, mai l'email) |
-| POST | `/lists/{id}/items/{item}/prices` | `price, per? (pz, kg, l), province?, city?, locality?`: proposta (chiunque veda la lista), in attesa di conferma |
-| POST | `/lists/{id}/items/{item}/prices/{report}/vote` | `approve`: conferma o smentisce un prezzo (non il proprio) |
-| GET | `/supermarkets?country=` | Catene del paese (`name, description, has_prices`) |
-| GET | `/lists/{id}/price-comparison` | Costo della lista in ogni catena con prezzi: `total, priced_count, items_count, current, items[{name, price}]` |
+| GET | `/lists/{id}/items/{item}/info` | Info del prodotto da Open Food Facts (`null` se non si trova) |
+| GET | `/me/prices?q=` | I miei prezzi (solo i propri) |
+| POST | `/me/prices` | `product_name, price, per? (pz, kg, l), barcode?, brand?, supermarket?, note?` |
+| PATCH | `/me/prices/{id}` | Modifica un proprio prezzo |
+| DELETE | `/me/prices/{id}` | Elimina un proprio prezzo |
+| GET | `/supermarkets` | Catene note, per i suggerimenti (`name, description`) |
 | GET | `/products/suggestions` | Prodotti da suggerire: già usati nelle liste accessibili (con `times`), poi i più comuni |
 | POST | `/lists/{id}/messages` | `body` e/o `image` (multipart, max 8 MB): chiunque abbia accesso alla lista |
 | GET | `/lists/{id}/messages/{message}/image` | Foto del messaggio (`has_image`) |
@@ -370,24 +364,10 @@ Tutte le rotte sono sotto `/api`. Le rotte protette richiedono `Authorization: B
 
 Le date viaggiano in ISO 8601; il server le salva in UTC e l'app le mostra nel fuso del dispositivo.
 
-### Prezzi di Open Prices
-
-I prezzi di **Open Prices** si importano ogni notte alle 4:30 (container `scheduler`): tutto il mondo, o solo i
-paesi di `OPEN_PRICES_COUNTRIES` (es. `IT,SM,CH`). Ogni negozio viene abbinato alla sua catena dall'insegna; le
-insegne sconosciute (Leclerc, Rema 1000…) diventano catene nuove del loro paese. Si tiene solo il prezzo più
-recente per prodotto, catena, stato e comune: uno più nuovo sostituisce il vecchio (e ne azzera le conferme), uno
-più vecchio si scarta. La prima importazione è completa
-(35-40 minuti; l'API non va oltre 500 pagine per ricerca, quindi si legge un mese per volta e, se si interrompe,
-si riprende dal primo mese non completato), poi solo i prezzi nuovi. A mano:
-
-```bash
-docker compose exec app php artisan prices:sync-open-prices          # nuovi (o completa la prima volta)
-docker compose exec app php artisan prices:sync-open-prices --all    # rilegge tutto
-docker compose exec app php artisan prices:sync-open-prices --from=2026-09-01   # da una data
-```
+### Open Food Facts
 
 Ricerche e foto di Open Food Facts restano in cache un giorno; con `OPENFOODFACTS_ENABLED=false` nel `.env` il
-server non contatta Open Food Facts (niente suggerimenti di marca, foto automatiche né import).
+server non contatta Open Food Facts (niente suggerimenti di marca, foto automatiche né info dei prodotti).
 
 ### Canali ed eventi WebSocket
 

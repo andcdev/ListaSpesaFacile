@@ -385,23 +385,34 @@ class _EmptyChat extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(32),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              error == null ? Icons.chat_bubble_outline : Icons.cloud_off,
-              size: 64,
-              color: Theme.of(context).disabledColor,
+    // La chat sotto la lista può essere bassa: icona più piccola e testo che scorre, senza mai sforare.
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final small = constraints.maxHeight < 220;
+        return SingleChildScrollView(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(minHeight: constraints.maxHeight),
+            child: Center(
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 32, vertical: small ? 8 : 32),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      error == null ? Icons.chat_bubble_outline : Icons.cloud_off,
+                      size: small ? 32 : 64,
+                      color: Theme.of(context).disabledColor,
+                    ),
+                    SizedBox(height: small ? 8 : 16),
+                    Text(error ?? context.l10n.emptyChat, textAlign: TextAlign.center),
+                    if (error != null) TextButton(onPressed: onRetry, child: Text(context.l10n.retry)),
+                  ],
+                ),
+              ),
             ),
-            const SizedBox(height: 16),
-            Text(error ?? context.l10n.emptyChat, textAlign: TextAlign.center),
-            if (error != null) TextButton(onPressed: onRetry, child: Text(context.l10n.retry)),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 }

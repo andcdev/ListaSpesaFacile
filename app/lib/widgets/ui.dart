@@ -1,9 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../l10n/l10n.dart';
 import '../models/app_user.dart';
 import '../services/api_client.dart';
+
+/// Informativa privacy sul sito (accettata alla registrazione).
+const privacyPolicyUrl = 'https://listaspesafacile.com/privacy';
+
+Future<void> openPrivacyPolicy() => launchUrl(Uri.parse(privacyPolicyUrl), mode: LaunchMode.externalApplication);
+
+/// Email scritta correttamente: nome@dominio.estensione, senza spazi né punti doppi ("mario@localhost" no).
+bool isValidEmail(String value) {
+  final email = value.trim();
+  return RegExp(r'^[^@\s]+@[^@\s]+\.[a-zA-Z]{2,}$').hasMatch(email) && !email.contains('..');
+}
 
 void showError(BuildContext context, Object error) {
   ScaffoldMessenger.of(context)

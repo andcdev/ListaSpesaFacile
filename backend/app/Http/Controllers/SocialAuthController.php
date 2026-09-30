@@ -111,8 +111,10 @@ class SocialAuthController extends Controller
                 'email' => $email,
                 'locale' => app()->getLocale(),
             ]), function (User $user) {
-                // Email già verificata dal provider.
+                // Email già verificata dal provider. L'informativa privacy è accettata continuando con il provider
+                // (la schermata di accesso lo dice sotto i pulsanti).
                 $user->email_verified_at = now();
+                $user->privacy_accepted_at = now();
                 $user->save();
             });
 

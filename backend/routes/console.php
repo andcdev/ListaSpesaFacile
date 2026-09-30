@@ -10,6 +10,3 @@ Schedule::command('lists:send-reminders')->everyMinute()->withoutOverlapping();
 Schedule::call(fn () => DatabaseNotification::where('created_at', '<', now()->subDays(90))->delete())
     ->daily()
     ->name('prune-notifications');
-
-// Prezzi di partenza da Open Prices, di notte (poche centinaia di richieste lente, per non pesare sul servizio).
-Schedule::command('prices:sync-open-prices')->dailyAt('04:30')->withoutOverlapping();

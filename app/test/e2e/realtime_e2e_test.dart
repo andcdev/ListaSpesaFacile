@@ -33,8 +33,18 @@ void main() {
     final stamp = DateTime.now().millisecondsSinceEpoch;
     final annaApi = ApiClient(baseUrl: apiUrl);
     final brunoApi = ApiClient(baseUrl: apiUrl);
-    final (annaToken, anna) = await annaApi.register('Anna Rossi', 'anna$stamp@example.com', 'password123');
-    final (brunoToken, bruno) = await brunoApi.register('Bruno', 'bruno$stamp@example.com', 'password123');
+    final (annaToken, anna) = await annaApi.register(
+      'Anna Rossi',
+      'anna$stamp@example.com',
+      'password123',
+      privacy: true,
+    );
+    final (brunoToken, bruno) = await brunoApi.register(
+      'Bruno',
+      'bruno$stamp@example.com',
+      'password123',
+      privacy: true,
+    );
     annaApi.token = annaToken;
     brunoApi.token = brunoToken;
 
@@ -102,8 +112,18 @@ void main() {
     final stamp = DateTime.now().millisecondsSinceEpoch;
     final annaApi = ApiClient(baseUrl: apiUrl);
     final brunoApi = ApiClient(baseUrl: apiUrl);
-    final (annaToken, anna) = await annaApi.register('Anna', 'anna-chat$stamp@example.com', 'password123');
-    final (brunoToken, bruno) = await brunoApi.register('Bruno', 'bruno-chat$stamp@example.com', 'password123');
+    final (annaToken, anna) = await annaApi.register(
+      'Anna',
+      'anna-chat$stamp@example.com',
+      'password123',
+      privacy: true,
+    );
+    final (brunoToken, bruno) = await brunoApi.register(
+      'Bruno',
+      'bruno-chat$stamp@example.com',
+      'password123',
+      privacy: true,
+    );
     annaApi.token = annaToken;
     brunoApi.token = brunoToken;
 
@@ -186,8 +206,8 @@ void main() {
       final stamp = DateTime.now().millisecondsSinceEpoch;
       final api = ApiClient(baseUrl: apiUrl);
       final other = ApiClient(baseUrl: apiUrl);
-      final (t1, me) = await api.register('Carla', 'c$stamp@example.com', 'password123');
-      final (t2, _) = await other.register('Dario', 'd$stamp@example.com', 'password123');
+      final (t1, me) = await api.register('Carla', 'c$stamp@example.com', 'password123', privacy: true);
+      final (t2, _) = await other.register('Dario', 'd$stamp@example.com', 'password123', privacy: true);
       api.token = t1;
       other.token = t2;
       final list = await api.createList(name: 'R', scheduledAt: DateTime.now());

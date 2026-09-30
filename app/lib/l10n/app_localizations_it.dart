@@ -908,56 +908,10 @@ class AppLocalizationsIt extends AppLocalizations {
   String get supermarketHint => 'es. Esselunga, Coop, Lidl';
 
   @override
-  String get supermarketHelper => 'Se è una catena nota, la lista mostra i prezzi indicativi';
-
-  @override
-  String estimatedTotal(String chain) {
-    return 'Totale stimato da $chain*';
-  }
-
-  @override
-  String get pricesIndicativeNote =>
-      '* Prezzi indicativi in base alla catena: possono variare da un punto vendita all\'altro e per le offerte.';
-
-  @override
-  String pricedOf(int priced, int total) {
-    return 'Prezzo per $priced di $total prodotti';
-  }
-
-  @override
-  String noPricesForChain(String chain) {
-    return 'Nessun prezzo disponibile da $chain per questi prodotti';
-  }
-
-  @override
-  String get compareChains => 'Confronta catene';
-
-  @override
-  String get currentChain => 'scelta';
-
-  @override
-  String get noChainPrices => 'Non ci sono ancora prezzi per i prodotti di questa lista.';
+  String get supermarketHelper => 'Dove fai la spesa (facoltativo)';
 
   @override
   String get close => 'Chiudi';
-
-  @override
-  String get country => 'Paese';
-
-  @override
-  String get cityLabel => 'Città o paese';
-
-  @override
-  String get cityHint => 'es. Milano';
-
-  @override
-  String get localityLabel => 'Località o quartiere (facoltativo)';
-
-  @override
-  String get localityHint => 'es. Città Studi';
-
-  @override
-  String get zoneHelper => 'Si mostra il prezzo più confermato della zona più vicina';
 
   @override
   String get perPiece => 'a confezione';
@@ -969,80 +923,211 @@ class AppLocalizationsIt extends AppLocalizations {
   String get perLitre => 'al litro';
 
   @override
-  String get priceMenu => 'Prezzo';
-
-  @override
   String get priceLabel => 'Prezzo';
-
-  @override
-  String get provinceLabel => 'Provincia';
-
-  @override
-  String get provinceHint => 'es. MI';
-
-  @override
-  String get proposeOtherPrice => 'Proponi un altro prezzo';
-
-  @override
-  String get priceProposed => 'Prezzo proposto: gli altri lo vedranno quando qualcuno lo conferma.';
-
-  @override
-  String get priceConfirmed => 'Prezzo confermato: grazie!';
-
-  @override
-  String get priceDisputed => 'Segnalato come non giusto: grazie!';
-
-  @override
-  String confirmations(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count conferme',
-      one: '1 conferma',
-      zero: 'Nessuna conferma',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String get confirmPrice => 'Confermo';
-
-  @override
-  String get notRightPrice => 'Non è giusto';
-
-  @override
-  String yourProposal(String price) {
-    return 'La tua proposta: $price';
-  }
-
-  @override
-  String get waitingConfirmation => 'In attesa di conferma: per ora la vedi solo tu';
-
-  @override
-  String get otherPrices => 'Altri prezzi';
-
-  @override
-  String get toBeConfirmed => 'da confermare';
-
-  @override
-  String get disputed => 'smentito';
-
-  @override
-  String get proposedByYou => 'proposto da te';
-
-  @override
-  String get addPrice => 'Aggiungi il prezzo';
-
-  @override
-  String get noPriceYet => 'Nessun prezzo ancora per questo prodotto in questa catena.';
-
-  @override
-  String get chooseKnownSupermarket => 'Per i prezzi scegli nella lista il supermercato di una catena conosciuta.';
 
   @override
   String get invalidPrice => 'Scrivi un prezzo, es. 1,29';
 
   @override
-  String get priceReportPrivacy =>
-      'Gli altri vedranno il prezzo dopo la conferma di altri utenti. Vedranno il tuo nome e l\'ora, non la tua email.';
+  String get privacyRequired => 'Per registrarti devi accettare l\'informativa privacy';
+
+  @override
+  String get acceptPrivacyPrefix => 'Ho letto e accetto l\'';
+
+  @override
+  String get acceptPrivacySuffix => '';
+
+  @override
+  String get privacyPolicy => 'informativa privacy';
+
+  @override
+  String get newsletterConsent => 'Voglio ricevere la newsletter di Lista Spesa Facile';
+
+  @override
+  String get newsletterOptional => 'Facoltativo: puoi cambiarlo quando vuoi dal menu del profilo';
+
+  @override
+  String get socialPrivacyNotice => 'Continuando con Google o Facebook accetti l\'';
+
+  @override
+  String get newsletter => 'Newsletter';
+
+  @override
+  String get myPrices => 'I miei prezzi';
+
+  @override
+  String get myPrice => 'Il mio prezzo';
+
+  @override
+  String get addMyPrice => 'Aggiungi prezzo';
+
+  @override
+  String get editMyPrice => 'Modifica prezzo';
+
+  @override
+  String get productRequired => 'Scrivi il prodotto';
+
+  @override
+  String get noteOptional => 'Nota (facoltativa)';
+
+  @override
+  String get myPricesPrivate => 'I tuoi prezzi li vedi solo tu.';
+
+  @override
+  String get myPriceSaved => 'Prezzo salvato in \"I miei prezzi\"';
+
+  @override
+  String get searchMyPrices => 'Cerca prodotto o supermercato';
+
+  @override
+  String get noMyPrices => 'Nessun prezzo. Aggiungilo da qui o dal menu ⋮ di un prodotto della lista.';
+
+  @override
+  String get noMyPricesFound => 'Nessun prezzo trovato.';
+
+  @override
+  String deleteMyPriceQuestion(String product) {
+    return 'Eliminare il prezzo di $product?';
+  }
+
+  @override
+  String get info => 'Info';
+
+  @override
+  String get noProductInfo => 'Nessuna informazione trovata su Open Food Facts per questo prodotto.';
+
+  @override
+  String get similarProductNotice => 'Prodotto simile trovato dal nome: potrebbe non essere esattamente il tuo.';
+
+  @override
+  String get barcode => 'Codice a barre';
+
+  @override
+  String get copy => 'Copia';
+
+  @override
+  String get copied => 'Copiato';
+
+  @override
+  String get forCoeliacs => 'Celiaci';
+
+  @override
+  String get glutenFree => 'senza glutine';
+
+  @override
+  String get containsGluten => 'contiene glutine';
+
+  @override
+  String get vegetarian => 'Vegetariano';
+
+  @override
+  String get vegan => 'Vegano';
+
+  @override
+  String get yes => 'sì';
+
+  @override
+  String get no => 'no';
+
+  @override
+  String get palmOil => 'Olio di palma';
+
+  @override
+  String get palmOilFree => 'senza';
+
+  @override
+  String get containsPalmOil => 'contiene';
+
+  @override
+  String get lactose => 'Lattosio';
+
+  @override
+  String get lactoseFree => 'senza lattosio';
+
+  @override
+  String get notIndicated => 'non indicato';
+
+  @override
+  String get nutritionPer100 => 'Valori nutrizionali per 100 g';
+
+  @override
+  String get nutrientFat => 'Grassi';
+
+  @override
+  String get nutrientSaturatedFat => 'di cui saturi';
+
+  @override
+  String get nutrientCarbohydrates => 'Carboidrati';
+
+  @override
+  String get nutrientSugars => 'di cui zuccheri';
+
+  @override
+  String get nutrientFiber => 'Fibre';
+
+  @override
+  String get nutrientProteins => 'Proteine';
+
+  @override
+  String get nutrientSalt => 'Sale';
+
+  @override
+  String get allergens => 'Allergeni';
+
+  @override
+  String mayContainTraces(String list) {
+    return 'Può contenere tracce di: $list';
+  }
+
+  @override
+  String get ingredients => 'Ingredienti';
+
+  @override
+  String get openFoodFactsPage => 'Vedi su Open Food Facts';
+
+  @override
+  String get openFoodFactsSource =>
+      'Dati da Open Food Facts (licenza ODbL): possono essere incompleti, controlla sempre l\'etichetta.';
+
+  @override
+  String get allergenGluten => 'Glutine';
+
+  @override
+  String get allergenCrustaceans => 'Crostacei';
+
+  @override
+  String get allergenEggs => 'Uova';
+
+  @override
+  String get allergenFish => 'Pesce';
+
+  @override
+  String get allergenPeanuts => 'Arachidi';
+
+  @override
+  String get allergenSoybeans => 'Soia';
+
+  @override
+  String get allergenMilk => 'Latte';
+
+  @override
+  String get allergenNuts => 'Frutta a guscio';
+
+  @override
+  String get allergenCelery => 'Sedano';
+
+  @override
+  String get allergenMustard => 'Senape';
+
+  @override
+  String get allergenSesame => 'Sesamo';
+
+  @override
+  String get allergenSulphites => 'Solfiti';
+
+  @override
+  String get allergenLupin => 'Lupini';
+
+  @override
+  String get allergenMolluscs => 'Molluschi';
 }

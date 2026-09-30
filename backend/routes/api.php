@@ -6,7 +6,6 @@ use App\Http\Controllers\Api\AvatarController;
 use App\Http\Controllers\Api\ConfigController;
 use App\Http\Controllers\Api\DeviceController;
 use App\Http\Controllers\Api\GlobalShareController;
-use App\Http\Controllers\Api\ItemPriceController;
 use App\Http\Controllers\Api\ListImageController;
 use App\Http\Controllers\Api\ListItemController;
 use App\Http\Controllers\Api\ListItemImageController;
@@ -14,10 +13,12 @@ use App\Http\Controllers\Api\ListMessageController;
 use App\Http\Controllers\Api\ListShareController;
 use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\PasswordResetController;
+use App\Http\Controllers\Api\ProductInfoController;
 use App\Http\Controllers\Api\ProductSearchController;
 use App\Http\Controllers\Api\ProductSuggestionController;
 use App\Http\Controllers\Api\ShoppingListController;
 use App\Http\Controllers\Api\SupermarketController;
+use App\Http\Controllers\Api\UserPriceController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/config', ConfigController::class);
@@ -35,6 +36,7 @@ Route::middleware('throttle:10,1')->group(function () {
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/me', [AuthController::class, 'me']);
+    Route::patch('/me', [AuthController::class, 'update']);
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::delete('/me', [AuthController::class, 'destroy']);
     Route::post('/me/avatar', [AvatarController::class, 'store']);
@@ -45,7 +47,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/products/suggestions', ProductSuggestionController::class);
     Route::get('/products/search', ProductSearchController::class)->middleware('throttle:60,1');
     Route::get('/supermarkets', [SupermarketController::class, 'index']);
-    Route::get('/lists/{list}/price-comparison', [SupermarketController::class, 'compare']);
+
+    // I miei prezzi: li vede solo chi li ha scritti.
+    Route::get('/me/prices', [UserPriceController::class, 'index']);
+    Route::post('/me/prices', [UserPriceController::class, 'store']);
+    Route::patch('/me/prices/{price}', [UserPriceController::class, 'update']);
+    Route::delete('/me/prices/{price}', [UserPriceController::class, 'destroy']);
 
     Route::scopeBindings()->group(function () {
         Route::delete('/lists/{list}/items/checked', [ListItemController::class, 'destroyChecked']);
@@ -56,13 +63,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/lists/{list}/items/{item}/image', [ListItemImageController::class, 'show']);
         Route::post('/lists/{list}/items/{item}/image', [ListItemImageController::class, 'store']);
         Route::delete('/lists/{list}/items/{item}/image', [ListItemImageController::class, 'destroy']);
+        Route::get('/lists/{list}/items/{item}/info', ProductInfoController::class)->middleware('throttle:60,1');
 
-        Route::get('/lists/{list}/items/{item}/prices', [ItemPriceController::class, 'index']);
-        Route::post('/lists/{list}/items/{item}/prices', [ItemPriceController::class, 'store'])->middleware('throttle:20,1');
-        // Il prezzo votato non appartiene all'articolo: si controlla nel controller che sia della catena della lista.
-        Route::post('/lists/{list}/items/{item}/prices/{report}/vote', [ItemPriceController::class, 'vote'])
-            ->withoutScopedBindings()
-            ->middleware('throttle:60,1');
     });
 
     Route::get('/lists/{list}/shares', [ListShareController::class, 'index']);

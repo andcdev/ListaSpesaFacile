@@ -1,5 +1,3 @@
-import 'supermarket.dart';
-
 /// Stato di un articolo: da prendere, preso (nel carrello) o non preso (non trovato / esaurito).
 enum ItemStatus {
   todo('todo'),
@@ -29,10 +27,6 @@ class ListItem {
     this.quantity,
     this.amount,
     this.unit,
-    this.price,
-    this.priceInfo,
-    this.myPrice,
-    this.pendingPrices = 0,
     this.status = ItemStatus.todo,
     this.position = 0,
     this.createdBy,
@@ -67,23 +61,7 @@ class ListItem {
   /// Peso o volume, es. 500 g, 1,5 l.
   final double? amount;
   final String? unit;
-
-  /// Prezzo indicativo nella catena scelta per la lista (quantità e peso compresi), null se non si conosce.
-  final double? price;
-
-  /// Da dove viene il prezzo: chi l'ha segnalato, quando e dove.
-  final PriceInfo? priceInfo;
-
-  /// Il prezzo che ho proposto, in attesa di conferma: lo vedo solo io (non arriva con gli eventi in tempo reale).
-  final PriceInfo? myPrice;
-
-  /// Prezzi proposti da altri in attesa di una conferma.
-  final int pendingPrices;
   final ItemStatus status;
-
-  /// Prezzo da mostrare: la mia proposta in attesa, altrimenti quello confermato.
-  double? get shownPrice => myPrice?.line ?? price;
-  String get currency => (myPrice ?? priceInfo)?.currency ?? 'EUR';
   final int position;
   final String? createdBy;
 
@@ -116,18 +94,13 @@ class ListItem {
     quantity: json['quantity'] as String?,
     amount: (json['amount'] as num?)?.toDouble(),
     unit: json['unit'] as String?,
-    price: (json['price'] as num?)?.toDouble(),
-    priceInfo: json['price_info'] == null ? null : PriceInfo.fromJson(json['price_info'] as Map<String, dynamic>),
-    myPrice: json['my_price'] == null ? null : PriceInfo.fromJson(json['my_price'] as Map<String, dynamic>),
-    pendingPrices: json['pending_prices'] as int? ?? 0,
     status: ItemStatus.parse(json['status'] as String?, checked: json['checked'] as bool? ?? false),
     position: json['position'] as int? ?? 0,
     createdBy: json['created_by'] as String?,
     checkedBy: json['checked_by'] as String?,
   );
 
-  /// [myPrice] (nullable) sostituisce la mia proposta: serve per tenerla quando l'articolo arriva da un evento.
-  ListItem copyWith({ItemStatus? status, PriceInfo? Function()? myPrice}) => ListItem(
+  ListItem copyWith({ItemStatus? status}) => ListItem(
     id: id,
     listId: listId,
     name: name,
@@ -141,10 +114,6 @@ class ListItem {
     quantity: quantity,
     amount: amount,
     unit: unit,
-    price: price,
-    priceInfo: priceInfo,
-    myPrice: myPrice == null ? this.myPrice : myPrice(),
-    pendingPrices: pendingPrices,
     status: status ?? this.status,
     position: position,
     createdBy: createdBy,

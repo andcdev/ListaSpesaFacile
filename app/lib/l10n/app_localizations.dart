@@ -1688,92 +1688,14 @@ abstract class AppLocalizations {
   /// No description provided for @supermarketHelper.
   ///
   /// In it, this message translates to:
-  /// **'Se è una catena nota, la lista mostra i prezzi indicativi'**
+  /// **'Dove fai la spesa (facoltativo)'**
   String get supermarketHelper;
-
-  /// No description provided for @estimatedTotal.
-  ///
-  /// In it, this message translates to:
-  /// **'Totale stimato da {chain}*'**
-  String estimatedTotal(String chain);
-
-  /// No description provided for @pricesIndicativeNote.
-  ///
-  /// In it, this message translates to:
-  /// **'* Prezzi indicativi in base alla catena: possono variare da un punto vendita all\'altro e per le offerte.'**
-  String get pricesIndicativeNote;
-
-  /// No description provided for @pricedOf.
-  ///
-  /// In it, this message translates to:
-  /// **'Prezzo per {priced} di {total} prodotti'**
-  String pricedOf(int priced, int total);
-
-  /// No description provided for @noPricesForChain.
-  ///
-  /// In it, this message translates to:
-  /// **'Nessun prezzo disponibile da {chain} per questi prodotti'**
-  String noPricesForChain(String chain);
-
-  /// No description provided for @compareChains.
-  ///
-  /// In it, this message translates to:
-  /// **'Confronta catene'**
-  String get compareChains;
-
-  /// No description provided for @currentChain.
-  ///
-  /// In it, this message translates to:
-  /// **'scelta'**
-  String get currentChain;
-
-  /// No description provided for @noChainPrices.
-  ///
-  /// In it, this message translates to:
-  /// **'Non ci sono ancora prezzi per i prodotti di questa lista.'**
-  String get noChainPrices;
 
   /// No description provided for @close.
   ///
   /// In it, this message translates to:
   /// **'Chiudi'**
   String get close;
-
-  /// No description provided for @country.
-  ///
-  /// In it, this message translates to:
-  /// **'Paese'**
-  String get country;
-
-  /// No description provided for @cityLabel.
-  ///
-  /// In it, this message translates to:
-  /// **'Città o paese'**
-  String get cityLabel;
-
-  /// No description provided for @cityHint.
-  ///
-  /// In it, this message translates to:
-  /// **'es. Milano'**
-  String get cityHint;
-
-  /// No description provided for @localityLabel.
-  ///
-  /// In it, this message translates to:
-  /// **'Località o quartiere (facoltativo)'**
-  String get localityLabel;
-
-  /// No description provided for @localityHint.
-  ///
-  /// In it, this message translates to:
-  /// **'es. Città Studi'**
-  String get localityHint;
-
-  /// No description provided for @zoneHelper.
-  ///
-  /// In it, this message translates to:
-  /// **'Si mostra il prezzo più confermato della zona più vicina'**
-  String get zoneHelper;
 
   /// No description provided for @perPiece.
   ///
@@ -1793,125 +1715,11 @@ abstract class AppLocalizations {
   /// **'al litro'**
   String get perLitre;
 
-  /// No description provided for @priceMenu.
-  ///
-  /// In it, this message translates to:
-  /// **'Prezzo'**
-  String get priceMenu;
-
   /// No description provided for @priceLabel.
   ///
   /// In it, this message translates to:
   /// **'Prezzo'**
   String get priceLabel;
-
-  /// No description provided for @provinceLabel.
-  ///
-  /// In it, this message translates to:
-  /// **'Provincia'**
-  String get provinceLabel;
-
-  /// No description provided for @provinceHint.
-  ///
-  /// In it, this message translates to:
-  /// **'es. MI'**
-  String get provinceHint;
-
-  /// No description provided for @proposeOtherPrice.
-  ///
-  /// In it, this message translates to:
-  /// **'Proponi un altro prezzo'**
-  String get proposeOtherPrice;
-
-  /// No description provided for @priceProposed.
-  ///
-  /// In it, this message translates to:
-  /// **'Prezzo proposto: gli altri lo vedranno quando qualcuno lo conferma.'**
-  String get priceProposed;
-
-  /// No description provided for @priceConfirmed.
-  ///
-  /// In it, this message translates to:
-  /// **'Prezzo confermato: grazie!'**
-  String get priceConfirmed;
-
-  /// No description provided for @priceDisputed.
-  ///
-  /// In it, this message translates to:
-  /// **'Segnalato come non giusto: grazie!'**
-  String get priceDisputed;
-
-  /// No description provided for @confirmations.
-  ///
-  /// In it, this message translates to:
-  /// **'{count, plural, =0{Nessuna conferma} =1{1 conferma} other{{count} conferme}}'**
-  String confirmations(int count);
-
-  /// No description provided for @confirmPrice.
-  ///
-  /// In it, this message translates to:
-  /// **'Confermo'**
-  String get confirmPrice;
-
-  /// No description provided for @notRightPrice.
-  ///
-  /// In it, this message translates to:
-  /// **'Non è giusto'**
-  String get notRightPrice;
-
-  /// No description provided for @yourProposal.
-  ///
-  /// In it, this message translates to:
-  /// **'La tua proposta: {price}'**
-  String yourProposal(String price);
-
-  /// No description provided for @waitingConfirmation.
-  ///
-  /// In it, this message translates to:
-  /// **'In attesa di conferma: per ora la vedi solo tu'**
-  String get waitingConfirmation;
-
-  /// No description provided for @otherPrices.
-  ///
-  /// In it, this message translates to:
-  /// **'Altri prezzi'**
-  String get otherPrices;
-
-  /// No description provided for @toBeConfirmed.
-  ///
-  /// In it, this message translates to:
-  /// **'da confermare'**
-  String get toBeConfirmed;
-
-  /// No description provided for @disputed.
-  ///
-  /// In it, this message translates to:
-  /// **'smentito'**
-  String get disputed;
-
-  /// No description provided for @proposedByYou.
-  ///
-  /// In it, this message translates to:
-  /// **'proposto da te'**
-  String get proposedByYou;
-
-  /// No description provided for @addPrice.
-  ///
-  /// In it, this message translates to:
-  /// **'Aggiungi il prezzo'**
-  String get addPrice;
-
-  /// No description provided for @noPriceYet.
-  ///
-  /// In it, this message translates to:
-  /// **'Nessun prezzo ancora per questo prodotto in questa catena.'**
-  String get noPriceYet;
-
-  /// No description provided for @chooseKnownSupermarket.
-  ///
-  /// In it, this message translates to:
-  /// **'Per i prezzi scegli nella lista il supermercato di una catena conosciuta.'**
-  String get chooseKnownSupermarket;
 
   /// No description provided for @invalidPrice.
   ///
@@ -1919,11 +1727,401 @@ abstract class AppLocalizations {
   /// **'Scrivi un prezzo, es. 1,29'**
   String get invalidPrice;
 
-  /// No description provided for @priceReportPrivacy.
+  /// No description provided for @privacyRequired.
   ///
   /// In it, this message translates to:
-  /// **'Gli altri vedranno il prezzo dopo la conferma di altri utenti. Vedranno il tuo nome e l\'ora, non la tua email.'**
-  String get priceReportPrivacy;
+  /// **'Per registrarti devi accettare l\'informativa privacy'**
+  String get privacyRequired;
+
+  /// No description provided for @acceptPrivacyPrefix.
+  ///
+  /// In it, this message translates to:
+  /// **'Ho letto e accetto l\''**
+  String get acceptPrivacyPrefix;
+
+  /// No description provided for @acceptPrivacySuffix.
+  ///
+  /// In it, this message translates to:
+  /// **''**
+  String get acceptPrivacySuffix;
+
+  /// No description provided for @privacyPolicy.
+  ///
+  /// In it, this message translates to:
+  /// **'informativa privacy'**
+  String get privacyPolicy;
+
+  /// No description provided for @newsletterConsent.
+  ///
+  /// In it, this message translates to:
+  /// **'Voglio ricevere la newsletter di Lista Spesa Facile'**
+  String get newsletterConsent;
+
+  /// No description provided for @newsletterOptional.
+  ///
+  /// In it, this message translates to:
+  /// **'Facoltativo: puoi cambiarlo quando vuoi dal menu del profilo'**
+  String get newsletterOptional;
+
+  /// No description provided for @socialPrivacyNotice.
+  ///
+  /// In it, this message translates to:
+  /// **'Continuando con Google o Facebook accetti l\''**
+  String get socialPrivacyNotice;
+
+  /// No description provided for @newsletter.
+  ///
+  /// In it, this message translates to:
+  /// **'Newsletter'**
+  String get newsletter;
+
+  /// No description provided for @myPrices.
+  ///
+  /// In it, this message translates to:
+  /// **'I miei prezzi'**
+  String get myPrices;
+
+  /// No description provided for @myPrice.
+  ///
+  /// In it, this message translates to:
+  /// **'Il mio prezzo'**
+  String get myPrice;
+
+  /// No description provided for @addMyPrice.
+  ///
+  /// In it, this message translates to:
+  /// **'Aggiungi prezzo'**
+  String get addMyPrice;
+
+  /// No description provided for @editMyPrice.
+  ///
+  /// In it, this message translates to:
+  /// **'Modifica prezzo'**
+  String get editMyPrice;
+
+  /// No description provided for @productRequired.
+  ///
+  /// In it, this message translates to:
+  /// **'Scrivi il prodotto'**
+  String get productRequired;
+
+  /// No description provided for @noteOptional.
+  ///
+  /// In it, this message translates to:
+  /// **'Nota (facoltativa)'**
+  String get noteOptional;
+
+  /// No description provided for @myPricesPrivate.
+  ///
+  /// In it, this message translates to:
+  /// **'I tuoi prezzi li vedi solo tu.'**
+  String get myPricesPrivate;
+
+  /// No description provided for @myPriceSaved.
+  ///
+  /// In it, this message translates to:
+  /// **'Prezzo salvato in \"I miei prezzi\"'**
+  String get myPriceSaved;
+
+  /// No description provided for @searchMyPrices.
+  ///
+  /// In it, this message translates to:
+  /// **'Cerca prodotto o supermercato'**
+  String get searchMyPrices;
+
+  /// No description provided for @noMyPrices.
+  ///
+  /// In it, this message translates to:
+  /// **'Nessun prezzo. Aggiungilo da qui o dal menu ⋮ di un prodotto della lista.'**
+  String get noMyPrices;
+
+  /// No description provided for @noMyPricesFound.
+  ///
+  /// In it, this message translates to:
+  /// **'Nessun prezzo trovato.'**
+  String get noMyPricesFound;
+
+  /// No description provided for @deleteMyPriceQuestion.
+  ///
+  /// In it, this message translates to:
+  /// **'Eliminare il prezzo di {product}?'**
+  String deleteMyPriceQuestion(String product);
+
+  /// No description provided for @info.
+  ///
+  /// In it, this message translates to:
+  /// **'Info'**
+  String get info;
+
+  /// No description provided for @noProductInfo.
+  ///
+  /// In it, this message translates to:
+  /// **'Nessuna informazione trovata su Open Food Facts per questo prodotto.'**
+  String get noProductInfo;
+
+  /// No description provided for @similarProductNotice.
+  ///
+  /// In it, this message translates to:
+  /// **'Prodotto simile trovato dal nome: potrebbe non essere esattamente il tuo.'**
+  String get similarProductNotice;
+
+  /// No description provided for @barcode.
+  ///
+  /// In it, this message translates to:
+  /// **'Codice a barre'**
+  String get barcode;
+
+  /// No description provided for @copy.
+  ///
+  /// In it, this message translates to:
+  /// **'Copia'**
+  String get copy;
+
+  /// No description provided for @copied.
+  ///
+  /// In it, this message translates to:
+  /// **'Copiato'**
+  String get copied;
+
+  /// No description provided for @forCoeliacs.
+  ///
+  /// In it, this message translates to:
+  /// **'Celiaci'**
+  String get forCoeliacs;
+
+  /// No description provided for @glutenFree.
+  ///
+  /// In it, this message translates to:
+  /// **'senza glutine'**
+  String get glutenFree;
+
+  /// No description provided for @containsGluten.
+  ///
+  /// In it, this message translates to:
+  /// **'contiene glutine'**
+  String get containsGluten;
+
+  /// No description provided for @vegetarian.
+  ///
+  /// In it, this message translates to:
+  /// **'Vegetariano'**
+  String get vegetarian;
+
+  /// No description provided for @vegan.
+  ///
+  /// In it, this message translates to:
+  /// **'Vegano'**
+  String get vegan;
+
+  /// No description provided for @yes.
+  ///
+  /// In it, this message translates to:
+  /// **'sì'**
+  String get yes;
+
+  /// No description provided for @no.
+  ///
+  /// In it, this message translates to:
+  /// **'no'**
+  String get no;
+
+  /// No description provided for @palmOil.
+  ///
+  /// In it, this message translates to:
+  /// **'Olio di palma'**
+  String get palmOil;
+
+  /// No description provided for @palmOilFree.
+  ///
+  /// In it, this message translates to:
+  /// **'senza'**
+  String get palmOilFree;
+
+  /// No description provided for @containsPalmOil.
+  ///
+  /// In it, this message translates to:
+  /// **'contiene'**
+  String get containsPalmOil;
+
+  /// No description provided for @lactose.
+  ///
+  /// In it, this message translates to:
+  /// **'Lattosio'**
+  String get lactose;
+
+  /// No description provided for @lactoseFree.
+  ///
+  /// In it, this message translates to:
+  /// **'senza lattosio'**
+  String get lactoseFree;
+
+  /// No description provided for @notIndicated.
+  ///
+  /// In it, this message translates to:
+  /// **'non indicato'**
+  String get notIndicated;
+
+  /// No description provided for @nutritionPer100.
+  ///
+  /// In it, this message translates to:
+  /// **'Valori nutrizionali per 100 g'**
+  String get nutritionPer100;
+
+  /// No description provided for @nutrientFat.
+  ///
+  /// In it, this message translates to:
+  /// **'Grassi'**
+  String get nutrientFat;
+
+  /// No description provided for @nutrientSaturatedFat.
+  ///
+  /// In it, this message translates to:
+  /// **'di cui saturi'**
+  String get nutrientSaturatedFat;
+
+  /// No description provided for @nutrientCarbohydrates.
+  ///
+  /// In it, this message translates to:
+  /// **'Carboidrati'**
+  String get nutrientCarbohydrates;
+
+  /// No description provided for @nutrientSugars.
+  ///
+  /// In it, this message translates to:
+  /// **'di cui zuccheri'**
+  String get nutrientSugars;
+
+  /// No description provided for @nutrientFiber.
+  ///
+  /// In it, this message translates to:
+  /// **'Fibre'**
+  String get nutrientFiber;
+
+  /// No description provided for @nutrientProteins.
+  ///
+  /// In it, this message translates to:
+  /// **'Proteine'**
+  String get nutrientProteins;
+
+  /// No description provided for @nutrientSalt.
+  ///
+  /// In it, this message translates to:
+  /// **'Sale'**
+  String get nutrientSalt;
+
+  /// No description provided for @allergens.
+  ///
+  /// In it, this message translates to:
+  /// **'Allergeni'**
+  String get allergens;
+
+  /// No description provided for @mayContainTraces.
+  ///
+  /// In it, this message translates to:
+  /// **'Può contenere tracce di: {list}'**
+  String mayContainTraces(String list);
+
+  /// No description provided for @ingredients.
+  ///
+  /// In it, this message translates to:
+  /// **'Ingredienti'**
+  String get ingredients;
+
+  /// No description provided for @openFoodFactsPage.
+  ///
+  /// In it, this message translates to:
+  /// **'Vedi su Open Food Facts'**
+  String get openFoodFactsPage;
+
+  /// No description provided for @openFoodFactsSource.
+  ///
+  /// In it, this message translates to:
+  /// **'Dati da Open Food Facts (licenza ODbL): possono essere incompleti, controlla sempre l\'etichetta.'**
+  String get openFoodFactsSource;
+
+  /// No description provided for @allergenGluten.
+  ///
+  /// In it, this message translates to:
+  /// **'Glutine'**
+  String get allergenGluten;
+
+  /// No description provided for @allergenCrustaceans.
+  ///
+  /// In it, this message translates to:
+  /// **'Crostacei'**
+  String get allergenCrustaceans;
+
+  /// No description provided for @allergenEggs.
+  ///
+  /// In it, this message translates to:
+  /// **'Uova'**
+  String get allergenEggs;
+
+  /// No description provided for @allergenFish.
+  ///
+  /// In it, this message translates to:
+  /// **'Pesce'**
+  String get allergenFish;
+
+  /// No description provided for @allergenPeanuts.
+  ///
+  /// In it, this message translates to:
+  /// **'Arachidi'**
+  String get allergenPeanuts;
+
+  /// No description provided for @allergenSoybeans.
+  ///
+  /// In it, this message translates to:
+  /// **'Soia'**
+  String get allergenSoybeans;
+
+  /// No description provided for @allergenMilk.
+  ///
+  /// In it, this message translates to:
+  /// **'Latte'**
+  String get allergenMilk;
+
+  /// No description provided for @allergenNuts.
+  ///
+  /// In it, this message translates to:
+  /// **'Frutta a guscio'**
+  String get allergenNuts;
+
+  /// No description provided for @allergenCelery.
+  ///
+  /// In it, this message translates to:
+  /// **'Sedano'**
+  String get allergenCelery;
+
+  /// No description provided for @allergenMustard.
+  ///
+  /// In it, this message translates to:
+  /// **'Senape'**
+  String get allergenMustard;
+
+  /// No description provided for @allergenSesame.
+  ///
+  /// In it, this message translates to:
+  /// **'Sesamo'**
+  String get allergenSesame;
+
+  /// No description provided for @allergenSulphites.
+  ///
+  /// In it, this message translates to:
+  /// **'Solfiti'**
+  String get allergenSulphites;
+
+  /// No description provided for @allergenLupin.
+  ///
+  /// In it, this message translates to:
+  /// **'Lupini'**
+  String get allergenLupin;
+
+  /// No description provided for @allergenMolluscs.
+  ///
+  /// In it, this message translates to:
+  /// **'Molluschi'**
+  String get allergenMolluscs;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

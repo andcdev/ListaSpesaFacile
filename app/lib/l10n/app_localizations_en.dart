@@ -906,56 +906,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get supermarketHint => 'e.g. Esselunga, Coop, Lidl';
 
   @override
-  String get supermarketHelper => 'If it is a known chain, the list shows indicative prices';
-
-  @override
-  String estimatedTotal(String chain) {
-    return 'Estimated total at $chain*';
-  }
-
-  @override
-  String get pricesIndicativeNote =>
-      '* Indicative prices based on the chain: they may vary between stores and with offers.';
-
-  @override
-  String pricedOf(int priced, int total) {
-    return 'Price for $priced of $total products';
-  }
-
-  @override
-  String noPricesForChain(String chain) {
-    return 'No prices available at $chain for these products';
-  }
-
-  @override
-  String get compareChains => 'Compare chains';
-
-  @override
-  String get currentChain => 'chosen';
-
-  @override
-  String get noChainPrices => 'There are no prices for the products in this list yet.';
+  String get supermarketHelper => 'Where you shop (optional)';
 
   @override
   String get close => 'Close';
-
-  @override
-  String get country => 'Country';
-
-  @override
-  String get cityLabel => 'Town or city';
-
-  @override
-  String get cityHint => 'e.g. Milan';
-
-  @override
-  String get localityLabel => 'Area or neighbourhood (optional)';
-
-  @override
-  String get localityHint => 'e.g. Città Studi';
-
-  @override
-  String get zoneHelper => 'The most confirmed price of the nearest area is shown';
 
   @override
   String get perPiece => 'per pack';
@@ -967,80 +921,211 @@ class AppLocalizationsEn extends AppLocalizations {
   String get perLitre => 'per litre';
 
   @override
-  String get priceMenu => 'Price';
-
-  @override
   String get priceLabel => 'Price';
-
-  @override
-  String get provinceLabel => 'County';
-
-  @override
-  String get provinceHint => 'e.g. Kent';
-
-  @override
-  String get proposeOtherPrice => 'Suggest another price';
-
-  @override
-  String get priceProposed => 'Price suggested: others will see it once someone confirms it.';
-
-  @override
-  String get priceConfirmed => 'Price confirmed: thank you!';
-
-  @override
-  String get priceDisputed => 'Marked as wrong: thank you!';
-
-  @override
-  String confirmations(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count confirmations',
-      one: '1 confirmation',
-      zero: 'No confirmations',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String get confirmPrice => 'Confirm';
-
-  @override
-  String get notRightPrice => 'It\'s wrong';
-
-  @override
-  String yourProposal(String price) {
-    return 'Your suggestion: $price';
-  }
-
-  @override
-  String get waitingConfirmation => 'Waiting for confirmation: only you see it for now';
-
-  @override
-  String get otherPrices => 'Other prices';
-
-  @override
-  String get toBeConfirmed => 'to be confirmed';
-
-  @override
-  String get disputed => 'disputed';
-
-  @override
-  String get proposedByYou => 'suggested by you';
-
-  @override
-  String get addPrice => 'Add the price';
-
-  @override
-  String get noPriceYet => 'No price yet for this product in this chain.';
-
-  @override
-  String get chooseKnownSupermarket => 'For prices, choose a supermarket from a known chain in the list.';
 
   @override
   String get invalidPrice => 'Enter a price, e.g. 1.29';
 
   @override
-  String get priceReportPrivacy =>
-      'Others will see the price once other users confirm it. They will see your name and the time, not your email.';
+  String get privacyRequired => 'You must accept the privacy policy to sign up';
+
+  @override
+  String get acceptPrivacyPrefix => 'I have read and accept the ';
+
+  @override
+  String get acceptPrivacySuffix => '';
+
+  @override
+  String get privacyPolicy => 'privacy policy';
+
+  @override
+  String get newsletterConsent => 'I want to receive the Lista Spesa Facile newsletter';
+
+  @override
+  String get newsletterOptional => 'Optional: you can change it anytime from the profile menu';
+
+  @override
+  String get socialPrivacyNotice => 'By continuing with Google or Facebook you accept the ';
+
+  @override
+  String get newsletter => 'Newsletter';
+
+  @override
+  String get myPrices => 'My prices';
+
+  @override
+  String get myPrice => 'My price';
+
+  @override
+  String get addMyPrice => 'Add price';
+
+  @override
+  String get editMyPrice => 'Edit price';
+
+  @override
+  String get productRequired => 'Enter the product';
+
+  @override
+  String get noteOptional => 'Note (optional)';
+
+  @override
+  String get myPricesPrivate => 'Only you can see your prices.';
+
+  @override
+  String get myPriceSaved => 'Price saved in \"My prices\"';
+
+  @override
+  String get searchMyPrices => 'Search product or supermarket';
+
+  @override
+  String get noMyPrices => 'No prices yet. Add one here or from the ⋮ menu of a product in a list.';
+
+  @override
+  String get noMyPricesFound => 'No prices found.';
+
+  @override
+  String deleteMyPriceQuestion(String product) {
+    return 'Delete the price of $product?';
+  }
+
+  @override
+  String get info => 'Info';
+
+  @override
+  String get noProductInfo => 'No information found on Open Food Facts for this product.';
+
+  @override
+  String get similarProductNotice => 'Similar product found by name: it may not be exactly yours.';
+
+  @override
+  String get barcode => 'Barcode';
+
+  @override
+  String get copy => 'Copy';
+
+  @override
+  String get copied => 'Copied';
+
+  @override
+  String get forCoeliacs => 'Coeliacs';
+
+  @override
+  String get glutenFree => 'gluten free';
+
+  @override
+  String get containsGluten => 'contains gluten';
+
+  @override
+  String get vegetarian => 'Vegetarian';
+
+  @override
+  String get vegan => 'Vegan';
+
+  @override
+  String get yes => 'yes';
+
+  @override
+  String get no => 'no';
+
+  @override
+  String get palmOil => 'Palm oil';
+
+  @override
+  String get palmOilFree => 'none';
+
+  @override
+  String get containsPalmOil => 'contains';
+
+  @override
+  String get lactose => 'Lactose';
+
+  @override
+  String get lactoseFree => 'lactose free';
+
+  @override
+  String get notIndicated => 'not stated';
+
+  @override
+  String get nutritionPer100 => 'Nutrition facts per 100 g';
+
+  @override
+  String get nutrientFat => 'Fat';
+
+  @override
+  String get nutrientSaturatedFat => 'of which saturates';
+
+  @override
+  String get nutrientCarbohydrates => 'Carbohydrates';
+
+  @override
+  String get nutrientSugars => 'of which sugars';
+
+  @override
+  String get nutrientFiber => 'Fibre';
+
+  @override
+  String get nutrientProteins => 'Protein';
+
+  @override
+  String get nutrientSalt => 'Salt';
+
+  @override
+  String get allergens => 'Allergens';
+
+  @override
+  String mayContainTraces(String list) {
+    return 'May contain traces of: $list';
+  }
+
+  @override
+  String get ingredients => 'Ingredients';
+
+  @override
+  String get openFoodFactsPage => 'View on Open Food Facts';
+
+  @override
+  String get openFoodFactsSource =>
+      'Data from Open Food Facts (ODbL licence): it may be incomplete, always check the label.';
+
+  @override
+  String get allergenGluten => 'Gluten';
+
+  @override
+  String get allergenCrustaceans => 'Crustaceans';
+
+  @override
+  String get allergenEggs => 'Eggs';
+
+  @override
+  String get allergenFish => 'Fish';
+
+  @override
+  String get allergenPeanuts => 'Peanuts';
+
+  @override
+  String get allergenSoybeans => 'Soy';
+
+  @override
+  String get allergenMilk => 'Milk';
+
+  @override
+  String get allergenNuts => 'Tree nuts';
+
+  @override
+  String get allergenCelery => 'Celery';
+
+  @override
+  String get allergenMustard => 'Mustard';
+
+  @override
+  String get allergenSesame => 'Sesame';
+
+  @override
+  String get allergenSulphites => 'Sulphites';
+
+  @override
+  String get allergenLupin => 'Lupin';
+
+  @override
+  String get allergenMolluscs => 'Molluscs';
 }

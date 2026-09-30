@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -24,6 +25,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Map<String, List<String>> _serverErrors = {};
   bool _busy = false;
 
+  /// Informativa privacy accettata (obbligatoria) e consenso alla newsletter (facoltativo).
+  bool _privacy = false;
+  bool _newsletter = false;
+
   @override
   void dispose() {
     for (final c in [_name, _email, _password, _confirm]) {
@@ -37,7 +42,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
     if (!_form.currentState!.validate()) return;
     setState(() => _busy = true);
     try {
-      await context.read<AuthController>().register(_name.text, _email.text, _password.text);
+      await context.read<AuthController>().register(
+        _name.text,
+        _email.text,
+        _password.text,
+        privacy: _privacy,
+        newsletter: _newsletter,
+      );
       if (mounted) Navigator.pop(context);
     } on ApiException catch (e) {
       if (!mounted) return;
@@ -77,7 +88,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     decoration: InputDecoration(labelText: l.email, errorText: _serverError('email')),
                     keyboardType: TextInputType.emailAddress,
                     textInputAction: TextInputAction.next,
-                    validator: (v) => (v == null || !v.contains('@')) ? l.invalidEmail : null,
+                    validator: (v) => isValidEmail(v ?? '') ? null : l.invalidEmail,
                   ),
                   const SizedBox(height: 16),
                   PasswordField(
@@ -97,7 +108,57 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     onFieldSubmitted: (_) => _submit(),
                     validator: (v) => v != _password.text ? l.passwordsDontMatch : null,
                   ),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 16),
+                  FormField<bool>(
+                    validator: (_) => _privacy ? null : l.privacyRequired,
+                    builder: (field) => Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        CheckboxListTile(
+                          value: _privacy,
+                          contentPadding: EdgeInsets.zero,
+                          controlAffinity: ListTileControlAffinity.leading,
+                          onChanged: (v) {
+                            setState(() => _privacy = v ?? false);
+                            field.didChange(v);
+                          },
+                          title: Text.rich(
+                            TextSpan(
+                              text: l.acceptPrivacyPrefix,
+                              children: [
+                                TextSpan(
+                                  text: l.privacyPolicy,
+                                  style: TextStyle(
+                                    color: Theme.of(context).colorScheme.primary,
+                                    decoration: TextDecoration.underline,
+                                  ),
+                                  recognizer: TapGestureRecognizer()..onTap = openPrivacyPolicy,
+                                ),
+                                TextSpan(text: l.acceptPrivacySuffix),
+                              ],
+                            ),
+                          ),
+                        ),
+                        if (field.errorText != null || _serverError('privacy') != null)
+                          Padding(
+                            padding: const EdgeInsets.only(left: 12),
+                            child: Text(
+                              field.errorText ?? _serverError('privacy')!,
+                              style: TextStyle(color: Theme.of(context).colorScheme.error, fontSize: 12),
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+                  CheckboxListTile(
+                    value: _newsletter,
+                    contentPadding: EdgeInsets.zero,
+                    controlAffinity: ListTileControlAffinity.leading,
+                    onChanged: (v) => setState(() => _newsletter = v ?? false),
+                    title: Text(l.newsletterConsent),
+                    subtitle: Text(l.newsletterOptional),
+                  ),
+                  const SizedBox(height: 16),
                   FilledButton(
                     onPressed: _busy ? null : _submit,
                     child: _busy

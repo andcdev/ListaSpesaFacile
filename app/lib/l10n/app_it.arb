@@ -572,82 +572,91 @@
   "imageLinkOptional": "Link a un'immagine (facoltativo)",
   "supermarketLabel": "Supermercato (facoltativo)",
   "supermarketHint": "es. Esselunga, Coop, Lidl",
-  "supermarketHelper": "Se è una catena nota, la lista mostra i prezzi indicativi",
-  "estimatedTotal": "Totale stimato da {chain}*",
-  "@estimatedTotal": {
-    "placeholders": {
-      "chain": {
-        "type": "String"
-      }
-    }
-  },
-  "pricesIndicativeNote": "* Prezzi indicativi in base alla catena: possono variare da un punto vendita all'altro e per le offerte.",
-  "pricedOf": "Prezzo per {priced} di {total} prodotti",
-  "@pricedOf": {
-    "placeholders": {
-      "priced": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    }
-  },
-  "noPricesForChain": "Nessun prezzo disponibile da {chain} per questi prodotti",
-  "@noPricesForChain": {
-    "placeholders": {
-      "chain": {
-        "type": "String"
-      }
-    }
-  },
-  "compareChains": "Confronta catene",
-  "currentChain": "scelta",
-  "noChainPrices": "Non ci sono ancora prezzi per i prodotti di questa lista.",
+  "supermarketHelper": "Dove fai la spesa (facoltativo)",
   "close": "Chiudi",
-  "country": "Paese",
-  "cityLabel": "Città o paese",
-  "cityHint": "es. Milano",
-  "localityLabel": "Località o quartiere (facoltativo)",
-  "localityHint": "es. Città Studi",
-  "zoneHelper": "Si mostra il prezzo più confermato della zona più vicina",
   "perPiece": "a confezione",
   "perKg": "al kg",
   "perLitre": "al litro",
-  "priceMenu": "Prezzo",
   "priceLabel": "Prezzo",
-  "provinceLabel": "Provincia",
-  "provinceHint": "es. MI",
-  "proposeOtherPrice": "Proponi un altro prezzo",
-  "priceProposed": "Prezzo proposto: gli altri lo vedranno quando qualcuno lo conferma.",
-  "priceConfirmed": "Prezzo confermato: grazie!",
-  "priceDisputed": "Segnalato come non giusto: grazie!",
-  "confirmations": "{count, plural, =0{Nessuna conferma} =1{1 conferma} other{{count} conferme}}",
-  "@confirmations": {
+  "invalidPrice": "Scrivi un prezzo, es. 1,29",
+  "privacyRequired": "Per registrarti devi accettare l'informativa privacy",
+  "acceptPrivacyPrefix": "Ho letto e accetto l'",
+  "acceptPrivacySuffix": "",
+  "privacyPolicy": "informativa privacy",
+  "newsletterConsent": "Voglio ricevere la newsletter di Lista Spesa Facile",
+  "newsletterOptional": "Facoltativo: puoi cambiarlo quando vuoi dal menu del profilo",
+  "socialPrivacyNotice": "Continuando con Google o Facebook accetti l'",
+  "newsletter": "Newsletter",
+  "myPrices": "I miei prezzi",
+  "myPrice": "Il mio prezzo",
+  "addMyPrice": "Aggiungi prezzo",
+  "editMyPrice": "Modifica prezzo",
+  "productRequired": "Scrivi il prodotto",
+  "noteOptional": "Nota (facoltativa)",
+  "myPricesPrivate": "I tuoi prezzi li vedi solo tu.",
+  "myPriceSaved": "Prezzo salvato in \"I miei prezzi\"",
+  "searchMyPrices": "Cerca prodotto o supermercato",
+  "noMyPrices": "Nessun prezzo. Aggiungilo da qui o dal menu ⋮ di un prodotto della lista.",
+  "noMyPricesFound": "Nessun prezzo trovato.",
+  "deleteMyPriceQuestion": "Eliminare il prezzo di {product}?",
+  "@deleteMyPriceQuestion": {
     "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "confirmPrice": "Confermo",
-  "notRightPrice": "Non è giusto",
-  "yourProposal": "La tua proposta: {price}",
-  "@yourProposal": {
-    "placeholders": {
-      "price": {
+      "product": {
         "type": "String"
       }
     }
   },
-  "waitingConfirmation": "In attesa di conferma: per ora la vedi solo tu",
-  "otherPrices": "Altri prezzi",
-  "toBeConfirmed": "da confermare",
-  "disputed": "smentito",
-  "proposedByYou": "proposto da te",
-  "addPrice": "Aggiungi il prezzo",
-  "noPriceYet": "Nessun prezzo ancora per questo prodotto in questa catena.",
-  "chooseKnownSupermarket": "Per i prezzi scegli nella lista il supermercato di una catena conosciuta.",
-  "invalidPrice": "Scrivi un prezzo, es. 1,29",
-  "priceReportPrivacy": "Gli altri vedranno il prezzo dopo la conferma di altri utenti. Vedranno il tuo nome e l'ora, non la tua email."
+  "info": "Info",
+  "noProductInfo": "Nessuna informazione trovata su Open Food Facts per questo prodotto.",
+  "similarProductNotice": "Prodotto simile trovato dal nome: potrebbe non essere esattamente il tuo.",
+  "barcode": "Codice a barre",
+  "copy": "Copia",
+  "copied": "Copiato",
+  "forCoeliacs": "Celiaci",
+  "glutenFree": "senza glutine",
+  "containsGluten": "contiene glutine",
+  "vegetarian": "Vegetariano",
+  "vegan": "Vegano",
+  "yes": "sì",
+  "no": "no",
+  "palmOil": "Olio di palma",
+  "palmOilFree": "senza",
+  "containsPalmOil": "contiene",
+  "lactose": "Lattosio",
+  "lactoseFree": "senza lattosio",
+  "notIndicated": "non indicato",
+  "nutritionPer100": "Valori nutrizionali per 100 g",
+  "nutrientFat": "Grassi",
+  "nutrientSaturatedFat": "di cui saturi",
+  "nutrientCarbohydrates": "Carboidrati",
+  "nutrientSugars": "di cui zuccheri",
+  "nutrientFiber": "Fibre",
+  "nutrientProteins": "Proteine",
+  "nutrientSalt": "Sale",
+  "allergens": "Allergeni",
+  "mayContainTraces": "Può contenere tracce di: {list}",
+  "@mayContainTraces": {
+    "placeholders": {
+      "list": {
+        "type": "String"
+      }
+    }
+  },
+  "ingredients": "Ingredienti",
+  "openFoodFactsPage": "Vedi su Open Food Facts",
+  "openFoodFactsSource": "Dati da Open Food Facts (licenza ODbL): possono essere incompleti, controlla sempre l'etichetta.",
+  "allergenGluten": "Glutine",
+  "allergenCrustaceans": "Crostacei",
+  "allergenEggs": "Uova",
+  "allergenFish": "Pesce",
+  "allergenPeanuts": "Arachidi",
+  "allergenSoybeans": "Soia",
+  "allergenMilk": "Latte",
+  "allergenNuts": "Frutta a guscio",
+  "allergenCelery": "Sedano",
+  "allergenMustard": "Senape",
+  "allergenSesame": "Sesamo",
+  "allergenSulphites": "Solfiti",
+  "allergenLupin": "Lupini",
+  "allergenMolluscs": "Molluschi"
 }

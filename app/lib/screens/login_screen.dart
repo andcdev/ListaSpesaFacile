@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -225,6 +226,21 @@ class _SocialLoginSectionState extends State<SocialLoginSection> {
               onPressed: _busy ? null : () => _signIn(provider, enabled: enabled.contains(provider)),
             ),
           ),
+        // Con Google o Facebook l'account si crea al primo accesso: l'informativa si accetta continuando.
+        Text.rich(
+          TextSpan(
+            text: context.l10n.socialPrivacyNotice,
+            children: [
+              TextSpan(
+                text: context.l10n.privacyPolicy,
+                style: TextStyle(color: Theme.of(context).colorScheme.primary, decoration: TextDecoration.underline),
+                recognizer: TapGestureRecognizer()..onTap = openPrivacyPolicy,
+              ),
+            ],
+          ),
+          textAlign: TextAlign.center,
+          style: Theme.of(context).textTheme.bodySmall,
+        ),
       ],
     );
   }

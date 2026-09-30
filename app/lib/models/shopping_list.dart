@@ -1,6 +1,5 @@
 import 'app_user.dart';
 import 'list_item.dart';
-import 'supermarket.dart';
 
 /// Chi riceve il promemoria di una lista.
 /// Il testo da mostrare è ReminderTarget.label (l10n.dart).
@@ -25,11 +24,6 @@ class ShoppingList {
     required this.permission,
     this.notes,
     this.supermarket,
-    this.supermarketChain,
-    this.country = 'IT',
-    this.province,
-    this.city,
-    this.locality,
     this.imageVersion,
     this.reminderMinutes,
     this.reminderTarget = ReminderTarget.all,
@@ -45,17 +39,8 @@ class ShoppingList {
   final String name;
   final String? notes;
 
-  /// Supermercato dove si fa la spesa, come scritto dall'utente.
+  /// Supermercato dove si fa la spesa, come scritto dall'utente (solo informativo).
   final String? supermarket;
-
-  /// Catena riconosciuta dal server (solo nel dettaglio): se è null la lista non mostra prezzi.
-  final Supermarket? supermarketChain;
-
-  /// Zona del supermercato (paese ISO, città, località): i prezzi segnalati lì hanno la precedenza.
-  final String country;
-  final String? province;
-  final String? city;
-  final String? locality;
 
   /// Versione della foto della lista (null se non c'è): vedi ApiClient.listImageUrl.
   final String? imageVersion;
@@ -100,13 +85,6 @@ class ShoppingList {
       name: json['name'] as String,
       notes: json['notes'] as String?,
       supermarket: json['supermarket'] as String?,
-      supermarketChain: json['supermarket_chain'] == null
-          ? null
-          : Supermarket.fromJson(json['supermarket_chain'] as Map<String, dynamic>),
-      country: json['country'] as String? ?? 'IT',
-      province: json['province'] as String?,
-      city: json['city'] as String?,
-      locality: json['locality'] as String?,
       imageVersion: json['image_version'] as String?,
       scheduledAt: DateTime.parse(json['scheduled_at'] as String).toLocal(),
       reminderMinutes: json['reminder_minutes'] as int?,
@@ -128,13 +106,7 @@ class ShoppingList {
     id: id,
     name: json['name'] as String? ?? name,
     notes: json['notes'] as String?,
-    // Un supermercato diverso cambia i prezzi: il controller ricarica la lista e la catena arriva con il dettaglio.
     supermarket: json.containsKey('supermarket') ? json['supermarket'] as String? : supermarket,
-    supermarketChain: !json.containsKey('supermarket') || json['supermarket'] == supermarket ? supermarketChain : null,
-    country: json['country'] as String? ?? country,
-    province: json.containsKey('province') ? json['province'] as String? : province,
-    city: json.containsKey('city') ? json['city'] as String? : city,
-    locality: json.containsKey('locality') ? json['locality'] as String? : locality,
     imageVersion: json.containsKey('image_version') ? json['image_version'] as String? : imageVersion,
     scheduledAt: json['scheduled_at'] == null ? scheduledAt : DateTime.parse(json['scheduled_at'] as String).toLocal(),
     reminderMinutes: json.containsKey('reminder_minutes') ? json['reminder_minutes'] as int? : reminderMinutes,

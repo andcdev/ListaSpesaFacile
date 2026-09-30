@@ -23,13 +23,13 @@ class FindItemImage implements ShouldQueue
 
     public function handle(): void
     {
-        $item = ListItem::with('shoppingList')->find($this->itemId);
+        $item = ListItem::with('creator')->find($this->itemId);
         // Rinominato di nuovo nel frattempo: ci pensa il job del nome nuovo.
         if (! $item || $item->name !== $this->name || ! self::wanted($item)) {
             return;
         }
 
-        $url = OpenFoodFacts::imageFor($item->name, $item->shoppingList->country ?? 'IT');
+        $url = OpenFoodFacts::imageFor($item->name, OpenFoodFacts::countryForLocale($item->creator?->locale));
         if ($url === null || $url === $item->image_url) {
             return;
         }
