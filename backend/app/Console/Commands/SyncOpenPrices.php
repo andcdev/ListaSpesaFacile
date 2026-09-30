@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Models\PriceReport;
+use App\Models\PriceReportVote;
 use App\Models\Supermarket;
 use App\Support\OpenFoodFacts;
 use App\Support\PriceBook;
@@ -20,7 +21,8 @@ use Throwable;
 /**
  * Prezzi di partenza da Open Prices (prices.openfoodfacts.org): prezzi fotografati nei negozi dagli utenti di
  * Open Food Facts, in tutto il mondo (OPEN_PRICES_COUNTRIES li limita ad alcuni paesi). La zona è la città del
- * negozio; le rettifiche degli utenti dell'app, più recenti, hanno la precedenza.
+ * negozio. Si tiene solo il prezzo più recente per prodotto, catena, stato e comune (dedupe_key): uno più nuovo
+ * sostituisce il vecchio e ne azzera le conferme, uno più vecchio si scarta.
  *
  * Ogni prezzo porta con sé il negozio. La catena si riconosce dall'insegna: prima uguale a una catena nota
  * (nome o altro nome), poi, in Italia, contenuta nel nome ("Esselunga Viale Piave"); altrimenti la catena viene
@@ -141,21 +143,71 @@ class SyncOpenPrices extends Command
     private function import(array $prices): int
     {
         $now = now();
-        $rows = [];
+        // Di ogni prodotto, catena, stato e comune si tiene solo il prezzo più recente.
+        $latest = [];
         foreach ($prices as $price) {
             $location = $price['location'] ?? null;
             $supermarket = is_array($location) ? $this->chain($location) : null;
             $row = $supermarket ? $this->row($price, $location) : null;
-            if ($row !== null) {
-                $rows[] = [...$row, 'supermarket_id' => $supermarket->id, 'created_at' => $now, 'updated_at' => $now];
+            if ($row === null) {
+                continue;
+            }
+            $row = [...$row, 'supermarket_id' => $supermarket->id, 'created_at' => $now, 'updated_at' => $now];
+            $row['dedupe_key'] = sha1(implode('|', [
+                $supermarket->id, $row['country'], Supermarket::normalize((string) $row['city']),
+                $row['barcode'] ?? 'k:'.($row['product_key'] ?? Supermarket::normalize($row['product_name'])),
+            ]));
+            if (! isset($latest[$row['dedupe_key']]) || self::newer($row, $latest[$row['dedupe_key']])) {
+                $latest[$row['dedupe_key']] = $row;
             }
         }
-        if ($rows !== []) {
-            // Rileggendo un prezzo si aggiornano i dati, non lo stato: le smentite degli utenti restano.
-            PriceReport::upsert($rows, ['external_id'], array_keys(collect($rows[0])->except(['external_id', 'created_at', 'status'])->all()));
+        if ($latest === []) {
+            return 0;
+        }
+
+        $existing = PriceReport::whereIn('dedupe_key', array_keys($latest))
+            ->get(['id', 'dedupe_key', 'external_id', 'observed_at'])
+            ->keyBy('dedupe_key');
+        $replaced = [];
+        foreach ($latest as $key => $row) {
+            $old = $existing[$key] ?? null;
+            if ($old === null || $old->external_id === $row['external_id']) {
+                continue;
+            }
+            $current = ['observed_at' => $old->observed_at->toDateTimeString(), 'external_id' => $old->external_id];
+            if (self::newer($row, $current)) {
+                $replaced[] = $old->id;
+            } else {
+                unset($latest[$key]);
+            }
+        }
+        if ($latest === []) {
+            return 0;
+        }
+
+        // Rileggendo lo stesso prezzo si aggiornano i dati, non lo stato: le smentite degli utenti restano.
+        $rows = array_values($latest);
+        PriceReport::upsert($rows, ['dedupe_key'], array_keys(collect($rows[0])->except(['dedupe_key', 'created_at', 'status'])->all()));
+        // Un prezzo più recente sostituisce il vecchio: le conferme erano per il prezzo vecchio.
+        if ($replaced !== []) {
+            PriceReportVote::whereIn('price_report_id', $replaced)->delete();
+            PriceReport::whereKey($replaced)->update(['status' => PriceReport::APPROVED, 'approvals' => 0, 'rejections' => 0]);
         }
 
         return count($rows);
+    }
+
+    /**
+     * [$a] è più recente di [$b]: data del prezzo e, a parità, inserito dopo su Open Prices.
+     *
+     * @param  array<string, mixed>  $a
+     * @param  array<string, mixed>  $b
+     */
+    private static function newer(array $a, array $b): bool
+    {
+        $id = fn (array $row) => (int) substr((string) $row['external_id'], 3);
+
+        return [(string) $a['observed_at'], $id($a)] > [(string) $b['observed_at'], $id($b)];
     }
 
     /**

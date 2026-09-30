@@ -487,4 +487,43 @@ class PriceReportsTest extends TestCase
         Http::assertSent(fn (Request $r) => $r['created__gte'] === '2026-09-16T00:00:00' && str_starts_with($r['created__lte'], '2026-09-30T23:59:59'));
         Http::assertNotSent(fn (Request $r) => (int) $r['page'] > 500);
     }
+
+    public function test_only_the_latest_price_per_product_chain_and_town_is_kept(): void
+    {
+        config(['services.openfoodfacts.enabled' => true]);
+        Sleep::fake();
+        $this->travelTo('2026-09-30 12:00:00');
+        $milan1 = [1, 'Carrefour', 'Carrefour', 'IT', 'Milano'];
+        $milan2 = [2, 'Carrefour Market', 'Carrefour Market Brera', 'IT', 'Milano'];
+        $monza = [3, 'Carrefour', 'Carrefour', 'IT', 'Monza'];
+        $milk = fn (int $id, array $store, float $price, string $date) => $this->openPrice($id, $store, 'Latte', $price, ['product_code' => '8002580018446', 'date' => $date]);
+        $page = [
+            $milk(100, $milan1, 1.00, '2026-09-01'),
+            $milk(101, $milan2, 1.20, '2026-09-10'),
+            $milk(102, $monza, 1.10, '2026-09-02'),
+            // Inserito dopo, ma è un prezzo più vecchio: non sostituisce quello del 10 settembre.
+            $milk(103, $milan1, 0.90, '2026-08-01'),
+        ];
+        Http::fake(function () use (&$page) {
+            return Http::response(['items' => $page, 'pages' => 1]);
+        });
+
+        $this->artisan('prices:sync-open-prices', ['--pause' => 0, '--from' => '2026-09-01'])->assertSuccessful();
+
+        $this->assertSame(2, PriceReport::count());
+        $milan = PriceReport::where('city', 'Milano')->sole();
+        $this->assertEquals(1.2, $milan->price);
+        $this->assertSame('op:101', $milan->external_id);
+
+        // Il prezzo di Milano ha una conferma; poi arriva un prezzo più recente: lo sostituisce e le conferme ripartono.
+        $milan->vote(User::factory()->create(), true);
+        $this->assertSame(1, $milan->fresh()->approvals);
+        $page = [$milk(104, $milan1, 1.30, '2026-09-20'), $milk(101, $milan2, 1.20, '2026-09-10')];
+        $this->artisan('prices:sync-open-prices', ['--pause' => 0, '--from' => '2026-09-01'])->assertSuccessful();
+
+        $this->assertSame(2, PriceReport::count());
+        $milan = PriceReport::where('city', 'Milano')->sole();
+        $this->assertEquals([1.3, 'op:104', 0, 'approved'], [$milan->price, $milan->external_id, $milan->approvals, $milan->status]);
+        $this->assertSame(0, $milan->votes()->count());
+    }
 }

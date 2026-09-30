@@ -374,7 +374,9 @@ Le date viaggiano in ISO 8601; il server le salva in UTC e l'app le mostra nel f
 
 I prezzi di **Open Prices** si importano ogni notte alle 4:30 (container `scheduler`): tutto il mondo, o solo i
 paesi di `OPEN_PRICES_COUNTRIES` (es. `IT,SM,CH`). Ogni negozio viene abbinato alla sua catena dall'insegna; le
-insegne sconosciute (Leclerc, Rema 1000…) diventano catene nuove del loro paese. La prima importazione è completa
+insegne sconosciute (Leclerc, Rema 1000…) diventano catene nuove del loro paese. Si tiene solo il prezzo più
+recente per prodotto, catena, stato e comune: uno più nuovo sostituisce il vecchio (e ne azzera le conferme), uno
+più vecchio si scarta. La prima importazione è completa
 (35-40 minuti; l'API non va oltre 500 pagine per ricerca, quindi si legge un mese per volta e, se si interrompe,
 si riprende dal primo mese non completato), poi solo i prezzi nuovi. A mano:
 

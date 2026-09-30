@@ -13,7 +13,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  */
 #[Fillable([
     'supermarket_id', 'product_key', 'barcode', 'product_name', 'price', 'currency', 'per', 'package_amount', 'package_unit',
-    'country', 'province', 'city', 'locality', 'source', 'status', 'approvals', 'rejections', 'external_id', 'user_id', 'reporter_name', 'reporter_email', 'observed_at',
+    'country', 'province', 'city', 'locality', 'source', 'status', 'approvals', 'rejections', 'external_id', 'dedupe_key', 'user_id', 'reporter_name', 'reporter_email', 'observed_at',
 ])]
 class PriceReport extends Model
 {
