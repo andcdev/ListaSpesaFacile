@@ -80,6 +80,8 @@ class AppLogo extends StatelessWidget {
       Image.asset(asset, width: size, height: size, filterQuality: FilterQuality.medium, semanticLabel: '');
 }
 
+/// Logo e nome dell'app, nella barra in alto accanto ai comandi: se lo spazio non basta (schermo stretto, testo
+/// di sistema grande) si rimpiccioliscono insieme, senza tagliare il nome.
 class AppName extends StatelessWidget {
   const AppName({super.key});
 
@@ -88,21 +90,22 @@ class AppName extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final primary = Theme.of(context).colorScheme.primary;
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        const AppLogo(size: 28),
-        const SizedBox(width: 8),
-        Flexible(
-          child: Text(
+    return FittedBox(
+      fit: BoxFit.scaleDown,
+      alignment: Alignment.centerLeft,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const AppLogo(size: 34),
+          const SizedBox(width: 10),
+          Text(
             appName,
             maxLines: 1,
-            overflow: TextOverflow.fade,
             softWrap: false,
             style: Theme.of(context).textTheme.labelLarge?.copyWith(color: primary, fontSize: 13, letterSpacing: 1.6),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
