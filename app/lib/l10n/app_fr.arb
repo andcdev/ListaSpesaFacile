@@ -233,8 +233,6 @@
   "oftenBought": "Vous achetez souvent :",
   "timesInList": "{count, plural, =1{Déjà ajouté 1 fois} other{Déjà ajouté {count} fois}}",
   "addProductHint": "Ajout. produit...",
-  "quantityAndWeight": "Quantité et poids",
-  "changeQuantityAndWeight": "Changer quantité et poids",
   "amountExampleError": "Saisissez un nombre, ex. 500 ou 1,5",
   "quantity": "Quantité",
   "less": "Moins",

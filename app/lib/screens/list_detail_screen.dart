@@ -1051,7 +1051,7 @@ class _AddItemBarState extends State<_AddItemBar> {
   }
 
   /// Prodotto di marca toccato: nome, peso o volume della confezione; marca, codice e foto arrivano al server.
-  /// Poi si apre il popup di peso/volume e quantità, già compilato con la confezione.
+  /// Poi il popup (già compilato con la confezione) e "Fatto" lo aggiunge.
   void _useBranded(BrandedProduct product) {
     setState(() {
       _chosen = product;
@@ -1065,20 +1065,20 @@ class _AddItemBarState extends State<_AddItemBar> {
       text: product.name,
       selection: TextSelection.collapsed(offset: product.name.length),
     );
-    _editMeasure();
+    _askMeasureAndAdd();
   }
 
   void _refresh() {
     if (mounted) setState(() {});
   }
 
-  /// Suggerimento toccato: scrive il nome e apre il popup di peso/volume e quantità.
+  /// Suggerimento toccato: scrive il nome e apre il popup; "Fatto" lo aggiunge.
   void _useSuggestion(ProductSuggestion suggestion) {
     _name.value = TextEditingValue(
       text: suggestion.name,
       selection: TextSelection.collapsed(offset: suggestion.name.length),
     );
-    _editMeasure();
+    _askMeasureAndAdd();
   }
 
   @override
@@ -1107,7 +1107,10 @@ class _AddItemBarState extends State<_AddItemBar> {
     }
   }
 
-  Future<void> _editMeasure() async {
+  /// Popup di quantità e peso/volume (solo i campi che servono per il prodotto): "Fatto" lo aggiunge alla lista,
+  /// chiuderlo in altro modo no. Si apre dai suggerimenti (con o senza foto), dal "+" e dall'invio della tastiera.
+  Future<void> _askMeasureAndAdd() async {
+    if (_name.text.trim().isEmpty || _busy) return;
     final mode = await _measureMode();
     if (!mounted) return;
     final result = await showModalBottomSheet<_Measure>(
@@ -1116,8 +1119,13 @@ class _AddItemBarState extends State<_AddItemBar> {
       isScrollControlled: true,
       builder: (_) => _MeasureSheet(initial: _measure, units: widget.units, mode: mode),
     );
-    if (result != null && mounted) setState(() => _measure = result);
-    _focus.requestFocus();
+    if (!mounted) return;
+    if (result == null) {
+      _focus.requestFocus();
+      return;
+    }
+    setState(() => _measure = result);
+    await _submit();
   }
 
   Future<void> _pickPhoto() async {
@@ -1299,7 +1307,7 @@ class _AddItemBarState extends State<_AddItemBar> {
                   focusNode: _focus,
                   textCapitalization: TextCapitalization.sentences,
                   textInputAction: TextInputAction.done,
-                  onSubmitted: (_) => _submit(),
+                  onSubmitted: (_) => _askMeasureAndAdd(),
                   style: TextStyle(color: onBar, fontSize: 16),
                   cursorColor: scheme.secondary,
                   decoration: InputDecoration(
@@ -1313,12 +1321,11 @@ class _AddItemBarState extends State<_AddItemBar> {
                 ),
               ),
               VoiceInputButton(controller: _name, onResult: _onDictated, compact: true),
-              // Quantità e peso accanto al nome: un'icona, o il valore scelto (es. "2 · 500 g").
-              _MeasureButton(measure: _measure, onPressed: _editMeasure),
               const SizedBox(width: 4),
+              // "+": prima il popup di quantità e peso/volume, poi "Fatto" aggiunge.
               IconButton.filled(
                 style: IconButton.styleFrom(backgroundColor: scheme.secondary, foregroundColor: scheme.onSecondary),
-                onPressed: _busy ? null : _submit,
+                onPressed: _busy ? null : _askMeasureAndAdd,
                 icon: const Icon(Icons.add),
                 tooltip: context.l10n.add,
               ),
@@ -1359,50 +1366,6 @@ class _Measure {
   final String? quantity;
   final double? amount;
   final String unit;
-
-  bool get isEmpty => quantity == null && amount == null;
-
-  /// Es. "2", "500 g", "2 · 1,5 l".
-  String get label => [?quantity, if (amount != null) '${formatAmount(amount!)} $unit'].join(' · ');
-}
-
-/// Pulsante accanto al nome del prodotto: bilancia se non c'è nulla, altrimenti il valore scelto.
-class _MeasureButton extends StatelessWidget {
-  const _MeasureButton({required this.measure, required this.onPressed});
-
-  final _Measure measure;
-  final VoidCallback onPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    if (measure.isEmpty) {
-      return IconButton(
-        icon: const Icon(Icons.scale_outlined),
-        tooltip: context.l10n.quantityAndWeight,
-        visualDensity: VisualDensity.compact,
-        onPressed: onPressed,
-      );
-    }
-    final scheme = Theme.of(context).colorScheme;
-    return Tooltip(
-      message: context.l10n.changeQuantityAndWeight,
-      child: InkWell(
-        onTap: onPressed,
-        borderRadius: BorderRadius.circular(999),
-        child: Container(
-          constraints: const BoxConstraints(maxWidth: 88),
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-          decoration: BoxDecoration(color: scheme.secondaryContainer, borderRadius: BorderRadius.circular(999)),
-          child: Text(
-            measure.label,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: Theme.of(context).textTheme.labelMedium?.copyWith(color: scheme.onSecondaryContainer),
-          ),
-        ),
-      ),
-    );
-  }
 }
 
 /// Scelta di quantità (− / +) e peso o volume con l'unità, in un foglio dal basso che non copre la lista.
@@ -1545,14 +1508,13 @@ class _MeasureSheetState extends State<_MeasureSheet> {
             const SizedBox(height: 16),
             Row(
               children: [
+                // Azzera i campi (il peso di una confezione resta, non si modifica); il popup resta aperto.
                 TextButton(
-                  // Confezione: si azzera solo il numero, il peso della confezione resta.
-                  onPressed: () => Navigator.pop(
-                    context,
-                    widget.mode.asksWeight
-                        ? _Measure(unit: _unit)
-                        : _Measure(amount: widget.initial.amount, unit: widget.initial.unit),
-                  ),
+                  onPressed: () => setState(() {
+                    _quantity = 0;
+                    _amount.clear();
+                    _error = null;
+                  }),
                   child: Text(l.clearMeasure),
                 ),
                 const Spacer(),

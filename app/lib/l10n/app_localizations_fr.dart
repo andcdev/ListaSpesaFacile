@@ -855,12 +855,6 @@ class AppLocalizationsFr extends AppLocalizations {
   String get addProductHint => 'Ajout. produit...';
 
   @override
-  String get quantityAndWeight => 'Quantité et poids';
-
-  @override
-  String get changeQuantityAndWeight => 'Changer quantité et poids';
-
-  @override
   String get amountExampleError => 'Saisissez un nombre, ex. 500 ou 1,5';
 
   @override
