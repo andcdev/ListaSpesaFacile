@@ -78,6 +78,9 @@ nav.menu a:hover, nav.menu a[aria-current="page"] { color: var(--verde); }
 }
 @media (prefers-color-scheme: dark) { .pulsante { color: #102414; } }
 .pulsante:hover { filter: brightness(1.08); }
+/* Badge ufficiale di Google Play: immagine così com'è, solo ridimensionata (linee guida di Google). */
+.badge-play { display: block; width: max-content; line-height: 0; }
+.badge-play img { height: 64px; width: auto; }
 .nota-pulsante { display: block; margin-top: 12px; font-size: 14px; color: var(--testo-2); }
 
 .funzioni {
@@ -120,6 +123,7 @@ footer.piede { border-top: 1px solid var(--bordo); padding: 28px 0 40px; font-si
 footer.piede .contenitore { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
 footer.piede nav { display: flex; gap: 18px; flex-wrap: wrap; }
 footer.piede a { color: var(--testo-2); }
+footer.piede .marchi { flex-basis: 100%; margin: 0; font-size: 12px; }
 
 /* ── Moduli (elimina account) ────────────────────────────── */
 .modulo { display: grid; gap: 10px; max-width: 460px; margin: 24px 0; }
