@@ -25,15 +25,20 @@ PAGES = ['index', 'privacy', 'supporto', 'elimina-account']
 # Testi comuni: menu, piè di pagina, etichette.
 UI = {
     'it': {'support': 'Supporto', 'privacy': 'Privacy', 'delete': 'Elimina account', 'menu': 'Menu',
-           'info': 'Informazioni', 'language': 'Lingua'},
+           'info': 'Informazioni', 'language': 'Lingua',
+           'trademark': 'Google Play e il logo di Google Play sono marchi di Google LLC.'},
     'en': {'support': 'Support', 'privacy': 'Privacy', 'delete': 'Delete account', 'menu': 'Menu',
-           'info': 'Information', 'language': 'Language'},
+           'info': 'Information', 'language': 'Language',
+           'trademark': 'Google Play and the Google Play logo are trademarks of Google LLC.'},
     'fr': {'support': 'Assistance', 'privacy': 'Confidentialité', 'delete': 'Supprimer le compte', 'menu': 'Menu',
-           'info': 'Informations', 'language': 'Langue'},
+           'info': 'Informations', 'language': 'Langue',
+           'trademark': 'Google Play et le logo Google Play sont des marques de Google LLC.'},
     'de': {'support': 'Hilfe', 'privacy': 'Datenschutz', 'delete': 'Konto löschen', 'menu': 'Menü',
-           'info': 'Informationen', 'language': 'Sprache'},
+           'info': 'Informationen', 'language': 'Sprache',
+           'trademark': 'Google Play und das Google Play-Logo sind Marken von Google LLC.'},
     'es': {'support': 'Soporte', 'privacy': 'Privacidad', 'delete': 'Eliminar cuenta', 'menu': 'Menú',
-           'info': 'Información', 'language': 'Idioma'},
+           'info': 'Información', 'language': 'Idioma',
+           'trademark': 'Google Play y el logotipo de Google Play son marcas de Google LLC.'},
 }
 
 
@@ -98,6 +103,7 @@ def render(lang: str, page: str) -> str:
         <a href="/{lang}/privacy">{t['privacy']}</a>
         <a href="/{lang}/elimina-account">{t['delete']}</a>
       </nav>
+      <p class="marchi">{t['trademark']}</p>
     </div>
   </footer>
 </body>
