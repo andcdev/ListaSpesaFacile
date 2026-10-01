@@ -90,7 +90,7 @@ class ChatDeliveryTest extends TestCase
 
         $data = collect($this->getJson('/api/products/suggestions')->assertOk()->json('data'));
 
-        $this->assertSame(['name' => 'biscotti al cacao', 'icon' => '🍪', 'category' => 'dolci', 'times' => 2], $data[0]);
+        $this->assertSame(['name' => 'biscotti al cacao', 'icon' => '🍪', 'category' => 'dolci', 'measure' => 'count', 'times' => 2], $data[0]);
         $this->assertSame(1, $data->where('name', 'Mele')->count(), 'i prodotti comuni già usati non si ripetono');
         $this->assertSame('🧻', $data->firstWhere('name', 'Carta igienica')['icon']);
         $this->assertNull($data->firstWhere('name', 'Segreto di un altro'), 'solo liste accessibili');

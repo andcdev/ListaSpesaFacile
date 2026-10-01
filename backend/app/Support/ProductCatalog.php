@@ -78,6 +78,8 @@ class ProductCatalog
         'cocco' => ['frutta', '🥥'], 'mirtill' => ['frutta', '🫐'], 'lampon' => ['frutta', '🫐'], 'prugn' => ['frutta', '🍑'],
         'susin' => ['frutta', '🍑'], 'fichi' => ['frutta', '🍐'], 'fico' => ['frutta', '🍐'], 'frutta' => ['frutta', '🍎'],
         'avocado' => ['frutta', '🥑'], 'pompelm' => ['frutta', '🍊'], 'cachi' => ['frutta', '🍅'], 'melagran' => ['frutta', '🍎'],
+        'nespol' => ['frutta', '🍑'], 'ribes' => ['frutta', '🍒'], 'papaya' => ['frutta', '🥭'], 'lime' => ['frutta', '🍋'],
+        'castagn' => ['frutta', '🌰'], 'cedr' => ['frutta', '🍋'],
         // Verdura
         'pomodor' => ['verdura', '🍅'], 'insalat' => ['verdura', '🥬'], 'lattug' => ['verdura', '🥬'], 'rucol' => ['verdura', '🥬'],
         'spinac' => ['verdura', '🥬'], 'carot' => ['verdura', '🥕'], 'patat' => ['verdura', '🥔'], 'cipoll' => ['verdura', '🧅'],
@@ -89,6 +91,10 @@ class ProductCatalog
         'asparag' => ['verdura', '🥬'], 'radicchi' => ['verdura', '🥬'], 'basilic' => ['verdura', '🌿'], 'prezzemol' => ['verdura', '🌿'],
         'rosmarin' => ['verdura', '🌿'], 'verdur' => ['verdura', '🥦'], 'porri' => ['verdura', '🧅'], 'porro' => ['verdura', '🧅'],
         'zenzero' => ['verdura', '🫚'], 'ravanell' => ['verdura', '🥕'], 'barbabietol' => ['verdura', '🥕'],
+        'cicori' => ['verdura', '🥬'], 'bietol' => ['verdura', '🥬'], 'scarol' => ['verdura', '🥬'], 'indivi' => ['verdura', '🥬'],
+        'catalogn' => ['verdura', '🥬'], 'friariell' => ['verdura', '🥬'], 'puntarell' => ['verdura', '🥬'], 'valerian' => ['verdura', '🥬'],
+        'cime di rapa' => ['verdura', '🥬'], 'topinambur' => ['verdura', '🥔'], 'fave' => ['verdura', '🫛'], 'scalogn' => ['verdura', '🧅'],
+        'menta' => ['verdura', '🌿'], 'salvia' => ['verdura', '🌿'], 'cavolini' => ['verdura', '🥦'],
         // Pane e forno
         'pane' => ['pane', '🍞'], 'pani' => ['pane', '🍞'], 'panin' => ['pane', '🥖'], 'baguette' => ['pane', '🥖'],
         'filone' => ['pane', '🍞'], 'pancarre' => ['pane', '🍞'], 'focacc' => ['pane', '🫓'], 'piadin' => ['pane', '🫓'],
@@ -102,6 +108,8 @@ class ProductCatalog
         'provol' => ['latticini', '🧀'], 'scamorz' => ['latticini', '🧀'], 'fontin' => ['latticini', '🧀'], 'emmental' => ['latticini', '🧀'],
         'sottilett' => ['latticini', '🧀'], 'philadelphia' => ['latticini', '🧀'], 'panna' => ['latticini', '🥛'], 'uova' => ['latticini', '🥚'],
         'uovo' => ['latticini', '🥚'], 'kefir' => ['latticini', '🥛'], 'burrata' => ['latticini', '🧀'],
+        'taleggi' => ['latticini', '🧀'], 'asiago' => ['latticini', '🧀'], 'montasio' => ['latticini', '🧀'], 'caciocavall' => ['latticini', '🧀'],
+        'fontal' => ['latticini', '🧀'], 'caciott' => ['latticini', '🧀'], 'robiol' => ['latticini', '🧀'], 'quartirol' => ['latticini', '🧀'],
         // Carne e salumi
         'carne' => ['carne', '🥩'], 'manzo' => ['carne', '🥩'], 'vitell' => ['carne', '🥩'], 'bistecc' => ['carne', '🥩'],
         'maiale' => ['carne', '🥩'], 'braciol' => ['carne', '🥩'], 'pollo' => ['carne', '🍗'], 'tacchin' => ['carne', '🍗'],
@@ -110,6 +118,8 @@ class ProductCatalog
         'speck' => ['carne', '🥓'], 'pancett' => ['carne', '🥓'], 'bacon' => ['carne', '🥓'], 'salame' => ['carne', '🍖'],
         'salami' => ['carne', '🍖'], 'mortadell' => ['carne', '🍖'], 'bresaol' => ['carne', '🍖'], 'cotolett' => ['carne', '🍗'],
         'polpett' => ['carne', '🍖'], 'arrosto' => ['carne', '🍖'], 'spezzatin' => ['carne', '🥩'], 'coppa' => ['carne', '🥓'],
+        'guancial' => ['carne', '🥓'], 'lardo' => ['carne', '🥓'], 'culatell' => ['carne', '🥓'], 'capocoll' => ['carne', '🥓'],
+        'soppressat' => ['carne', '🍖'], 'nduja' => ['carne', '🌶️'], 'porchett' => ['carne', '🍖'], 'cotechin' => ['carne', '🍖'],
         // Pesce
         'pesce' => ['pesce', '🐟'], 'salmone' => ['pesce', '🐟'], 'tonno' => ['pesce', '🐟'], 'merluzz' => ['pesce', '🐟'],
         'orata' => ['pesce', '🐟'], 'branzin' => ['pesce', '🐟'], 'spigol' => ['pesce', '🐟'], 'sgombr' => ['pesce', '🐟'],
@@ -175,6 +185,86 @@ class ProductCatalog
         'scatolett' => ['animali', '🐾'], 'gatto' => ['animali', '🐱'], 'gatti' => ['animali', '🐱'], 'cane' => ['animali', '🐶'],
         'cani' => ['animali', '🐶'], 'mangime' => ['animali', '🐾'],
     ];
+
+    /** Come si indica quanto prenderne: solo il peso, peso e pezzi, solo il numero di confezioni. */
+    public const MEASURE_WEIGHT = 'weight';
+
+    public const MEASURE_WEIGHT_COUNT = 'weight_count';
+
+    public const MEASURE_COUNT = 'count';
+
+    /**
+     * Sfusi che si contano (si chiede peso e numero di pezzi): frutta e verdura "a pezzo" e pesce intero.
+     * Gli altri prodotti di frutta e verdura sono sfusi solo a peso (uva, ciliegie, spinaci, funghi…).
+     */
+    private const LOOSE_COUNTABLE = [
+        'mela', 'mele', 'pera', 'pere', 'banan', 'aranc', 'mandarin', 'clementin', 'limon', 'pesca', 'pesche',
+        'albicocc', 'anguri', 'melon', 'ananas', 'kiwi', 'mango', 'cocco', 'avocado', 'pompelm', 'cachi', 'melagran',
+        'fichi', 'fico', 'prugn', 'susin',
+        'pomodor', 'insalat', 'lattug', 'carot', 'patat', 'cipoll', 'aglio', 'zucchin', 'cetriol', 'melanzan', 'peperon',
+        'broccol', 'cavol', 'verza', 'finocch', 'sedan', 'pannocch', 'zucca', 'carciof', 'radicchi', 'porri', 'porro',
+        'barbabietol', 'basilic', 'prezzemol', 'rosmarin', 'nespol', 'lime', 'papaya', 'cedr', 'cicori', 'scarol',
+        'indivi', 'catalogn', 'scalogn',
+        'orata', 'branzin', 'spigol', 'sgombr',
+    ];
+
+    /** Sfusi a peso fuori da frutta e verdura: salumi e formaggi al banco, carne e pesce freschi. */
+    private const LOOSE_BY_WEIGHT = [
+        'prosciutt', 'salame', 'salami', 'mortadell', 'bresaol', 'speck', 'pancett', 'coppa', 'guancial', 'lardo',
+        'culatell', 'capocoll', 'soppressat', 'porchett',
+        'formagg', 'parmigian', 'grana', 'pecorin', 'gorgonzol', 'provol', 'scamorz', 'fontin', 'emmental', 'taleggi',
+        'asiago', 'montasio', 'caciocavall', 'fontal', 'caciott',
+        'carne', 'manzo', 'vitell', 'bistecc', 'maiale', 'braciol', 'pollo', 'tacchin', 'petto', 'cosce', 'agnello',
+        'macinat', 'salsicc', 'arrosto', 'spezzatin',
+        'pesce', 'salmone', 'tonno', 'merluzz', 'gamber', 'scampi', 'cozze', 'vongol', 'calamar', 'totan', 'polpo',
+        'seppi',
+    ];
+
+    /** Di frutta e verdura ma quasi sempre in confezione. */
+    private const PACKAGED_PRODUCE = ['piselli', 'mais', 'frutta', 'verdur', 'frutti di bosco', 'zenzero'];
+
+    /** Parole che indicano una confezione anche per un prodotto di solito sfuso ("pomodori pelati"). */
+    private const PACKAGE_WORDS = [
+        'surgelat', 'scatol', 'pelati', 'passata', 'polpa', 'concentrat', 'vasett', 'barattol', 'confezion', 'busta',
+        'sacchett', 'bottigli', 'lattin', 'brick', 'secc', 'sott', 'succo', 'spremut', 'marmellat', 'confettur', 'sugo',
+        'yogurt', 'gelato', 'crema', 'snack', 'chips', 'wurstel', 'bastoncin', 'cotolett', 'hamburger', 'affettat',
+    ];
+
+    /**
+     * Come si misura un articolo: "weight" (salumi e formaggi al banco, frutta e verdura da pesare),
+     * "weight_count" (frutta e verdura che si contano: 3 mele, 1 kg di pomodori), "count" (confezionati: quante
+     * confezioni, il peso è quello della confezione). Un prodotto non riconosciuto ("Kinder sorpresa") è
+     * confezionato: gli sfusi (frutta, verdura, salumi, formaggi) sono tutti nel catalogo.
+     */
+    public static function measure(string $name, ?string $barcode = null): string
+    {
+        // Prodotto di marca (scelto da Open Food Facts): ha sempre una confezione.
+        if ($barcode) {
+            return self::MEASURE_COUNT;
+        }
+        $normalized = ' '.trim((string) preg_replace('/[^a-z0-9]+/', ' ', Str::lower(Str::ascii($name)))).' ';
+        foreach (self::PACKAGE_WORDS as $word) {
+            if (str_contains($normalized, ' '.$word)) {
+                return self::MEASURE_COUNT;
+            }
+        }
+        $found = self::find($name);
+        if ($found === null) {
+            return self::MEASURE_COUNT;
+        }
+        [$stem, [$category]] = $found;
+        if (in_array($stem, self::PACKAGED_PRODUCE, true)) {
+            return self::MEASURE_COUNT;
+        }
+        if (in_array($stem, self::LOOSE_COUNTABLE, true)) {
+            return self::MEASURE_WEIGHT_COUNT;
+        }
+        if (in_array($category, ['frutta', 'verdura'], true) || in_array($stem, self::LOOSE_BY_WEIGHT, true)) {
+            return self::MEASURE_WEIGHT;
+        }
+
+        return self::MEASURE_COUNT;
+    }
 
     /**
      * Reparto e icona per il nome di un articolo.

@@ -9,6 +9,7 @@ import '../l10n/l10n.dart';
 import '../models/branded_product.dart';
 import '../models/list_item.dart';
 import '../models/user_price.dart';
+import '../models/measure_mode.dart';
 import '../models/product_suggestion.dart';
 import '../services/api_client.dart';
 import '../services/list_export.dart';
@@ -442,6 +443,7 @@ class _ListDetailScreenState extends State<ListDetailScreen> {
     suggestions: detail.suggestions,
     existing: [for (final item in detail.items) item.name],
     search: detail.searchProducts,
+    measureOf: detail.api.productMeasure,
     onAdd: (name, qty, amount, unit, imagePath, product) =>
         detail.addItem(name, quantity: qty, amount: amount, unit: unit, imagePath: imagePath, product: product),
   );
@@ -955,6 +957,7 @@ class _AddItemBar extends StatefulWidget {
     required this.onAdd,
     required this.units,
     required this.search,
+    this.measureOf,
     this.compact = false,
     this.suggestions = const [],
     this.existing = const [],
@@ -977,6 +980,9 @@ class _AddItemBar extends StatefulWidget {
 
   /// Prodotti di marca per quanto scritto (Open Food Facts).
   final Future<List<BrandedProduct>> Function(String text) search;
+
+  /// Come si misura un nome scritto a mano (dal server): solo peso, peso e pezzi o confezioni.
+  final Future<MeasureMode?> Function(String name)? measureOf;
 
   /// Solo il nome (con la chat aperta sotto): quantità e peso si aggiungono con la matita.
   final bool compact;
@@ -1014,7 +1020,14 @@ class _AddItemBarState extends State<_AddItemBar> {
   /// Cambiando il testo il prodotto di marca scelto non vale più; con almeno 3 lettere si cercano quelli nuovi.
   void _onTextChanged() {
     final text = _name.text.trim();
-    if (_chosen != null && text != _chosen!.name) _chosen = null;
+    if (_chosen != null && text != _chosen!.name) {
+      // Lasciato il prodotto di marca: via anche il peso della sua confezione, non è di questo prodotto.
+      final package = _chosen!;
+      _chosen = null;
+      if (_measure.amount == package.amount && _measure.unit == package.unit) {
+        setState(() => _measure = _Measure(quantity: _measure.quantity));
+      }
+    }
     if (text == _searched) return;
     _searchTimer?.cancel();
     if (text.length < 3 || _chosen != null) {
@@ -1073,12 +1086,32 @@ class _AddItemBarState extends State<_AddItemBar> {
     super.dispose();
   }
 
+  /// Come si misura quello che si sta aggiungendo: un prodotto di marca è una confezione; poi il suggerimento
+  /// con lo stesso nome; poi il server (che considera confezionato un prodotto non riconosciuto). Null (senza
+  /// rete): tutti i campi.
+  Future<MeasureMode?> _measureMode() async {
+    if (_chosen != null) return MeasureMode.count;
+    final name = _name.text.trim();
+    if (name.isEmpty) return null;
+    final key = name.toLowerCase();
+    for (final s in widget.suggestions) {
+      if (s.name.toLowerCase() == key) return s.measure;
+    }
+    try {
+      return await widget.measureOf?.call(name);
+    } catch (_) {
+      return null;
+    }
+  }
+
   Future<void> _editMeasure() async {
+    final mode = await _measureMode();
+    if (!mounted) return;
     final result = await showModalBottomSheet<_Measure>(
       context: context,
       showDragHandle: true,
       isScrollControlled: true,
-      builder: (_) => _MeasureSheet(initial: _measure, units: widget.units),
+      builder: (_) => _MeasureSheet(initial: _measure, units: widget.units, mode: mode),
     );
     if (result != null && mounted) setState(() => _measure = result);
     _focus.requestFocus();
@@ -1370,24 +1403,36 @@ class _MeasureButton extends StatelessWidget {
 }
 
 /// Scelta di quantità (− / +) e peso o volume con l'unità, in un foglio dal basso che non copre la lista.
+/// Solo i campi che servono per [mode]: sfuso a peso → peso; frutta e verdura a pezzi → peso e pezzi;
+/// confezione → quante confezioni (il peso è quello della confezione, solo da leggere); null → tutto.
 class _MeasureSheet extends StatefulWidget {
-  const _MeasureSheet({required this.initial, required this.units});
+  const _MeasureSheet({required this.initial, required this.units, this.mode});
 
   final _Measure initial;
   final List<String> units;
+  final MeasureMode? mode;
 
   @override
   State<_MeasureSheet> createState() => _MeasureSheetState();
 }
 
 class _MeasureSheetState extends State<_MeasureSheet> {
+  /// Sfuso: solo unità di peso.
+  late final List<String> _units = widget.mode.isLoose
+      ? [
+          for (final u in widget.units)
+            if (weightUnits.contains(u)) u,
+        ]
+      : widget.units;
   late int _quantity = int.tryParse(widget.initial.quantity ?? '') ?? 0;
   late final _amount = TextEditingController(
-    text: widget.initial.amount == null ? '' : formatAmount(widget.initial.amount!),
+    text: widget.initial.amount == null || !_units.contains(widget.initial.unit)
+        ? ''
+        : formatAmount(widget.initial.amount!),
   );
-  late String _unit = widget.units.contains(widget.initial.unit)
+  late String _unit = _units.contains(widget.initial.unit)
       ? widget.initial.unit
-      : (widget.units.contains('g') ? 'g' : widget.units.first);
+      : (_units.contains('g') || _units.isEmpty ? 'g' : _units.first);
   String? _error;
 
   @override
@@ -1397,12 +1442,28 @@ class _MeasureSheetState extends State<_MeasureSheet> {
   }
 
   void _done() {
+    final mode = widget.mode;
+    if (!mode.asksWeight) {
+      // Confezione: il peso resta quello della confezione.
+      Navigator.pop(
+        context,
+        _Measure(
+          quantity: _quantity > 0 ? '$_quantity' : null,
+          amount: widget.initial.amount,
+          unit: widget.initial.unit,
+        ),
+      );
+      return;
+    }
     final amount = _parseAmount(_amount.text);
     if (amount != null && amount.isNaN) {
       setState(() => _error = context.l10n.amountExampleError);
       return;
     }
-    Navigator.pop(context, _Measure(quantity: _quantity > 0 ? '$_quantity' : null, amount: amount, unit: _unit));
+    Navigator.pop(
+      context,
+      _Measure(quantity: mode.asksQuantity && _quantity > 0 ? '$_quantity' : null, amount: amount, unit: _unit),
+    );
   }
 
   @override
@@ -1417,57 +1478,78 @@ class _MeasureSheetState extends State<_MeasureSheet> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              children: [
-                Expanded(child: Text(l.quantity, style: text.titleSmall)),
-                IconButton.outlined(
-                  icon: const Icon(Icons.remove),
-                  tooltip: l.less,
-                  onPressed: _quantity > 0 ? () => setState(() => _quantity--) : null,
-                ),
-                SizedBox(
-                  width: 44,
-                  child: Text(_quantity == 0 ? '–' : '$_quantity', textAlign: TextAlign.center, style: text.titleLarge),
-                ),
-                IconButton.outlined(
-                  icon: const Icon(Icons.add),
-                  tooltip: l.more,
-                  onPressed: () => setState(() => _quantity++),
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            Text(l.weightOrVolume, style: text.titleSmall),
-            SizedBox(
-              width: 140,
-              child: TextField(
-                controller: _amount,
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                decoration: InputDecoration(hintText: l.amountHint, isDense: true, errorText: _error),
-                onChanged: (_) => setState(() => _error = null),
-                onSubmitted: (_) => _done(),
-              ),
-            ),
-            const SizedBox(height: 8),
-            Wrap(
-              spacing: 6,
-              runSpacing: 6,
-              children: [
-                for (final u in widget.units)
-                  ChoiceChip(
-                    label: Text(u),
-                    selected: u == _unit,
-                    showCheckmark: false,
-                    visualDensity: VisualDensity.compact,
-                    onSelected: (_) => setState(() => _unit = u),
+            if (widget.mode.asksQuantity) ...[
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(widget.mode == MeasureMode.count ? l.packages : l.quantity, style: text.titleSmall),
                   ),
-              ],
-            ),
+                  IconButton.outlined(
+                    icon: const Icon(Icons.remove),
+                    tooltip: l.less,
+                    onPressed: _quantity > 0 ? () => setState(() => _quantity--) : null,
+                  ),
+                  SizedBox(
+                    width: 44,
+                    child: Text(
+                      _quantity == 0 ? '–' : '$_quantity',
+                      textAlign: TextAlign.center,
+                      style: text.titleLarge,
+                    ),
+                  ),
+                  IconButton.outlined(
+                    icon: const Icon(Icons.add),
+                    tooltip: l.more,
+                    onPressed: () => setState(() => _quantity++),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+            ],
+            if (!widget.mode.asksWeight && widget.initial.amount != null)
+              Text(
+                l.packageSize('${formatAmount(widget.initial.amount!)} ${widget.initial.unit}'),
+                style: text.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+              ),
+            if (widget.mode.asksWeight) ...[
+              Text(widget.mode.isLoose ? l.weight : l.weightOrVolume, style: text.titleSmall),
+              SizedBox(
+                width: 140,
+                child: TextField(
+                  controller: _amount,
+                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                  decoration: InputDecoration(hintText: l.amountHint, isDense: true, errorText: _error),
+                  onChanged: (_) => setState(() => _error = null),
+                  onSubmitted: (_) => _done(),
+                ),
+              ),
+              const SizedBox(height: 8),
+              Wrap(
+                spacing: 6,
+                runSpacing: 6,
+                children: [
+                  for (final u in _units)
+                    ChoiceChip(
+                      label: Text(u),
+                      selected: u == _unit,
+                      showCheckmark: false,
+                      visualDensity: VisualDensity.compact,
+                      onSelected: (_) => setState(() => _unit = u),
+                    ),
+                ],
+              ),
+            ],
             const SizedBox(height: 16),
             Row(
               children: [
                 TextButton(
-                  onPressed: () => Navigator.pop(context, _Measure(unit: _unit)),
+                  // Confezione: si azzera solo il numero, il peso della confezione resta.
+                  onPressed: () => Navigator.pop(
+                    context,
+                    widget.mode.asksWeight
+                        ? _Measure(unit: _unit)
+                        : _Measure(amount: widget.initial.amount, unit: widget.initial.unit),
+                  ),
                   child: Text(l.clearMeasure),
                 ),
                 const Spacer(),
@@ -1577,7 +1659,18 @@ class _EditItemDialogState extends State<_EditItemDialog> {
   late final _name = TextEditingController(text: widget.item.name);
   late final _quantity = TextEditingController(text: widget.item.quantity);
   late final _amount = TextEditingController(text: widget.item.amount == null ? '' : formatAmount(widget.item.amount!));
-  late String _unit = widget.item.unit ?? (widget.units.contains('g') ? 'g' : widget.units.first);
+
+  /// Solo i campi che servono (vedi [MeasureMode]); quelli nascosti restano come sono.
+  MeasureMode? get _mode => widget.item.measure;
+  late final List<String> _units = _mode.isLoose
+      ? [
+          for (final u in widget.units)
+            if (weightUnits.contains(u)) u,
+        ]
+      : widget.units;
+  late String _unit = _units.contains(widget.item.unit)
+      ? widget.item.unit!
+      : (_units.contains('g') || _units.isEmpty ? 'g' : _units.first);
   late String _category = widget.item.category;
   late final _emoji = TextEditingController(text: widget.item.customIcon);
   late final _imageUrl = TextEditingController(text: widget.item.imageUrl);
@@ -1641,11 +1734,12 @@ class _EditItemDialogState extends State<_EditItemDialog> {
   void _save() {
     final name = _name.text.trim();
     if (name.isEmpty) return;
-    final amount = _parseAmount(_amount.text);
+    final amount = _mode.asksWeight ? _parseAmount(_amount.text) : widget.item.amount;
     if (amount != null && amount.isNaN) {
       setState(() => _amountError = context.l10n.invalidNumber);
       return;
     }
+    final unit = _mode.asksWeight ? _unit : widget.item.unit;
     final emoji = _emoji.text.trim();
     if (emoji.length > 16) {
       setState(() => _emojiError = context.l10n.emojiTooLong);
@@ -1658,14 +1752,14 @@ class _EditItemDialogState extends State<_EditItemDialog> {
       setState(() => _imageUrlError = message);
       return;
     }
-    final qty = _quantity.text.trim();
+    final qty = _mode.asksQuantity ? _quantity.text.trim() : (widget.item.quantity ?? '');
     Navigator.pop(
       context,
       _ItemEdit(
         name: name,
         quantity: qty.isEmpty ? null : qty,
         amount: amount,
-        unit: amount == null ? null : _unit,
+        unit: amount == null ? null : unit,
         category: _category == widget.item.category ? null : _category,
         customIcon: emoji.isEmpty ? null : emoji,
         imageUrl: imageUrl,
@@ -1725,25 +1819,40 @@ class _EditItemDialogState extends State<_EditItemDialog> {
                 suffixIcon: VoiceInputButton(controller: _name, compact: true),
               ),
             ),
-            TextField(
-              controller: _quantity,
-              keyboardType: TextInputType.number,
-              decoration: InputDecoration(labelText: l.quantityOptional),
-            ),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: _amount,
-                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                    decoration: InputDecoration(labelText: l.weightOptional, errorText: _amountError),
-                  ),
+            if (_mode.asksQuantity)
+              TextField(
+                controller: _quantity,
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                  labelText: _mode == MeasureMode.count ? l.packagesOptional : l.quantityOptional,
                 ),
-                const SizedBox(width: 12),
-                _UnitPicker(units: widget.units, value: _unit, onChanged: (u) => setState(() => _unit = u)),
-              ],
-            ),
+              ),
+            if (!_mode.asksWeight && widget.item.amount != null && widget.item.unit != null)
+              Padding(
+                padding: const EdgeInsets.only(top: 8),
+                child: Text(
+                  l.packageSize('${formatAmount(widget.item.amount!)} ${widget.item.unit}'),
+                  style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                ),
+              ),
+            if (_mode.asksWeight)
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: _amount,
+                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                      decoration: InputDecoration(
+                        labelText: _mode.isLoose ? l.weightOnlyOptional : l.weightOptional,
+                        errorText: _amountError,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  _UnitPicker(units: _units, value: _unit, onChanged: (u) => setState(() => _unit = u)),
+                ],
+              ),
             if (known) ...[
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(

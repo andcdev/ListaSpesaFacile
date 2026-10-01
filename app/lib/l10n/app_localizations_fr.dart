@@ -876,6 +876,17 @@ class AppLocalizationsFr extends AppLocalizations {
   String get weightOrVolume => 'Poids ou volume';
 
   @override
+  String get weight => 'Poids';
+
+  @override
+  String get packages => 'Paquets';
+
+  @override
+  String packageSize(String size) {
+    return 'Paquet de $size';
+  }
+
+  @override
   String get amountHint => 'ex. 500';
 
   @override
@@ -910,6 +921,12 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get weightOptional => 'Poids ou volume (facultatif)';
+
+  @override
+  String get packagesOptional => 'Paquets (facultatif)';
+
+  @override
+  String get weightOnlyOptional => 'Poids (facultatif)';
 
   @override
   String get department => 'Rayon';

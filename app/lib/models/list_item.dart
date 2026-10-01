@@ -1,3 +1,5 @@
+import 'measure_mode.dart';
+
 /// Stato di un articolo: da prendere, preso (nel carrello) o non preso (non trovato / esaurito).
 enum ItemStatus {
   todo('todo'),
@@ -24,6 +26,7 @@ class ListItem {
     this.customIcon,
     this.imageUrl,
     this.imageVersion,
+    this.measure,
     this.quantity,
     this.amount,
     this.unit,
@@ -54,6 +57,9 @@ class ListItem {
   /// Versione della foto caricata dal telefono (null se non c'è): vedi ApiClient.itemImageUrl.
   /// Se c'è ha la precedenza sul link esterno.
   final String? imageVersion;
+
+  /// Come si misura (solo peso, peso e pezzi, confezioni), deciso dal server; null = non si sa.
+  final MeasureMode? measure;
 
   /// Numero di pezzi o confezioni (testo libero, es. "2").
   final String? quantity;
@@ -91,6 +97,7 @@ class ListItem {
     customIcon: json['custom_icon'] as String?,
     imageUrl: json['image_url'] as String?,
     imageVersion: json['image_version'] as String?,
+    measure: MeasureMode.fromJson(json['measure']),
     quantity: json['quantity'] as String?,
     amount: (json['amount'] as num?)?.toDouble(),
     unit: json['unit'] as String?,
@@ -111,6 +118,7 @@ class ListItem {
     customIcon: customIcon,
     imageUrl: imageUrl,
     imageVersion: imageVersion,
+    measure: measure,
     quantity: quantity,
     amount: amount,
     unit: unit,

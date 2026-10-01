@@ -10,6 +10,7 @@ import '../models/app_user.dart';
 import '../models/branded_product.dart';
 import '../models/chat_message.dart';
 import '../models/list_item.dart';
+import '../models/measure_mode.dart';
 import '../models/product_info.dart';
 import '../models/product_suggestion.dart';
 import '../models/shopping_list.dart';
@@ -353,6 +354,12 @@ class ApiClient {
       _list(await _send('GET', '/products/search?q=${Uri.encodeQueryComponent(text)}'), BrandedProduct.fromJson);
 
   /// Scheda del prodotto di un articolo (foto, valori nutrizionali, ingredienti, allergeni…); null se non si trova.
+  /// Come si misura un prodotto scritto a mano (solo peso, peso e pezzi, confezioni); null se non riconosciuto.
+  Future<MeasureMode?> productMeasure(String name) async {
+    final json = await _send('GET', '/products/measure?name=${Uri.encodeQueryComponent(name)}');
+    return MeasureMode.fromJson((json['data'] as Map<String, dynamic>?)?['measure']);
+  }
+
   Future<ProductInfo?> productInfo(int listId, int itemId) async {
     final data = (await _send('GET', '/lists/$listId/items/$itemId/info') as Map<String, dynamic>)['data'];
     return data == null ? null : ProductInfo.fromJson(data as Map<String, dynamic>);

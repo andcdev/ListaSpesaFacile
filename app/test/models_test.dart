@@ -1,6 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lista_spesa_facile/l10n/l10n.dart';
 import 'package:lista_spesa_facile/models/list_item.dart';
+import 'package:lista_spesa_facile/models/measure_mode.dart';
+import 'package:lista_spesa_facile/models/product_suggestion.dart';
 import 'package:lista_spesa_facile/models/shopping_list.dart';
 import 'package:lista_spesa_facile/services/notification_service.dart';
 
@@ -138,5 +140,24 @@ void main() {
     // Prima quelli da prendere in ordine alfabetico, poi quelli già nel carrello.
     expect(groups.first.items.map((i) => i.name), ['arance', 'mele', 'pere', 'Ananas']);
     expect(groups[1].items.single.name, 'spinaci');
+  });
+
+  test('modo di misura: sfuso a peso, a peso e pezzi, in confezione', () {
+    expect(MeasureMode.fromJson('weight'), MeasureMode.weight);
+    expect(MeasureMode.fromJson('weight_count'), MeasureMode.weightCount);
+    expect(MeasureMode.fromJson('count'), MeasureMode.count);
+    expect(MeasureMode.fromJson(null), isNull);
+    // Salumi e formaggi al banco: solo peso. Mele: peso e pezzi. Kinder: solo confezioni. Sconosciuto: tutto.
+    expect([MeasureMode.weight.asksQuantity, MeasureMode.weight.asksWeight], [false, true]);
+    expect([MeasureMode.weightCount.asksQuantity, MeasureMode.weightCount.asksWeight], [true, true]);
+    expect([MeasureMode.count.asksQuantity, MeasureMode.count.asksWeight], [true, false]);
+    const MeasureMode? unknown = null;
+    expect([unknown.asksQuantity, unknown.asksWeight, unknown.isLoose], [true, true, false]);
+
+    final item = ListItem.fromJson({'id': 1, 'shopping_list_id': 1, 'name': 'Salame', 'measure': 'weight'});
+    expect(item.measure, MeasureMode.weight);
+    expect(item.copyWith(status: ItemStatus.taken).measure, MeasureMode.weight);
+    final suggestion = ProductSuggestion.fromJson({'name': 'Mele', 'icon': '🍎', 'measure': 'weight_count'});
+    expect(suggestion.measure, MeasureMode.weightCount);
   });
 }

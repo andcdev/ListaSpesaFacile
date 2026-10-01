@@ -3,6 +3,7 @@
 namespace App\Http\Resources;
 
 use App\Models\ListItem;
+use App\Support\ProductCatalog;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -30,6 +31,8 @@ class ListItemResource extends JsonResource
             'image_url' => $this->image_url,
             // Foto caricata dal telefono: GET /api/lists/{list}/items/{id}/image?v={image_version}; null se non c'è.
             'image_version' => $this->imageVersion(),
+            // Come si misura: weight (sfuso a peso), weight_count (sfuso, anche a pezzi), count (confezioni).
+            'measure' => ProductCatalog::measure($this->name, $this->barcode),
             'quantity' => $this->quantity,
             'amount' => $this->amount,
             'unit' => $this->unit,

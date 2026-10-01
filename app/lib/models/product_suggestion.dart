@@ -1,10 +1,21 @@
+import 'measure_mode.dart';
+
 /// Prodotto suggerito mentre si scrive: già usato nelle liste (con quante volte) o tra i più comuni.
 class ProductSuggestion {
-  const ProductSuggestion({required this.name, required this.icon, this.category = 'altro', this.times = 0});
+  const ProductSuggestion({
+    required this.name,
+    required this.icon,
+    this.category = 'altro',
+    this.measure,
+    this.times = 0,
+  });
 
   final String name;
   final String icon;
   final String category;
+
+  /// Come si misura: solo peso, peso e pezzi o confezioni (null = non si sa).
+  final MeasureMode? measure;
 
   /// Quante volte è stato messo in lista (0 = prodotto comune mai usato).
   final int times;
@@ -13,6 +24,7 @@ class ProductSuggestion {
     name: json['name'] as String,
     icon: json['icon'] as String? ?? '🛒',
     category: json['category'] as String? ?? 'altro',
+    measure: MeasureMode.fromJson(json['measure']),
     times: json['times'] as int? ?? 0,
   );
 }
