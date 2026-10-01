@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -8,6 +10,7 @@ import '../models/supermarket.dart';
 import '../services/api_client.dart';
 import '../state/lists_controller.dart';
 import '../widgets/permission_picker.dart';
+import '../widgets/photo_picker.dart';
 import '../widgets/ui.dart';
 
 /// Creazione (list == null) o modifica di nome, data/ora, supermercato, note e promemoria di una lista.
@@ -37,6 +40,9 @@ class _ListFormScreenState extends State<ListFormScreen> {
   late ReminderTarget _reminderTarget = widget.list?.reminderTarget ?? ReminderTarget.all;
   late bool _membersCanRename = widget.list?.membersCanRename ?? false;
   final List<ShareRequest> _recipients = [];
+
+  /// Foto della lista scelta alla creazione: si carica appena la lista esiste.
+  String? _photoPath;
   String? _recipientError;
   bool _busy = false;
 
@@ -129,6 +135,21 @@ class _ListFormScreenState extends State<ListFormScreen> {
     });
   }
 
+  Future<void> _pickPhoto() async {
+    final choice = await askPhotoSource(context, canRemove: _photoPath != null, title: context.l10n.listPhoto);
+    if (choice == null) return;
+    if (choice == PhotoChoice.remove) {
+      setState(() => _photoPath = null);
+      return;
+    }
+    try {
+      final path = await pickPhoto(choice);
+      if (path != null && mounted) setState(() => _photoPath = path);
+    } catch (e) {
+      if (mounted) showError(context, e);
+    }
+  }
+
   Future<void> _save() async {
     if (!_form.currentState!.validate()) return;
     // Email scritta ma non ancora aggiunta con il pulsante: la aggiungiamo noi.
@@ -138,6 +159,7 @@ class _ListFormScreenState extends State<ListFormScreen> {
     }
     setState(() => _busy = true);
     final lists = context.read<ListsController>();
+    final api = context.read<ApiClient>();
     final notes = _notes.text.trim().isEmpty ? null : _notes.text.trim();
     final supermarket = _supermarket.trim().isEmpty ? null : _supermarket.trim();
     try {
@@ -164,6 +186,15 @@ class _ListFormScreenState extends State<ListFormScreen> {
           membersCanRename: _membersCanRename,
           shares: _recipients,
         );
+        if (_photoPath != null) {
+          try {
+            await api.uploadListImage(created.id, _photoPath!);
+            await lists.load();
+          } catch (_) {
+            // La lista c'è comunque: la foto si può aggiungere dopo dal menu.
+            if (mounted) showMessage(context, context.l10n.listPhotoUploadFailed);
+          }
+        }
         if (mounted) Navigator.pop(context, created);
       }
     } catch (e) {
@@ -185,6 +216,8 @@ class _ListFormScreenState extends State<ListFormScreen> {
             // In fondo anche lo spazio della barra di navigazione di Android, che altrimenti copre "Crea lista".
             padding: EdgeInsets.fromLTRB(16, 16, 16, 24 + MediaQuery.viewPaddingOf(context).bottom),
             children: [
+              // Alla creazione: foto della lista (fa da sfondo alla testata della lista).
+              if (!_editing) ...[_ListPhotoPicker(path: _photoPath, onPressed: _pickPhoto), const SizedBox(height: 16)],
               TextFormField(
                 controller: _name,
                 autofocus: !_editing,
@@ -463,6 +496,54 @@ class _CustomReminderDialogState extends State<_CustomReminderDialog> {
         TextButton(onPressed: () => Navigator.pop(context), child: Text(l.cancel)),
         FilledButton(onPressed: _confirm, child: Text(l.ok)),
       ],
+    );
+  }
+}
+
+/// Foto della lista nel modulo di creazione: un pulsante, o l'anteprima della foto scelta (toccala per cambiarla
+/// o toglierla).
+class _ListPhotoPicker extends StatelessWidget {
+  const _ListPhotoPicker({required this.path, required this.onPressed});
+
+  final String? path;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    final l = context.l10n;
+    if (path == null) {
+      return OutlinedButton.icon(
+        onPressed: onPressed,
+        icon: const Icon(Icons.add_a_photo_outlined),
+        label: Text(l.addPhoto),
+      );
+    }
+    return Semantics(
+      button: true,
+      label: l.changePhoto,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(18),
+        child: SizedBox(
+          height: 150,
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              Image.file(File(path!), fit: BoxFit.cover),
+              Align(
+                alignment: Alignment.bottomRight,
+                child: Padding(
+                  padding: const EdgeInsets.all(8),
+                  child: FilledButton.tonalIcon(
+                    onPressed: onPressed,
+                    icon: const Icon(Icons.edit_outlined, size: 18),
+                    label: Text(l.changePhoto),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

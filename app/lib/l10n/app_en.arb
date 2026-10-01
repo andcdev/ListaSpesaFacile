@@ -229,6 +229,8 @@
   "onlyYouViewing": "Only you are viewing this list",
   "viewingNow": "Here now: {names}",
   "typing": "{count, plural, =1{{names} is typing…} other{{names} are typing…}}",
+  "listPhoto": "List photo",
+  "listPhotoUploadFailed": "List created, but the photo was not uploaded: add it from the list menu.",
   "productPhoto": "Product photo",
   "oftenBought": "You often buy:",
   "timesInList": "{count, plural, =1{Already added once} other{Already added {count} times}}",

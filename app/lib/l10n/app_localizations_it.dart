@@ -829,6 +829,13 @@ class AppLocalizationsIt extends AppLocalizations {
   }
 
   @override
+  String get listPhoto => 'Foto della lista';
+
+  @override
+  String get listPhotoUploadFailed =>
+      'Lista creata, ma la foto non è stata caricata: aggiungila dal menu della lista.';
+
+  @override
   String get productPhoto => 'Foto del prodotto';
 
   @override
