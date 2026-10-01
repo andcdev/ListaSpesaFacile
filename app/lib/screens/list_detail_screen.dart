@@ -352,7 +352,10 @@ class _ListDetailScreenState extends State<ListDetailScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        // Il nome della lista è il titolo grande nella pagina; qui solo i pulsanti tondi.
+        // Il nome della lista è il titolo grande nella pagina; qui logo e nome dell'app tra la freccia e i
+        // pulsanti tondi, rimpiccioliti quanto serve per starci (AppName).
+        titleSpacing: 4,
+        title: const AppName(),
         leading: Center(
           child: IconButton(
             style: round,

@@ -5,7 +5,13 @@ import 'package:lista_spesa_facile/theme/app_theme.dart';
 import 'package:lista_spesa_facile/widgets/ui.dart';
 
 void main() {
-  Future<void> pumpPage(WidgetTester tester, {required Widget title, required Widget body, int actions = 4}) async {
+  Future<void> pumpPage(
+    WidgetTester tester, {
+    required Widget title,
+    required Widget body,
+    int actions = 4,
+    Widget? leading,
+  }) async {
     tester.view.physicalSize = const Size(320, 640);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.reset);
@@ -13,7 +19,11 @@ void main() {
       MaterialApp(
         theme: AppTheme.light,
         home: Scaffold(
-          appBar: AppBar(title: title, actions: [for (var i = 0; i < actions; i++) const Icon(Icons.star)]),
+          appBar: AppBar(
+            leading: leading,
+            title: title,
+            actions: [for (var i = 0; i < actions; i++) const Icon(Icons.star)],
+          ),
           body: body,
         ),
       ),
@@ -36,6 +46,27 @@ void main() {
       final firstAction = tester.getRect(find.byIcon(Icons.star).first);
       expect(name.right, lessThanOrEqualTo(firstAction.left), reason: 'non va sotto i comandi');
       expect(find.text('Le mie liste'), findsOneWidget);
+    });
+  }
+
+  for (final scale in [1.0, 2.0]) {
+    testWidgets('lista aperta: logo e nome tra la freccia e i comandi, interi e senza overflow (testo x$scale)', (
+      tester,
+    ) async {
+      tester.platformDispatcher.textScaleFactorTestValue = scale;
+      addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+      await pumpPage(
+        tester,
+        leading: const Icon(Icons.arrow_back),
+        title: const AppName(),
+        body: const PageHeading('Spesa settimanale'),
+      );
+      expect(tester.takeException(), isNull);
+      final text = tester.renderObject<RenderParagraph>(find.text(AppName.appName));
+      expect(text.didExceedMaxLines, isFalse);
+      final name = tester.getRect(find.byType(AppName));
+      expect(name.left, greaterThanOrEqualTo(tester.getRect(find.byIcon(Icons.arrow_back)).right));
+      expect(name.right, lessThanOrEqualTo(tester.getRect(find.byIcon(Icons.star).first).left));
     });
   }
 
