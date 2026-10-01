@@ -39,6 +39,8 @@ class SocialAuthTest extends TestCase
         $user = User::firstWhere('email', 'giulia@example.com');
         $this->assertSame('Giulia Verdi', $user->name);
         $this->assertNull($user->password);
+        $this->assertNotNull($user->privacy_accepted_at);
+        $this->assertNotNull($user->terms_accepted_at);
         $this->assertDatabaseHas('social_accounts', ['user_id' => $user->id, 'provider' => 'google', 'provider_user_id' => 'g-1']);
 
         $this->withToken($response->json('token'))->getJson('/api/me')->assertOk();

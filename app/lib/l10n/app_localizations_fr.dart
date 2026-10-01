@@ -938,6 +938,18 @@ class AppLocalizationsFr extends AppLocalizations {
   String get privacyPolicy => 'politique de confidentialité';
 
   @override
+  String get termsRequired => 'Vous devez accepter les conditions d\'utilisation pour vous inscrire';
+
+  @override
+  String get acceptTermsPrefix => 'J\'accepte les ';
+
+  @override
+  String get termsOfUse => 'conditions d\'utilisation';
+
+  @override
+  String get acceptTermsSuffix => ' : je suis responsable des contenus que j\'ajoute';
+
+  @override
   String get newsletterConsent => 'Je veux recevoir la newsletter de Lista Spesa Facile';
 
   @override
@@ -945,6 +957,9 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get socialPrivacyNotice => 'En continuant avec Google ou Amazon, vous acceptez la ';
+
+  @override
+  String get socialTermsJoin => ' et les ';
 
   @override
   String get myPrices => 'Mes prix';

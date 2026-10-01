@@ -38,12 +38,14 @@ void main() {
       'anna$stamp@example.com',
       'password123',
       privacy: true,
+      terms: true,
     );
     final (brunoToken, bruno) = await brunoApi.register(
       'Bruno',
       'bruno$stamp@example.com',
       'password123',
       privacy: true,
+      terms: true,
     );
     annaApi.token = annaToken;
     brunoApi.token = brunoToken;
@@ -117,12 +119,14 @@ void main() {
       'anna-chat$stamp@example.com',
       'password123',
       privacy: true,
+      terms: true,
     );
     final (brunoToken, bruno) = await brunoApi.register(
       'Bruno',
       'bruno-chat$stamp@example.com',
       'password123',
       privacy: true,
+      terms: true,
     );
     annaApi.token = annaToken;
     brunoApi.token = brunoToken;
@@ -206,8 +210,8 @@ void main() {
       final stamp = DateTime.now().millisecondsSinceEpoch;
       final api = ApiClient(baseUrl: apiUrl);
       final other = ApiClient(baseUrl: apiUrl);
-      final (t1, me) = await api.register('Carla', 'c$stamp@example.com', 'password123', privacy: true);
-      final (t2, _) = await other.register('Dario', 'd$stamp@example.com', 'password123', privacy: true);
+      final (t1, me) = await api.register('Carla', 'c$stamp@example.com', 'password123', privacy: true, terms: true);
+      final (t2, _) = await other.register('Dario', 'd$stamp@example.com', 'password123', privacy: true, terms: true);
       api.token = t1;
       other.token = t2;
       final list = await api.createList(name: 'R', scheduledAt: DateTime.now());

@@ -20,6 +20,7 @@ class AuthTest extends TestCase
             'password' => 'password123',
             'password_confirmation' => 'password123',
             'privacy' => true,
+            'terms' => true,
         ]);
 
         $response->assertCreated()->assertJsonStructure(['token', 'user' => ['id', 'name', 'email']]);
@@ -31,17 +32,23 @@ class AuthTest extends TestCase
             ->assertJsonPath('data.newsletter', false);
         $user = User::firstWhere('email', 'mario@example.com');
         $this->assertNotNull($user->privacy_accepted_at);
+        $this->assertNotNull($user->terms_accepted_at);
         $this->assertNull($user->newsletter_consented_at);
     }
 
-    public function test_registration_requires_privacy_and_a_valid_email(): void
+    public function test_registration_requires_privacy_terms_and_a_valid_email(): void
     {
         $data = ['name' => 'Mario', 'password' => 'password123', 'password_confirmation' => 'password123'];
 
-        $this->postJson('/api/register', [...$data, 'email' => 'mario@example.com'])->assertJsonValidationErrors('privacy');
-        $this->postJson('/api/register', [...$data, 'email' => 'mario@example.com', 'privacy' => false])->assertJsonValidationErrors('privacy');
+        // Poche richieste: la registrazione ha un limite al minuto. Senza "terms" (app vecchia): invito ad aggiornare.
+        $this->postJson('/api/register', [...$data, 'email' => 'mario@example.com', 'privacy' => true])
+            ->assertJsonValidationErrors(['privacy' => "Aggiorna l'app per accettare le condizioni d'uso e registrarti."]);
+        $this->postJson('/api/register', [...$data, 'email' => 'mario@example.com', 'privacy' => false, 'terms' => false])
+            ->assertJsonValidationErrors(['privacy', 'terms']);
+        $this->postJson('/api/register', [...$data, 'email' => 'mario@example.com', 'privacy' => false])
+            ->assertJsonValidationErrors(['privacy'])->assertJsonMissingValidationErrors(['terms']);
         foreach (['mario', 'mario@', 'mario@localhost', 'mario@@example.com', 'ma rio@example.com', 'mario@example.c', 'mario..rossi@example.com'] as $email) {
-            $this->postJson('/api/register', [...$data, 'email' => $email, 'privacy' => true])->assertJsonValidationErrors('email');
+            $this->postJson('/api/register', [...$data, 'email' => $email, 'privacy' => true, 'terms' => true])->assertJsonValidationErrors('email');
         }
         $this->assertDatabaseCount('users', 0);
     }
@@ -50,7 +57,7 @@ class AuthTest extends TestCase
     {
         $token = $this->postJson('/api/register', [
             'name' => 'Anna', 'email' => 'anna@example.com', 'password' => 'password123',
-            'password_confirmation' => 'password123', 'privacy' => true, 'newsletter' => true,
+            'password_confirmation' => 'password123', 'privacy' => true, 'terms' => true, 'newsletter' => true,
         ])->assertCreated()->json('token');
         $anna = User::firstWhere('email', 'anna@example.com');
         $this->assertTrue($anna->newsletter);

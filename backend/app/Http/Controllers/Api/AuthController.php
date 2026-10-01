@@ -23,16 +23,24 @@ class AuthController extends Controller
             'email' => ['required', 'string', 'lowercase', 'email:rfc,strict', 'regex:/^[^@\s]+@[^@\s]+\.[a-z]{2,}$/i', 'max:255', 'unique:users,email'],
             'password' => ['required', 'confirmed', Password::defaults()],
             'device_name' => ['nullable', 'string', 'max:255'],
-            // Informativa privacy da accettare; newsletter facoltativa.
+            // Informativa privacy e condizioni d'uso da accettare; newsletter facoltativa.
             'privacy' => ['accepted'],
+            'terms' => ['sometimes', 'accepted'],
             'newsletter' => ['sometimes', 'boolean'],
         ]);
+
+        // Le versioni dell'app precedenti alle condizioni d'uso non mandano "terms" e mostrano gli errori solo sotto
+        // i campi che conoscono: l'invito ad aggiornare va sotto la casella della privacy.
+        if (! array_key_exists('terms', $data)) {
+            throw ValidationException::withMessages(['privacy' => [__('app.errors.update_app_for_terms')]]);
+        }
 
         $newsletter = (bool) ($data['newsletter'] ?? false);
         $user = User::create([
             ...collect($data)->only(['name', 'email', 'password'])->all(),
             'locale' => app()->getLocale(),
             'privacy_accepted_at' => now(),
+            'terms_accepted_at' => now(),
             'newsletter' => $newsletter,
             'newsletter_consented_at' => $newsletter ? now() : null,
         ]);

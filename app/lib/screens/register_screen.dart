@@ -25,8 +25,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Map<String, List<String>> _serverErrors = {};
   bool _busy = false;
 
-  /// Informativa privacy accettata (obbligatoria) e consenso alla newsletter (facoltativo).
+  /// Informativa privacy e condizioni d'uso accettate (obbligatorie), consenso alla newsletter (facoltativo).
   bool _privacy = false;
+  bool _terms = false;
   bool _newsletter = false;
 
   @override
@@ -47,6 +48,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         _email.text,
         _password.text,
         privacy: _privacy,
+        terms: _terms,
         newsletter: _newsletter,
       );
       if (mounted) Navigator.pop(context);
@@ -60,6 +62,60 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   String? _serverError(String field) => _serverErrors[field]?.first;
+
+  /// Casella obbligatoria con il testo "prefisso + link + suffisso" (informativa privacy, condizioni d'uso).
+  Widget _consent({
+    required bool value,
+    required ValueChanged<bool> onChanged,
+    required String requiredMessage,
+    required String serverField,
+    required String prefix,
+    required String link,
+    required VoidCallback onLink,
+    required String suffix,
+  }) {
+    return FormField<bool>(
+      validator: (_) => value ? null : requiredMessage,
+      builder: (field) => Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          CheckboxListTile(
+            value: value,
+            contentPadding: EdgeInsets.zero,
+            controlAffinity: ListTileControlAffinity.leading,
+            onChanged: (v) {
+              onChanged(v ?? false);
+              field.didChange(v);
+            },
+            title: Text.rich(
+              TextSpan(
+                text: prefix,
+                children: [
+                  TextSpan(
+                    text: link,
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.primary,
+                      decoration: TextDecoration.underline,
+                    ),
+                    recognizer: TapGestureRecognizer()..onTap = onLink,
+                  ),
+                  TextSpan(text: suffix),
+                ],
+              ),
+            ),
+          ),
+          if (field.errorText != null || _serverError(serverField) != null)
+            Padding(
+              padding: const EdgeInsets.only(left: 12),
+              child: Text(
+                field.errorText ?? _serverError(serverField)!,
+                style: TextStyle(color: Theme.of(context).colorScheme.error, fontSize: 12),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -109,46 +165,25 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     validator: (v) => v != _password.text ? l.passwordsDontMatch : null,
                   ),
                   const SizedBox(height: 16),
-                  FormField<bool>(
-                    validator: (_) => _privacy ? null : l.privacyRequired,
-                    builder: (field) => Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        CheckboxListTile(
-                          value: _privacy,
-                          contentPadding: EdgeInsets.zero,
-                          controlAffinity: ListTileControlAffinity.leading,
-                          onChanged: (v) {
-                            setState(() => _privacy = v ?? false);
-                            field.didChange(v);
-                          },
-                          title: Text.rich(
-                            TextSpan(
-                              text: l.acceptPrivacyPrefix,
-                              children: [
-                                TextSpan(
-                                  text: l.privacyPolicy,
-                                  style: TextStyle(
-                                    color: Theme.of(context).colorScheme.primary,
-                                    decoration: TextDecoration.underline,
-                                  ),
-                                  recognizer: TapGestureRecognizer()..onTap = openPrivacyPolicy,
-                                ),
-                                TextSpan(text: l.acceptPrivacySuffix),
-                              ],
-                            ),
-                          ),
-                        ),
-                        if (field.errorText != null || _serverError('privacy') != null)
-                          Padding(
-                            padding: const EdgeInsets.only(left: 12),
-                            child: Text(
-                              field.errorText ?? _serverError('privacy')!,
-                              style: TextStyle(color: Theme.of(context).colorScheme.error, fontSize: 12),
-                            ),
-                          ),
-                      ],
-                    ),
+                  _consent(
+                    value: _privacy,
+                    onChanged: (v) => setState(() => _privacy = v),
+                    requiredMessage: l.privacyRequired,
+                    serverField: 'privacy',
+                    prefix: l.acceptPrivacyPrefix,
+                    link: l.privacyPolicy,
+                    onLink: openPrivacyPolicy,
+                    suffix: l.acceptPrivacySuffix,
+                  ),
+                  _consent(
+                    value: _terms,
+                    onChanged: (v) => setState(() => _terms = v),
+                    requiredMessage: l.termsRequired,
+                    serverField: 'terms',
+                    prefix: l.acceptTermsPrefix,
+                    link: l.termsOfUse,
+                    onLink: openTermsOfUse,
+                    suffix: l.acceptTermsSuffix,
                   ),
                   CheckboxListTile(
                     value: _newsletter,

@@ -11,6 +11,10 @@ const privacyPolicyUrl = 'https://listaspesafacile.com/privacy';
 
 Future<void> openPrivacyPolicy() => launchUrl(Uri.parse(privacyPolicyUrl), mode: LaunchMode.externalApplication);
 
+/// Condizioni d'uso: chi aggiunge un contenuto (liste, articoli, chat, foto) ne è responsabile.
+const termsOfUseUrl = 'https://listaspesafacile.com/termini';
+Future<void> openTermsOfUse() => launchUrl(Uri.parse(termsOfUseUrl), mode: LaunchMode.externalApplication);
+
 /// Email scritta correttamente: nome@dominio.estensione, senza spazi né punti doppi ("mario@localhost" no).
 bool isValidEmail(String value) {
   final email = value.trim();

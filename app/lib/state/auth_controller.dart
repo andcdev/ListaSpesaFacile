@@ -94,6 +94,7 @@ class AuthController extends ChangeNotifier {
     String email,
     String password, {
     required bool privacy,
+    required bool terms,
     bool newsletter = false,
   }) async {
     final (token, user) = await api.register(
@@ -101,6 +102,7 @@ class AuthController extends ChangeNotifier {
       email.trim(),
       password,
       privacy: privacy,
+      terms: terms,
       newsletter: newsletter,
     );
     await _signedIn(token, user);

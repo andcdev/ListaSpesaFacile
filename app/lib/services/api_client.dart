@@ -146,6 +146,7 @@ class ApiClient {
     String email,
     String password, {
     required bool privacy,
+    required bool terms,
     bool newsletter = false,
   }) async {
     final json = await _send('POST', '/register', {
@@ -155,6 +156,7 @@ class ApiClient {
       'password_confirmation': password,
       'device_name': _deviceName,
       'privacy': privacy,
+      'terms': terms,
       'newsletter': newsletter,
     });
     return (json['token'] as String, AppUser.fromJson(json['user'] as Map<String, dynamic>));
