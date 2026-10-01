@@ -5,7 +5,7 @@
   const testi = {
     it: {
       troppi: 'Troppi tentativi. Aspetta un minuto e riprova.',
-      email503: "In questo momento non riusciamo a mandare l'email. Riprova più tardi o scrivi a supporto@listaspesafacile.com.",
+      email503: "In questo momento non riusciamo a mandare l'email. Riprova più tardi o scrivi a support@listaspesafacile.com.",
       generico: 'Qualcosa non ha funzionato. Riprova tra poco.',
       rete: 'Connessione non riuscita. Controlla la rete e riprova.',
       email: 'Scrivi un indirizzo email valido.',
@@ -15,7 +15,7 @@
     },
     en: {
       troppi: 'Too many attempts. Wait a minute and try again.',
-      email503: "We can't send the email right now. Try again later or write to supporto@listaspesafacile.com.",
+      email503: "We can't send the email right now. Try again later or write to support@listaspesafacile.com.",
       generico: 'Something went wrong. Try again shortly.',
       rete: 'Connection failed. Check your network and try again.',
       email: 'Enter a valid email address.',
@@ -25,7 +25,7 @@
     },
     fr: {
       troppi: 'Trop de tentatives. Attendez une minute et réessayez.',
-      email503: "Nous ne pouvons pas envoyer l'e-mail pour le moment. Réessayez plus tard ou écrivez à supporto@listaspesafacile.com.",
+      email503: "Nous ne pouvons pas envoyer l'e-mail pour le moment. Réessayez plus tard ou écrivez à support@listaspesafacile.com.",
       generico: "Quelque chose n'a pas fonctionné. Réessayez dans un instant.",
       rete: 'Connexion impossible. Vérifiez le réseau et réessayez.',
       email: 'Saisissez une adresse e-mail valide.',
@@ -35,7 +35,7 @@
     },
     de: {
       troppi: 'Zu viele Versuche. Warte eine Minute und versuche es erneut.',
-      email503: 'Wir können die E-Mail gerade nicht senden. Versuche es später erneut oder schreib an supporto@listaspesafacile.com.',
+      email503: 'Wir können die E-Mail gerade nicht senden. Versuche es später erneut oder schreib an support@listaspesafacile.com.',
       generico: 'Etwas hat nicht funktioniert. Versuche es gleich noch einmal.',
       rete: 'Verbindung fehlgeschlagen. Prüfe das Netz und versuche es erneut.',
       email: 'Gib eine gültige E-Mail-Adresse ein.',
@@ -45,7 +45,7 @@
     },
     es: {
       troppi: 'Demasiados intentos. Espera un minuto y vuelve a intentarlo.',
-      email503: 'Ahora mismo no podemos enviar el correo. Inténtalo más tarde o escribe a supporto@listaspesafacile.com.',
+      email503: 'Ahora mismo no podemos enviar el correo. Inténtalo más tarde o escribe a support@listaspesafacile.com.',
       generico: 'Algo no ha funcionado. Inténtalo de nuevo en un momento.',
       rete: 'No se ha podido conectar. Comprueba la red y vuelve a intentarlo.',
       email: 'Escribe una dirección de correo válida.',

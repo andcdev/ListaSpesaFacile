@@ -1,4 +1,4 @@
-"""Genera il sito vetrina in cinque lingue: site/{it,en,fr,de,es}/{index,privacy,supporto,elimina-account}.html.
+"""Genera il sito vetrina in cinque lingue: site/{it,en,fr,de,es}/{index,privacy,termini,supporto,elimina-account}.html.
 
 Uso: python3 site-src/build.py
 
@@ -7,7 +7,7 @@ description), una riga "---" e poi il <main>. Nei collegamenti alle altre pagine
 lingua ({base}/privacy → /en/privacy). Testata con il selettore della lingua, piè di pagina, collegamenti tra le
 versioni (hreflang) e sitemap.xml li aggiunge questo script.
 
-Gli indirizzi senza lingua (/, /privacy, /supporto, /elimina-account: quelli usati dall'app e da Google Play)
+Gli indirizzi senza lingua (/, /privacy, /termini, /supporto, /elimina-account: quelli usati dall'app e da Google Play)
 portano Caddy alla lingua del browser (intestazione Accept-Language), vedi backend/docker/Caddyfile.
 """
 
@@ -20,24 +20,24 @@ DOMAIN = 'https://listaspesafacile.com'
 
 LANGS = ['it', 'en', 'fr', 'de', 'es']
 LANG_NAMES = {'it': 'Italiano', 'en': 'English', 'fr': 'Français', 'de': 'Deutsch', 'es': 'Español'}
-PAGES = ['index', 'privacy', 'supporto', 'elimina-account']
+PAGES = ['index', 'privacy', 'termini', 'supporto', 'elimina-account']
 
 # Testi comuni: menu, piè di pagina, etichette.
 UI = {
     'it': {'support': 'Supporto', 'privacy': 'Privacy', 'delete': 'Elimina account', 'menu': 'Menu',
-           'info': 'Informazioni', 'language': 'Lingua',
+           'terms': "Condizioni d'uso", 'info': 'Informazioni', 'language': 'Lingua',
            'trademark': 'Google Play e il logo di Google Play sono marchi di Google LLC.'},
     'en': {'support': 'Support', 'privacy': 'Privacy', 'delete': 'Delete account', 'menu': 'Menu',
-           'info': 'Information', 'language': 'Language',
+           'terms': "Terms of use", 'info': 'Information', 'language': 'Language',
            'trademark': 'Google Play and the Google Play logo are trademarks of Google LLC.'},
     'fr': {'support': 'Assistance', 'privacy': 'Confidentialité', 'delete': 'Supprimer le compte', 'menu': 'Menu',
-           'info': 'Informations', 'language': 'Langue',
+           'terms': "Conditions d'utilisation", 'info': 'Informations', 'language': 'Langue',
            'trademark': 'Google Play et le logo Google Play sont des marques de Google LLC.'},
     'de': {'support': 'Hilfe', 'privacy': 'Datenschutz', 'delete': 'Konto löschen', 'menu': 'Menü',
-           'info': 'Informationen', 'language': 'Sprache',
+           'terms': "Nutzungsbedingungen", 'info': 'Informationen', 'language': 'Sprache',
            'trademark': 'Google Play und das Google Play-Logo sind Marken von Google LLC.'},
     'es': {'support': 'Soporte', 'privacy': 'Privacidad', 'delete': 'Eliminar cuenta', 'menu': 'Menú',
-           'info': 'Información', 'language': 'Idioma',
+           'terms': "Condiciones de uso", 'info': 'Información', 'language': 'Idioma',
            'trademark': 'Google Play y el logotipo de Google Play son marcas de Google LLC.'},
 }
 
@@ -101,6 +101,7 @@ def render(lang: str, page: str) -> str:
       <nav aria-label="{t['info']}">
         <a href="/{lang}/supporto">{t['support']}</a>
         <a href="/{lang}/privacy">{t['privacy']}</a>
+        <a href="/{lang}/termini">{t['terms']}</a>
         <a href="/{lang}/elimina-account">{t['delete']}</a>
       </nav>
       <p class="marchi">{t['trademark']}</p>

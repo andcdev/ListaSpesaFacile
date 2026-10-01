@@ -81,6 +81,7 @@ nav.menu a:hover, nav.menu a[aria-current="page"] { color: var(--verde); }
 /* Badge ufficiale di Google Play: immagine così com'è, solo ridimensionata (linee guida di Google). */
 .badge-play { display: block; width: max-content; line-height: 0; }
 .badge-play img { height: 64px; width: auto; }
+@media (min-width: 720px) { .badge-play img { height: 48px; } }
 .nota-pulsante { display: block; margin-top: 12px; font-size: 14px; color: var(--testo-2); }
 
 .funzioni {

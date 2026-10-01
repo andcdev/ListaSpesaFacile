@@ -36,30 +36,30 @@ Disallow: /
 			# Lingua: il sito è in /it/, /en/, /fr/, /de/, /es/. Gli indirizzi senza lingua (quelli dell'app e di
 			# Google Play) portano alla versione nella prima lingua del browser (Accept-Language): un'altra lingua
 			# → inglese, nessuna → italiano. Nessun cookie: scelta la lingua, tutti i collegamenti restano in quella.
-			@senzaLingua path / /index.html /privacy /privacy.html /supporto /supporto.html /elimina-account /elimina-account.html
+			@senzaLingua path / /index.html /privacy /privacy.html /termini /termini.html /supporto /supporto.html /elimina-account /elimina-account.html
 			header @senzaLingua Vary Accept-Language
 			@linguaEn {
-				path / /index.html /privacy /privacy.html /supporto /supporto.html /elimina-account /elimina-account.html
+				path / /index.html /privacy /privacy.html /termini /termini.html /supporto /supporto.html /elimina-account /elimina-account.html
 				header_regexp Accept-Language (?i)^\s*en
 			}
 			@linguaFr {
-				path / /index.html /privacy /privacy.html /supporto /supporto.html /elimina-account /elimina-account.html
+				path / /index.html /privacy /privacy.html /termini /termini.html /supporto /supporto.html /elimina-account /elimina-account.html
 				header_regexp Accept-Language (?i)^\s*fr
 			}
 			@linguaDe {
-				path / /index.html /privacy /privacy.html /supporto /supporto.html /elimina-account /elimina-account.html
+				path / /index.html /privacy /privacy.html /termini /termini.html /supporto /supporto.html /elimina-account /elimina-account.html
 				header_regexp Accept-Language (?i)^\s*de
 			}
 			@linguaEs {
-				path / /index.html /privacy /privacy.html /supporto /supporto.html /elimina-account /elimina-account.html
+				path / /index.html /privacy /privacy.html /termini /termini.html /supporto /supporto.html /elimina-account /elimina-account.html
 				header_regexp Accept-Language (?i)^\s*es
 			}
 			@linguaIt {
-				path / /index.html /privacy /privacy.html /supporto /supporto.html /elimina-account /elimina-account.html
+				path / /index.html /privacy /privacy.html /termini /termini.html /supporto /supporto.html /elimina-account /elimina-account.html
 				header_regexp Accept-Language (?i)^\s*it
 			}
 			@altraLingua {
-				path / /index.html /privacy /privacy.html /supporto /supporto.html /elimina-account /elimina-account.html
+				path / /index.html /privacy /privacy.html /termini /termini.html /supporto /supporto.html /elimina-account /elimina-account.html
 				header_regexp Accept-Language \S
 			}
 			redir @linguaEn /en{path} 302

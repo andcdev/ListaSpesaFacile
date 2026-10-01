@@ -1733,6 +1733,30 @@ abstract class AppLocalizations {
   /// **'informativa privacy'**
   String get privacyPolicy;
 
+  /// No description provided for @termsRequired.
+  ///
+  /// In it, this message translates to:
+  /// **'Per registrarti devi accettare le condizioni d\'uso'**
+  String get termsRequired;
+
+  /// No description provided for @acceptTermsPrefix.
+  ///
+  /// In it, this message translates to:
+  /// **'Accetto le '**
+  String get acceptTermsPrefix;
+
+  /// No description provided for @termsOfUse.
+  ///
+  /// In it, this message translates to:
+  /// **'condizioni d\'uso'**
+  String get termsOfUse;
+
+  /// No description provided for @acceptTermsSuffix.
+  ///
+  /// In it, this message translates to:
+  /// **': i contenuti che aggiungo sono sotto la mia responsabilità'**
+  String get acceptTermsSuffix;
+
   /// No description provided for @newsletterConsent.
   ///
   /// In it, this message translates to:
@@ -1750,6 +1774,12 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Continuando con Google o Amazon accetti l\''**
   String get socialPrivacyNotice;
+
+  /// No description provided for @socialTermsJoin.
+  ///
+  /// In it, this message translates to:
+  /// **' e le '**
+  String get socialTermsJoin;
 
   /// No description provided for @myPrices.
   ///

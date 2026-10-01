@@ -226,7 +226,7 @@ class _SocialLoginSectionState extends State<SocialLoginSection> {
               onPressed: _busy ? null : () => _signIn(provider, enabled: enabled.contains(provider)),
             ),
           ),
-        // Con Google o Amazon l'account si crea al primo accesso: l'informativa si accetta continuando.
+        // Con Google o Amazon l'account si crea al primo accesso: informativa e condizioni si accettano continuando.
         Text.rich(
           TextSpan(
             text: context.l10n.socialPrivacyNotice,
@@ -235,6 +235,12 @@ class _SocialLoginSectionState extends State<SocialLoginSection> {
                 text: context.l10n.privacyPolicy,
                 style: TextStyle(color: Theme.of(context).colorScheme.primary, decoration: TextDecoration.underline),
                 recognizer: TapGestureRecognizer()..onTap = openPrivacyPolicy,
+              ),
+              TextSpan(text: context.l10n.socialTermsJoin),
+              TextSpan(
+                text: context.l10n.termsOfUse,
+                style: TextStyle(color: Theme.of(context).colorScheme.primary, decoration: TextDecoration.underline),
+                recognizer: TapGestureRecognizer()..onTap = openTermsOfUse,
               ),
             ],
           ),

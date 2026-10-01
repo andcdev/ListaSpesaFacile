@@ -930,6 +930,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get privacyPolicy => 'privacy policy';
 
   @override
+  String get termsRequired => 'You must accept the terms of use to sign up';
+
+  @override
+  String get acceptTermsPrefix => 'I accept the ';
+
+  @override
+  String get termsOfUse => 'terms of use';
+
+  @override
+  String get acceptTermsSuffix => ': I am responsible for the content I add';
+
+  @override
   String get newsletterConsent => 'I want to receive the Lista Spesa Facile newsletter';
 
   @override
@@ -937,6 +949,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get socialPrivacyNotice => 'By continuing with Google or Amazon you accept the ';
+
+  @override
+  String get socialTermsJoin => ' and the ';
 
   @override
   String get myPrices => 'My prices';

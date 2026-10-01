@@ -4,6 +4,7 @@
 
 return [
     'errors' => [
+        'update_app_for_terms' => 'Aktualisiere die App, um die Nutzungsbedingungen zu akzeptieren und dich zu registrieren.',
         'social_only' => 'Dieses Konto meldet sich mit :providers an.',
         'invalid_credentials' => 'Ungültige Anmeldedaten.',
         'social_code_invalid' => 'Anmeldung ungültig oder abgelaufen. Bitte erneut versuchen.',

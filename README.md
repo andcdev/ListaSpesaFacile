@@ -167,7 +167,7 @@ tail -f /var/log/lsf-aggiorna.log
 
 | Nome | Risposta |
 |---|---|
-| `listaspesafacile.com` | Sito vetrina in cinque lingue, file statici da `site/{it,en,fr,de,es}/` (Home, Privacy, Elimina account, Supporto). Gli indirizzi senza lingua (`/`, `/privacy`, …) rimandano alla lingua del browser (`Accept-Language`; altre lingue → inglese, nessuna → italiano) |
+| `listaspesafacile.com` | Sito vetrina in cinque lingue, file statici da `site/{it,en,fr,de,es}/` (Home, Privacy, Condizioni d'uso, Elimina account, Supporto). Gli indirizzi senza lingua (`/`, `/privacy`, …) rimandano alla lingua del browser (`Accept-Language`; altre lingue → inglese, nessuna → italiano) |
 | `listaspesafacile.com/api/account-deletion/*` | Eliminazione dell'account dalla pagina del sito (codice via email), senza chiave |
 | `api.listaspesafacile.com` | API e WebSocket, solo con `X-App-Key` uguale a `CLIENT_KEY`; senza → 404 vuoto |
 | `api.…/auth/*` | Login social, aperto senza chiave (lo apre il browser di sistema) |

@@ -15,7 +15,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Storage;
 use Laravel\Sanctum\HasApiTokens;
 
-#[Fillable(['name', 'email', 'password', 'locale', 'privacy_accepted_at', 'newsletter', 'newsletter_consented_at'])]
+#[Fillable(['name', 'email', 'password', 'locale', 'privacy_accepted_at', 'terms_accepted_at', 'newsletter', 'newsletter_consented_at'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable implements HasLocalePreference
 {
@@ -61,6 +61,7 @@ class User extends Authenticatable implements HasLocalePreference
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'privacy_accepted_at' => 'datetime',
+            'terms_accepted_at' => 'datetime',
             'newsletter' => 'boolean',
             'newsletter_consented_at' => 'datetime',
         ];
