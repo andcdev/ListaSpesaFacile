@@ -67,6 +67,19 @@ String dayLabel(DateTime date) {
 String timeLabel(DateTime date) => DateFormat.Hm().format(date);
 
 /// Icona del carrello e nome dell'app in stampatello, in alto nella prima pagina (il nome non si traduce).
+/// Logo dell'app, lo stesso in alto sul sito (marchio/logo.svg): carrello bianco su verde con la spunta.
+class AppLogo extends StatelessWidget {
+  const AppLogo({super.key, this.size = 28});
+
+  static const asset = 'assets/logos/lista_spesa_facile.png';
+
+  final double size;
+
+  @override
+  Widget build(BuildContext context) =>
+      Image.asset(asset, width: size, height: size, filterQuality: FilterQuality.medium, semanticLabel: '');
+}
+
 class AppName extends StatelessWidget {
   const AppName({super.key});
 
@@ -78,7 +91,7 @@ class AppName extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(Icons.shopping_cart_outlined, color: primary, size: 28),
+        const AppLogo(size: 28),
         const SizedBox(width: 8),
         Flexible(
           child: Text(

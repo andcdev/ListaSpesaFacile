@@ -60,7 +60,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      Icon(Icons.shopping_cart_outlined, size: 64, color: theme.colorScheme.primary),
+                      const AppLogo(size: 72),
                       const SizedBox(height: 12),
                       Text('Lista Spesa Facile', textAlign: TextAlign.center, style: theme.textTheme.headlineLarge),
                       const SizedBox(height: 32),
