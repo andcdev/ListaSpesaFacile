@@ -475,36 +475,31 @@ class _ListDetailScreenState extends State<ListDetailScreen> {
       child: ListView(
         padding: const EdgeInsets.only(bottom: 24),
         children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(20, 4, 20, 12),
-            child: PageHeading(
-              list.name,
-              compact: _chatOpen,
-              subtitle: _ListMeta(detail: detail),
+          // Con la foto della lista: la foto fa da sfondo, con nome e data sopra; senza, il titolo grande.
+          if (list.imageVersion != null)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 4, 16, 12),
+              child: _PhotoHeading(
+                image: NetworkImage(api.listImageUrl(list.id, list.imageVersion!), headers: api.authHeaders),
+                title: list.name,
+                subtitle: _ListMeta(detail: detail, onPhoto: true),
+                compact: _chatOpen,
+                onTap: detail.canEdit ? () => _photoMenu(detail) : null,
+              ),
+            )
+          else
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 4, 20, 12),
+              child: PageHeading(
+                list.name,
+                compact: _chatOpen,
+                subtitle: _ListMeta(detail: detail),
+              ),
             ),
-          ),
           if (items.isNotEmpty && !_chatOpen)
             Padding(
               padding: const EdgeInsets.fromLTRB(20, 0, 20, 8),
               child: ShoppingProgress(done: detail.checkedCount, total: items.length),
-            ),
-          if (list.imageVersion != null)
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-              child: GestureDetector(
-                onTap: detail.canEdit ? () => _photoMenu(detail) : null,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(22),
-                  child: Image.network(
-                    api.listImageUrl(list.id, list.imageVersion!),
-                    headers: api.authHeaders,
-                    height: _chatOpen ? 90 : 180,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                    errorBuilder: (_, _, _) => const SizedBox.shrink(),
-                  ),
-                ),
-              ),
             ),
           if (list.notes != null && list.notes!.isNotEmpty)
             Padding(
@@ -832,9 +827,12 @@ ImageProvider? itemImageProvider(ApiClient api, ListItem item, int listId) {
 /// Riga sotto il nome della lista: giorno e ora, chi la sta guardando (canale presence) e, finché scrive
 /// nella chat, chi sta scrivendo.
 class _ListMeta extends StatelessWidget {
-  const _ListMeta({required this.detail});
+  const _ListMeta({required this.detail, this.onPhoto = false});
 
   final ListDetailController detail;
+
+  /// Sopra la foto della lista: chi sta scrivendo in bianco, non nel verde del tema.
+  final bool onPhoto;
 
   @override
   Widget build(BuildContext context) {
@@ -853,9 +851,93 @@ class _ListMeta extends StatelessWidget {
           if (typing.isNotEmpty)
             TextSpan(
               text: ' · ${l.typing(typing.length, typing.join(', '))}',
-              style: TextStyle(color: primary, fontWeight: FontWeight.w600),
+              style: TextStyle(color: onPhoto ? Colors.white : primary, fontWeight: FontWeight.w600),
             ),
         ],
+      ),
+    );
+  }
+}
+
+/// Testata della lista con la sua foto come sfondo: nome e data in basso, in bianco su una sfumatura scura che li
+/// rende leggibili su qualsiasi foto. Il nome è di misura media (non il titolo grande della pagina senza foto).
+class _PhotoHeading extends StatelessWidget {
+  const _PhotoHeading({
+    required this.image,
+    required this.title,
+    required this.subtitle,
+    this.compact = false,
+    this.onTap,
+  });
+
+  final ImageProvider image;
+  final String title;
+  final Widget subtitle;
+
+  /// Più bassa con la chat aperta.
+  final bool compact;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final text = Theme.of(context).textTheme;
+    const shadow = [Shadow(color: Colors.black54, blurRadius: 6)];
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(22),
+      child: SizedBox(
+        height: compact ? 120 : 210,
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            Image(
+              image: image,
+              fit: BoxFit.cover,
+              errorBuilder: (_, _, _) => ColoredBox(color: Theme.of(context).colorScheme.primary),
+            ),
+            const DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  stops: [0.35, 1],
+                  colors: [Colors.transparent, Color(0xB3000000)],
+                ),
+              ),
+            ),
+            Positioned(
+              left: 18,
+              right: 18,
+              bottom: 14,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    title,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: (compact ? text.titleLarge : text.headlineSmall)?.copyWith(
+                      color: Colors.white,
+                      shadows: shadow,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  DefaultTextStyle.merge(
+                    style: text.bodyMedium?.copyWith(color: Colors.white.withValues(alpha: 0.9), shadows: shadow),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    child: subtitle,
+                  ),
+                ],
+              ),
+            ),
+            if (onTap != null)
+              Material(
+                type: MaterialType.transparency,
+                child: InkWell(onTap: onTap),
+              ),
+          ],
+        ),
       ),
     );
   }

@@ -363,88 +363,88 @@ class _ListCard extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(18, 16, 8, 16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // Foto della lista: una fascia in cima alla scheda.
+            if (list.imageVersion != null)
+              Image.network(
+                api.listImageUrl(list.id, list.imageVersion!),
+                headers: api.authHeaders,
+                height: 120,
+                fit: BoxFit.cover,
+                errorBuilder: (_, _, _) => const SizedBox.shrink(),
+              ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(18, 16, 8, 16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  if (list.imageVersion != null) ...[
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(14),
-                      child: Image.network(
-                        api.listImageUrl(list.id, list.imageVersion!),
-                        headers: api.authHeaders,
-                        width: 48,
-                        height: 48,
-                        fit: BoxFit.cover,
-                        errorBuilder: (_, _, _) => const SizedBox.square(dimension: 48),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                  ],
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          list.name,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: theme.textTheme.titleLarge,
-                        ),
-                        const SizedBox(height: 4),
-                        Row(
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Flexible(
-                              child: Text(
-                                meta,
-                                style: theme.textTheme.bodyMedium?.copyWith(color: scheme.onSurfaceVariant),
-                              ),
+                            Text(
+                              list.name,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: theme.textTheme.titleLarge,
                             ),
-                            if (list.remindsMe) ...[
-                              const SizedBox(width: 6),
-                              Icon(Icons.notifications_active_outlined, size: 16, color: scheme.onSurfaceVariant),
-                            ],
+                            const SizedBox(height: 4),
+                            Row(
+                              children: [
+                                Flexible(
+                                  child: Text(
+                                    meta,
+                                    style: theme.textTheme.bodyMedium?.copyWith(color: scheme.onSurfaceVariant),
+                                  ),
+                                ),
+                                if (list.remindsMe) ...[
+                                  const SizedBox(width: 6),
+                                  Icon(Icons.notifications_active_outlined, size: 16, color: scheme.onSurfaceVariant),
+                                ],
+                              ],
+                            ),
                           ],
                         ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  _Badge(
-                    text: list.itemsCount == 0
-                        ? l.listEmptyBadge
-                        : (complete ? l.listCompleteBadge : l.toBuyCount(toBuy)),
-                    done: complete,
-                  ),
-                  if (onDelete != null)
-                    SizedBox(
-                      width: 36,
-                      height: 32,
-                      child: PopupMenuButton<String>(
-                        padding: EdgeInsets.zero,
-                        iconSize: 20,
-                        icon: Icon(Icons.more_vert, color: scheme.onSurfaceVariant),
-                        onSelected: (_) => onDelete!(),
-                        itemBuilder: (_) => [PopupMenuItem(value: 'delete', child: Text(l.delete))],
                       ),
-                    )
-                  else
-                    const SizedBox(width: 10),
+                      const SizedBox(width: 8),
+                      _Badge(
+                        text: list.itemsCount == 0
+                            ? l.listEmptyBadge
+                            : (complete ? l.listCompleteBadge : l.toBuyCount(toBuy)),
+                        done: complete,
+                      ),
+                      if (onDelete != null)
+                        SizedBox(
+                          width: 36,
+                          height: 32,
+                          child: PopupMenuButton<String>(
+                            padding: EdgeInsets.zero,
+                            iconSize: 20,
+                            icon: Icon(Icons.more_vert, color: scheme.onSurfaceVariant),
+                            onSelected: (_) => onDelete!(),
+                            itemBuilder: (_) => [PopupMenuItem(value: 'delete', child: Text(l.delete))],
+                          ),
+                        )
+                      else
+                        const SizedBox(width: 10),
+                    ],
+                  ),
+                  if (list.itemsCount > 0) ...[
+                    const SizedBox(height: 14),
+                    Padding(
+                      padding: const EdgeInsets.only(right: 10),
+                      child: ShoppingProgress(done: list.checkedCount, total: list.itemsCount),
+                    ),
+                  ],
                 ],
               ),
-              if (list.itemsCount > 0) ...[
-                const SizedBox(height: 14),
-                Padding(
-                  padding: const EdgeInsets.only(right: 10),
-                  child: ShoppingProgress(done: list.checkedCount, total: list.itemsCount),
-                ),
-              ],
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
