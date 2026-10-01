@@ -208,6 +208,9 @@ class _ListsScreenState extends State<ListsScreen> {
     return Scaffold(
       // Il nome dell'app sta nella pagina, sopra "Le mie liste": nella barra lo coprivano i pulsanti.
       appBar: AppBar(
+        // Logo e nome sulla stessa riga dei comandi: se non c'è spazio si rimpiccioliscono.
+        titleSpacing: 20,
+        title: const AppName(),
         actions: [
           const _ConnectionIndicator(),
           _NotificationsButton(onPressed: _openNotifications),
@@ -285,7 +288,6 @@ class _ListsScreenState extends State<ListsScreen> {
               : ListView(
                   padding: const EdgeInsets.fromLTRB(16, 4, 16, 104),
                   children: [
-                    const Padding(padding: EdgeInsets.fromLTRB(4, 0, 4, 6), child: AppName()),
                     Padding(padding: const EdgeInsets.symmetric(horizontal: 4), child: PageHeading(l.myLists)),
                     const SizedBox(height: 16),
                     // In programma / passate.
