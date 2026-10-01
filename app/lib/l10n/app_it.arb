@@ -608,6 +608,43 @@
   "noteOptional": "Nota (facoltativa)",
   "myPricesPrivate": "I tuoi prezzi li vedi solo tu.",
   "myPriceSaved": "Prezzo salvato in \"I miei prezzi\"",
+  "filterLists": "Filtra le liste",
+  "sortOrder": "Ordine",
+  "dateAscending": "Data crescente",
+  "dateDescending": "Data decrescente",
+  "filterPerson": "Condivise con",
+  "everyone": "Tutti",
+  "filterPeriod": "Data dell'evento",
+  "allDates": "Tutte",
+  "last15Days": "Ultimi 15 giorni",
+  "last30Days": "Ultimi 30 giorni",
+  "next15Days": "Prossimi 15 giorni",
+  "next30Days": "Prossimi 30 giorni",
+  "chooseDates": "Da … a …",
+  "dateRange": "{from} – {to}",
+  "@dateRange": {
+    "placeholders": {
+      "from": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      }
+    }
+  },
+  "productInLists": "Prodotto nella lista",
+  "productInListsHint": "es. latte",
+  "containsProduct": "Con «{product}»",
+  "@containsProduct": {
+    "placeholders": {
+      "product": {
+        "type": "String"
+      }
+    }
+  },
+  "resetFilters": "Azzera",
+  "applyFilters": "Applica",
+  "noListsMatch": "Nessuna lista con questi filtri.",
   "searchMyPrices": "Cerca prodotto o supermercato",
   "noMyPrices": "Nessun prezzo. Aggiungilo da qui o dal menu ⋮ di un prodotto della lista.",
   "noMyPricesFound": "Nessun prezzo trovato.",

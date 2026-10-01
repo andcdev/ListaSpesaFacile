@@ -1862,6 +1862,126 @@ abstract class AppLocalizations {
   /// **'Prezzo salvato in \"I miei prezzi\"'**
   String get myPriceSaved;
 
+  /// No description provided for @filterLists.
+  ///
+  /// In it, this message translates to:
+  /// **'Filtra le liste'**
+  String get filterLists;
+
+  /// No description provided for @sortOrder.
+  ///
+  /// In it, this message translates to:
+  /// **'Ordine'**
+  String get sortOrder;
+
+  /// No description provided for @dateAscending.
+  ///
+  /// In it, this message translates to:
+  /// **'Data crescente'**
+  String get dateAscending;
+
+  /// No description provided for @dateDescending.
+  ///
+  /// In it, this message translates to:
+  /// **'Data decrescente'**
+  String get dateDescending;
+
+  /// No description provided for @filterPerson.
+  ///
+  /// In it, this message translates to:
+  /// **'Condivise con'**
+  String get filterPerson;
+
+  /// No description provided for @everyone.
+  ///
+  /// In it, this message translates to:
+  /// **'Tutti'**
+  String get everyone;
+
+  /// No description provided for @filterPeriod.
+  ///
+  /// In it, this message translates to:
+  /// **'Data dell\'evento'**
+  String get filterPeriod;
+
+  /// No description provided for @allDates.
+  ///
+  /// In it, this message translates to:
+  /// **'Tutte'**
+  String get allDates;
+
+  /// No description provided for @last15Days.
+  ///
+  /// In it, this message translates to:
+  /// **'Ultimi 15 giorni'**
+  String get last15Days;
+
+  /// No description provided for @last30Days.
+  ///
+  /// In it, this message translates to:
+  /// **'Ultimi 30 giorni'**
+  String get last30Days;
+
+  /// No description provided for @next15Days.
+  ///
+  /// In it, this message translates to:
+  /// **'Prossimi 15 giorni'**
+  String get next15Days;
+
+  /// No description provided for @next30Days.
+  ///
+  /// In it, this message translates to:
+  /// **'Prossimi 30 giorni'**
+  String get next30Days;
+
+  /// No description provided for @chooseDates.
+  ///
+  /// In it, this message translates to:
+  /// **'Da … a …'**
+  String get chooseDates;
+
+  /// No description provided for @dateRange.
+  ///
+  /// In it, this message translates to:
+  /// **'{from} – {to}'**
+  String dateRange(String from, String to);
+
+  /// No description provided for @productInLists.
+  ///
+  /// In it, this message translates to:
+  /// **'Prodotto nella lista'**
+  String get productInLists;
+
+  /// No description provided for @productInListsHint.
+  ///
+  /// In it, this message translates to:
+  /// **'es. latte'**
+  String get productInListsHint;
+
+  /// No description provided for @containsProduct.
+  ///
+  /// In it, this message translates to:
+  /// **'Con «{product}»'**
+  String containsProduct(String product);
+
+  /// No description provided for @resetFilters.
+  ///
+  /// In it, this message translates to:
+  /// **'Azzera'**
+  String get resetFilters;
+
+  /// No description provided for @applyFilters.
+  ///
+  /// In it, this message translates to:
+  /// **'Applica'**
+  String get applyFilters;
+
+  /// No description provided for @noListsMatch.
+  ///
+  /// In it, this message translates to:
+  /// **'Nessuna lista con questi filtri.'**
+  String get noListsMatch;
+
   /// No description provided for @searchMyPrices.
   ///
   /// In it, this message translates to:

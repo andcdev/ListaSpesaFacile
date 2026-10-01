@@ -18,6 +18,29 @@ class ShoppingListTest extends TestCase
 {
     use RefreshDatabase;
 
+    public function test_lists_can_be_searched_by_product_and_show_who_they_are_shared_with(): void
+    {
+        $me = User::factory()->create();
+        $anna = User::factory()->create(['name' => 'Anna']);
+        $weekend = ShoppingList::factory()->for($me, 'owner')->create(['name' => 'Weekend']);
+        $weekend->items()->create(['name' => 'Latte intero 1 l']);
+        $weekend->sharedWith()->attach($anna, ['can_edit' => true]);
+        $party = ShoppingList::factory()->for($me, 'owner')->create(['name' => 'Festa']);
+        $party->items()->create(['name' => 'Latte di mandorla']);
+        ShoppingList::factory()->for($me, 'owner')->create(['name' => 'Vuota']);
+        ShoppingList::factory()->create(['name' => 'Altrui'])->items()->create(['name' => 'Latte intero']);
+
+        Sanctum::actingAs($me);
+        $all = $this->getJson('/api/lists')->assertOk()->assertJsonCount(3, 'data');
+        $this->assertSame('Anna', collect($all->json('data'))->firstWhere('name', 'Weekend')['shared_with'][0]['name']);
+
+        // Tutte le parole, senza badare alle maiuscole; solo le liste accessibili.
+        $this->assertSame(['Festa', 'Weekend'], collect($this->getJson('/api/lists?product=latte')->json('data'))->pluck('name')->sort()->values()->all());
+        $this->assertSame(['Weekend'], collect($this->getJson('/api/lists?product=LATTE%20intero')->json('data'))->pluck('name')->all());
+        $this->getJson('/api/lists?product=%25')->assertJsonCount(0, 'data');
+        $this->getJson('/api/lists?product=')->assertJsonCount(3, 'data');
+    }
+
     public function test_lists_are_ordered_by_date_and_time(): void
     {
         $user = User::factory()->create();

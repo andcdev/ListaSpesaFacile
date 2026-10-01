@@ -247,7 +247,11 @@ class ApiClient {
 
   // ── Liste ───────────────────────────────────────────────────────
 
-  Future<List<ShoppingList>> lists() async => _list(await _send('GET', '/lists'), ShoppingList.fromJson);
+  /// Liste accessibili; con [product] solo quelle con un articolo che contiene quelle parole.
+  Future<List<ShoppingList>> lists({String? product}) async => _list(
+    await _send('GET', product == null ? '/lists' : '/lists?product=${Uri.encodeQueryComponent(product)}'),
+    ShoppingList.fromJson,
+  );
 
   Future<ShoppingList> list(int id) async => _data(await _send('GET', '/lists/$id'), ShoppingList.fromJson);
 
