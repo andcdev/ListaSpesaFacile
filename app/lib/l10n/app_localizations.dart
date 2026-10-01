@@ -1502,18 +1502,6 @@ abstract class AppLocalizations {
   /// **'Agg. prodotto...'**
   String get addProductHint;
 
-  /// No description provided for @quantityAndWeight.
-  ///
-  /// In it, this message translates to:
-  /// **'Quantità e peso'**
-  String get quantityAndWeight;
-
-  /// No description provided for @changeQuantityAndWeight.
-  ///
-  /// In it, this message translates to:
-  /// **'Cambia quantità e peso'**
-  String get changeQuantityAndWeight;
-
   /// No description provided for @amountExampleError.
   ///
   /// In it, this message translates to:

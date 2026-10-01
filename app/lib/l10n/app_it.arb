@@ -534,8 +534,6 @@
     }
   },
   "addProductHint": "Agg. prodotto...",
-  "quantityAndWeight": "Quantità e peso",
-  "changeQuantityAndWeight": "Cambia quantità e peso",
   "amountExampleError": "Scrivi un numero, es. 500 oppure 1,5",
   "quantity": "Quantità",
   "less": "Meno",
