@@ -541,6 +541,16 @@
   "less": "Meno",
   "more": "Più",
   "weightOrVolume": "Peso o volume",
+  "weight": "Peso",
+  "packages": "Confezioni",
+  "packageSize": "Confezione da {size}",
+  "@packageSize": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
   "amountHint": "es. 500",
   "clearMeasure": "Togli",
   "done": "Fatto",
@@ -553,6 +563,8 @@
   "product": "Prodotto",
   "quantityOptional": "Quantità (facoltativa)",
   "weightOptional": "Peso o volume (facoltativo)",
+  "packagesOptional": "Confezioni (facoltativo)",
+  "weightOnlyOptional": "Peso (facoltativo)",
   "department": "Reparto",
   "departmentHelper": "Riconosciuto dal nome: cambialo se non è giusto",
   "emojiOptional": "Emoji (facoltativa)",

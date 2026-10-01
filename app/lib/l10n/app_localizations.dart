@@ -1544,6 +1544,24 @@ abstract class AppLocalizations {
   /// **'Peso o volume'**
   String get weightOrVolume;
 
+  /// No description provided for @weight.
+  ///
+  /// In it, this message translates to:
+  /// **'Peso'**
+  String get weight;
+
+  /// No description provided for @packages.
+  ///
+  /// In it, this message translates to:
+  /// **'Confezioni'**
+  String get packages;
+
+  /// No description provided for @packageSize.
+  ///
+  /// In it, this message translates to:
+  /// **'Confezione da {size}'**
+  String packageSize(String size);
+
   /// No description provided for @amountHint.
   ///
   /// In it, this message translates to:
@@ -1615,6 +1633,18 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Peso o volume (facoltativo)'**
   String get weightOptional;
+
+  /// No description provided for @packagesOptional.
+  ///
+  /// In it, this message translates to:
+  /// **'Confezioni (facoltativo)'**
+  String get packagesOptional;
+
+  /// No description provided for @weightOnlyOptional.
+  ///
+  /// In it, this message translates to:
+  /// **'Peso (facoltativo)'**
+  String get weightOnlyOptional;
 
   /// No description provided for @department.
   ///

@@ -53,7 +53,7 @@ class ProductSuggestions
     ];
 
     /**
-     * @return array<int, array{name: string, icon: string, category: string, times: int}>
+     * @return array<int, array{name: string, icon: string, category: string, measure: string, times: int}>
      */
     public static function for(User $user): array
     {
@@ -80,6 +80,7 @@ class ProductSuggestions
                 'name' => $item->name,
                 'icon' => $item->custom_icon ?? $item->icon ?? ProductCatalog::categoryIcon($item->category),
                 'category' => $item->category,
+                'measure' => ProductCatalog::measure($item->name, $item->barcode),
                 'times' => (int) $row->times,
             ];
         }
@@ -88,7 +89,9 @@ class ProductSuggestions
         $translations = app()->getLocale() === 'it' ? [] : (array) trans('products');
         foreach (self::COMMON as $name) {
             $local = $translations[$name] ?? $name;
-            $suggestions[self::key($local)] ??= ['name' => $local, ...ProductCatalog::detect($name), 'times' => 0];
+            $suggestions[self::key($local)] ??= [
+                'name' => $local, ...ProductCatalog::detect($name), 'measure' => ProductCatalog::measure($name), 'times' => 0,
+            ];
         }
 
         return array_values($suggestions);

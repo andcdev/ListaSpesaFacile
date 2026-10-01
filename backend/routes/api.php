@@ -14,6 +14,7 @@ use App\Http\Controllers\Api\ListShareController;
 use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\PasswordResetController;
 use App\Http\Controllers\Api\ProductInfoController;
+use App\Http\Controllers\Api\ProductMeasureController;
 use App\Http\Controllers\Api\ProductSearchController;
 use App\Http\Controllers\Api\ProductSuggestionController;
 use App\Http\Controllers\Api\ShoppingListController;
@@ -46,6 +47,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('lists', ShoppingListController::class)->parameters(['lists' => 'list']);
     Route::get('/products/suggestions', ProductSuggestionController::class);
     Route::get('/products/search', ProductSearchController::class)->middleware('throttle:60,1');
+    Route::get('/products/measure', ProductMeasureController::class);
     Route::get('/supermarkets', [SupermarketController::class, 'index']);
 
     // I miei prezzi: li vede solo chi li ha scritti.
