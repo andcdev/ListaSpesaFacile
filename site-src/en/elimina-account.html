@@ -1,0 +1,62 @@
+title: Delete account — Lista Spesa Facile
+description: Delete your Lista Spesa Facile account and all your data, right here.
+---
+  <main class="pagina">
+    <div class="contenitore testo">
+      <h1>Delete your account</h1>
+      <p class="aggiornata">Lista Spesa Facile — deletion of the account and all its data</p>
+
+      <p>Enter the email you use in the app: we'll send you a code to confirm the mailbox is yours. This also works if
+        you sign in with Google or Amazon: in that case use the email of that account.</p>
+
+      <form id="passo-email" class="modulo" novalidate>
+        <label for="email">Email</label>
+        <input id="email" name="email" type="email" autocomplete="email" required>
+        <button type="submit" class="pulsante">Send me the code</button>
+      </form>
+
+      <form id="passo-codice" class="modulo" hidden novalidate>
+        <p>If <strong id="email-scelta"></strong> is registered, you'll shortly receive a 6-digit code (valid for
+          30 minutes). Check your spam folder too.</p>
+        <label for="codice">Code</label>
+        <input id="codice" name="codice" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}"
+          maxlength="6" required>
+        <label class="spunta"><input id="capito" type="checkbox" required> I understand that deletion is permanent and
+          cannot be undone.</label>
+        <button type="submit" class="pulsante pericolo">Permanently delete my account</button>
+        <button type="button" id="rimanda" class="collegamento">Didn't get it? Change email or ask again</button>
+      </form>
+
+      <div id="fatto" class="riquadro" hidden role="status">
+        <p><strong>Account deleted.</strong> Your data has been erased. You can uninstall the app: if you open it
+          again it will ask you to sign in.</p>
+      </div>
+
+      <p id="messaggio" class="messaggio" role="alert" hidden></p>
+
+      <h2>What is deleted</h2>
+      <ul>
+        <li>the account: name, email, password, language and profile photo;</li>
+        <li>the link with Google or Amazon, if you used it to sign in;</li>
+        <li>the lists you created, with items, photos, reminders and chat, also for the people you shared them
+          with;</li>
+        <li>the shares: you disappear from other people's lists you took part in;</li>
+        <li>the messages and photos you wrote in the chats;</li>
+        <li>the prices you noted down ("My prices");</li>
+        <li>notifications and your phones' sessions, which are signed out.</li>
+      </ul>
+
+      <h2>What remains</h2>
+      <p>The items you added to other people's lists stay in their lists, without your name. Technical access data
+        (IP address, date and time) are deleted automatically, normally within 30 days, as explained in the
+        <a href="{base}/privacy">privacy policy</a>.</p>
+
+      <div class="riquadro">
+        <p><strong>Can't receive the code?</strong> Write to
+          <a href="mailto:supporto@listaspesafacile.com?subject=Delete%20account">supporto@listaspesafacile.com</a>
+          from the address you registered with, with the subject "Delete account": we'll delete it within 30 days.</p>
+        <p><strong>Only want to remove some data?</strong> In the app you can delete a list, its items and photos,
+          your messages, your profile photo and your notifications, without closing the account.</p>
+      </div>
+    </div>
+  </main>

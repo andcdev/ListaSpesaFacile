@@ -206,9 +206,8 @@ class _ListsScreenState extends State<ListsScreen> {
     final shown = _showPast ? past : upcoming;
 
     return Scaffold(
+      // Il nome dell'app sta nella pagina, sopra "Le mie liste": nella barra lo coprivano i pulsanti.
       appBar: AppBar(
-        titleSpacing: 20,
-        title: const AppName(),
         actions: [
           const _ConnectionIndicator(),
           _NotificationsButton(onPressed: _openNotifications),
@@ -224,13 +223,6 @@ class _ListsScreenState extends State<ListsScreen> {
               if (value == 'avatar') await _changeAvatar();
               if (value == 'myPrices' && context.mounted) {
                 await Navigator.push(context, MaterialPageRoute(builder: (_) => const MyPricesScreen()));
-              }
-              if (value == 'newsletter') {
-                try {
-                  await auth.setNewsletter(!(me?.newsletter ?? false));
-                } catch (e) {
-                  if (context.mounted) showError(context, e);
-                }
               }
               if (value == 'appearance') await _chooseAppearance();
               if (value == 'language' && context.mounted) await chooseLanguage(context);
@@ -256,7 +248,6 @@ class _ListsScreenState extends State<ListsScreen> {
                 child: Text(me?.avatarVersion == null ? l.addProfilePhoto : l.changeProfilePhoto),
               ),
               PopupMenuItem(value: 'myPrices', child: Text(l.myPrices)),
-              CheckedPopupMenuItem(value: 'newsletter', checked: me?.newsletter ?? false, child: Text(l.newsletter)),
               PopupMenuItem(
                 value: 'appearance',
                 child: Text(l.backgroundValue(_themeLabel(l, context.read<AppearanceController>().mode))),
@@ -294,6 +285,7 @@ class _ListsScreenState extends State<ListsScreen> {
               : ListView(
                   padding: const EdgeInsets.fromLTRB(16, 4, 16, 104),
                   children: [
+                    const Padding(padding: EdgeInsets.fromLTRB(4, 0, 4, 6), child: AppName()),
                     Padding(padding: const EdgeInsets.symmetric(horizontal: 4), child: PageHeading(l.myLists)),
                     const SizedBox(height: 16),
                     // In programma / passate.

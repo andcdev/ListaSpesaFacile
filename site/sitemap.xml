@@ -1,7 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://listaspesafacile.com/</loc></url>
-  <url><loc>https://listaspesafacile.com/privacy</loc></url>
-  <url><loc>https://listaspesafacile.com/elimina-account</loc></url>
-  <url><loc>https://listaspesafacile.com/supporto</loc></url>
+  <url><loc>https://listaspesafacile.com/it/</loc></url>
+  <url><loc>https://listaspesafacile.com/en/</loc></url>
+  <url><loc>https://listaspesafacile.com/fr/</loc></url>
+  <url><loc>https://listaspesafacile.com/de/</loc></url>
+  <url><loc>https://listaspesafacile.com/es/</loc></url>
+  <url><loc>https://listaspesafacile.com/it/privacy</loc></url>
+  <url><loc>https://listaspesafacile.com/en/privacy</loc></url>
+  <url><loc>https://listaspesafacile.com/fr/privacy</loc></url>
+  <url><loc>https://listaspesafacile.com/de/privacy</loc></url>
+  <url><loc>https://listaspesafacile.com/es/privacy</loc></url>
+  <url><loc>https://listaspesafacile.com/it/supporto</loc></url>
+  <url><loc>https://listaspesafacile.com/en/supporto</loc></url>
+  <url><loc>https://listaspesafacile.com/fr/supporto</loc></url>
+  <url><loc>https://listaspesafacile.com/de/supporto</loc></url>
+  <url><loc>https://listaspesafacile.com/es/supporto</loc></url>
+  <url><loc>https://listaspesafacile.com/it/elimina-account</loc></url>
+  <url><loc>https://listaspesafacile.com/en/elimina-account</loc></url>
+  <url><loc>https://listaspesafacile.com/fr/elimina-account</loc></url>
+  <url><loc>https://listaspesafacile.com/de/elimina-account</loc></url>
+  <url><loc>https://listaspesafacile.com/es/elimina-account</loc></url>
 </urlset>

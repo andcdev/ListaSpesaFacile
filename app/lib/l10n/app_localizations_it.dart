@@ -532,9 +532,6 @@ class AppLocalizationsIt extends AppLocalizations {
   String get serviceChannelDescription => 'Tiene l\'app collegata per ricevere liste e messaggi anche quando è chiusa';
 
   @override
-  String get serviceNotificationText => 'Pronta a ricevere liste e messaggi';
-
-  @override
   String reminderTitle(String name) {
     return 'Promemoria: $name';
   }
@@ -938,13 +935,10 @@ class AppLocalizationsIt extends AppLocalizations {
   String get newsletterConsent => 'Voglio ricevere la newsletter di Lista Spesa Facile';
 
   @override
-  String get newsletterOptional => 'Facoltativo: puoi cambiarlo quando vuoi dal menu del profilo';
+  String get newsletterOptional => 'Facoltativo';
 
   @override
   String get socialPrivacyNotice => 'Continuando con Google o Amazon accetti l\'';
-
-  @override
-  String get newsletter => 'Newsletter';
 
   @override
   String get myPrices => 'I miei prezzi';

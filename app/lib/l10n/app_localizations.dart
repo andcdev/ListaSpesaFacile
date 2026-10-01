@@ -1037,12 +1037,6 @@ abstract class AppLocalizations {
   /// **'Tiene l\'app collegata per ricevere liste e messaggi anche quando è chiusa'**
   String get serviceChannelDescription;
 
-  /// No description provided for @serviceNotificationText.
-  ///
-  /// In it, this message translates to:
-  /// **'Pronta a ricevere liste e messaggi'**
-  String get serviceNotificationText;
-
   /// No description provided for @reminderTitle.
   ///
   /// In it, this message translates to:
@@ -1748,7 +1742,7 @@ abstract class AppLocalizations {
   /// No description provided for @newsletterOptional.
   ///
   /// In it, this message translates to:
-  /// **'Facoltativo: puoi cambiarlo quando vuoi dal menu del profilo'**
+  /// **'Facoltativo'**
   String get newsletterOptional;
 
   /// No description provided for @socialPrivacyNotice.
@@ -1756,12 +1750,6 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Continuando con Google o Amazon accetti l\''**
   String get socialPrivacyNotice;
-
-  /// No description provided for @newsletter.
-  ///
-  /// In it, this message translates to:
-  /// **'Newsletter'**
-  String get newsletter;
 
   /// No description provided for @myPrices.
   ///

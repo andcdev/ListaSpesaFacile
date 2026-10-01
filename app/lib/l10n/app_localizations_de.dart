@@ -533,9 +533,6 @@ class AppLocalizationsDe extends AppLocalizations {
       'Hält die App verbunden, um Listen und Nachrichten auch geschlossen zu empfangen';
 
   @override
-  String get serviceNotificationText => 'Bereit für Listen und Nachrichten';
-
-  @override
   String reminderTitle(String name) {
     return 'Erinnerung: $name';
   }
@@ -939,13 +936,10 @@ class AppLocalizationsDe extends AppLocalizations {
   String get newsletterConsent => 'Ich möchte den Newsletter von Lista Spesa Facile erhalten';
 
   @override
-  String get newsletterOptional => 'Optional: Du kannst es jederzeit im Profilmenü ändern';
+  String get newsletterOptional => 'Optional';
 
   @override
   String get socialPrivacyNotice => 'Wenn du mit Google oder Amazon fortfährst, akzeptierst du die ';
-
-  @override
-  String get newsletter => 'Newsletter';
 
   @override
   String get myPrices => 'Meine Preise';

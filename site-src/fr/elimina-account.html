@@ -1,0 +1,65 @@
+title: Supprimer le compte — Lista Spesa Facile
+description: Supprimez votre compte Lista Spesa Facile et toutes vos données, directement ici.
+---
+  <main class="pagina">
+    <div class="contenitore testo">
+      <h1>Supprimer votre compte</h1>
+      <p class="aggiornata">Lista Spesa Facile — suppression du compte et de toutes les données</p>
+
+      <p>Saisissez l'e-mail que vous utilisez dans l'application : nous vous envoyons un code pour confirmer que la boîte
+        vous appartient. Cela vaut aussi si vous vous connectez avec Google ou Amazon : dans ce cas, utilisez l'e-mail de
+        ce compte.</p>
+
+      <form id="passo-email" class="modulo" novalidate>
+        <label for="email">E-mail</label>
+        <input id="email" name="email" type="email" autocomplete="email" required>
+        <button type="submit" class="pulsante">Envoyez-moi le code</button>
+      </form>
+
+      <form id="passo-codice" class="modulo" hidden novalidate>
+        <p>Si <strong id="email-scelta"></strong> est inscrite, vous recevrez bientôt un code à 6 chiffres (valable
+          30 minutes). Vérifiez aussi les spams.</p>
+        <label for="codice">Code</label>
+        <input id="codice" name="codice" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}"
+          maxlength="6" required>
+        <label class="spunta"><input id="capito" type="checkbox" required> J'ai compris que la suppression est définitive
+          et irréversible.</label>
+        <button type="submit" class="pulsante pericolo">Supprimer définitivement mon compte</button>
+        <button type="button" id="rimanda" class="collegamento">Pas reçu ? Changez d'e-mail ou redemandez-le</button>
+      </form>
+
+      <div id="fatto" class="riquadro" hidden role="status">
+        <p><strong>Compte supprimé.</strong> Vos données ont été effacées. Vous pouvez désinstaller l'application : si
+          vous la rouvrez, elle vous demandera de vous connecter.</p>
+      </div>
+
+      <p id="messaggio" class="messaggio" role="alert" hidden></p>
+
+      <h2>Ce qui est supprimé</h2>
+      <ul>
+        <li>le compte : nom, e-mail, mot de passe, langue et photo de profil ;</li>
+        <li>le lien avec Google ou Amazon, si vous l'utilisiez pour vous connecter ;</li>
+        <li>les listes que vous avez créées, avec articles, photos, rappels et chat, y compris pour les personnes avec
+          qui vous les partagiez ;</li>
+        <li>les partages : vous disparaissez des listes des autres auxquelles vous participiez ;</li>
+        <li>les messages et les photos que vous avez écrits dans les chats ;</li>
+        <li>les prix que vous aviez notés (« Mes prix ») ;</li>
+        <li>les notifications et les sessions de vos téléphones, qui sont déconnectés.</li>
+      </ul>
+
+      <h2>Ce qui reste</h2>
+      <p>Les articles que vous avez ajoutés aux listes d'autres personnes restent dans leurs listes, sans votre nom. Les
+        données techniques des accès (adresse IP, date et heure) s'effacent d'elles-mêmes, en principe sous 30 jours,
+        comme expliqué dans la <a href="{base}/privacy">politique de confidentialité</a>.</p>
+
+      <div class="riquadro">
+        <p><strong>Vous ne recevez pas le code ?</strong> Écrivez à
+          <a href="mailto:supporto@listaspesafacile.com?subject=Supprimer%20le%20compte">supporto@listaspesafacile.com</a>
+          depuis l'adresse avec laquelle vous êtes inscrit, avec l'objet « Supprimer le compte » : nous le supprimons
+          sous 30 jours.</p>
+        <p><strong>Vous voulez seulement retirer certaines données ?</strong> Dans l'application, vous pouvez supprimer
+          une liste, ses articles et photos, vos messages, votre photo de profil et vos notifications, sans fermer le
+          compte.</p>
+      </div>
+    </div>
+  </main>
