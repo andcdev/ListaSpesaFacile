@@ -523,6 +523,8 @@
       }
     }
   },
+  "listPhoto": "Foto della lista",
+  "listPhotoUploadFailed": "Lista creata, ma la foto non è stata caricata: aggiungila dal menu della lista.",
   "productPhoto": "Foto del prodotto",
   "oftenBought": "Compri spesso:",
   "timesInList": "{count, plural, =1{Già messo in lista 1 volta} other{Già messo in lista {count} volte}}",

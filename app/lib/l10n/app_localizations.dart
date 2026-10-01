@@ -1478,6 +1478,18 @@ abstract class AppLocalizations {
   /// **'{count, plural, =1{{names} sta scrivendo…} other{{names} stanno scrivendo…}}'**
   String typing(int count, String names);
 
+  /// No description provided for @listPhoto.
+  ///
+  /// In it, this message translates to:
+  /// **'Foto della lista'**
+  String get listPhoto;
+
+  /// No description provided for @listPhotoUploadFailed.
+  ///
+  /// In it, this message translates to:
+  /// **'Lista creata, ma la foto non è stata caricata: aggiungila dal menu della lista.'**
+  String get listPhotoUploadFailed;
+
   /// No description provided for @productPhoto.
   ///
   /// In it, this message translates to:
