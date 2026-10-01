@@ -65,7 +65,8 @@ import 'app_localizations_it.dart';
 /// be consistent with the languages listed in the AppLocalizations.supportedLocales
 /// property.
 abstract class AppLocalizations {
-  AppLocalizations(String locale) : localeName = intl.Intl.canonicalizedLocale(locale.toString());
+  AppLocalizations(String locale)
+    : localeName = intl.Intl.canonicalizedLocale(locale.toString());
 
   final String localeName;
 
@@ -73,7 +74,8 @@ abstract class AppLocalizations {
     return Localizations.of<AppLocalizations>(context, AppLocalizations)!;
   }
 
-  static const LocalizationsDelegate<AppLocalizations> delegate = _AppLocalizationsDelegate();
+  static const LocalizationsDelegate<AppLocalizations> delegate =
+      _AppLocalizationsDelegate();
 
   /// A list of this localizations delegate along with the default localizations
   /// delegates.
@@ -85,12 +87,13 @@ abstract class AppLocalizations {
   /// Additional delegates can be added by appending to this list in
   /// MaterialApp. This list does not have to be used at all if a custom list
   /// of delegates is preferred or required.
-  static const List<LocalizationsDelegate<dynamic>> localizationsDelegates = <LocalizationsDelegate<dynamic>>[
-    delegate,
-    GlobalMaterialLocalizations.delegate,
-    GlobalCupertinoLocalizations.delegate,
-    GlobalWidgetsLocalizations.delegate,
-  ];
+  static const List<LocalizationsDelegate<dynamic>> localizationsDelegates =
+      <LocalizationsDelegate<dynamic>>[
+        delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+      ];
 
   /// A list of this localizations delegate's supported locales.
   static const List<Locale> supportedLocales = <Locale>[
@@ -1961,12 +1964,6 @@ abstract class AppLocalizations {
   /// **'senza lattosio'**
   String get lactoseFree;
 
-  /// No description provided for @notIndicated.
-  ///
-  /// In it, this message translates to:
-  /// **'non indicato'**
-  String get notIndicated;
-
   /// No description provided for @nutritionPer100.
   ///
   /// In it, this message translates to:
@@ -2014,6 +2011,78 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Sale'**
   String get nutrientSalt;
+
+  /// No description provided for @noNutritionInfo.
+  ///
+  /// In it, this message translates to:
+  /// **'Non ci sono informazioni nutrizionali'**
+  String get noNutritionInfo;
+
+  /// No description provided for @waterMinerals.
+  ///
+  /// In it, this message translates to:
+  /// **'Composizione per litro'**
+  String get waterMinerals;
+
+  /// No description provided for @mineralCalcium.
+  ///
+  /// In it, this message translates to:
+  /// **'Calcio'**
+  String get mineralCalcium;
+
+  /// No description provided for @mineralMagnesium.
+  ///
+  /// In it, this message translates to:
+  /// **'Magnesio'**
+  String get mineralMagnesium;
+
+  /// No description provided for @mineralSodium.
+  ///
+  /// In it, this message translates to:
+  /// **'Sodio'**
+  String get mineralSodium;
+
+  /// No description provided for @mineralPotassium.
+  ///
+  /// In it, this message translates to:
+  /// **'Potassio'**
+  String get mineralPotassium;
+
+  /// No description provided for @mineralBicarbonate.
+  ///
+  /// In it, this message translates to:
+  /// **'Bicarbonato'**
+  String get mineralBicarbonate;
+
+  /// No description provided for @mineralChloride.
+  ///
+  /// In it, this message translates to:
+  /// **'Cloruri'**
+  String get mineralChloride;
+
+  /// No description provided for @mineralSulphate.
+  ///
+  /// In it, this message translates to:
+  /// **'Solfati'**
+  String get mineralSulphate;
+
+  /// No description provided for @mineralNitrate.
+  ///
+  /// In it, this message translates to:
+  /// **'Nitrati'**
+  String get mineralNitrate;
+
+  /// No description provided for @mineralFluoride.
+  ///
+  /// In it, this message translates to:
+  /// **'Fluoro'**
+  String get mineralFluoride;
+
+  /// No description provided for @mineralSilica.
+  ///
+  /// In it, this message translates to:
+  /// **'Silice'**
+  String get mineralSilica;
 
   /// No description provided for @allergens.
   ///
@@ -2148,7 +2217,8 @@ abstract class AppLocalizations {
   String get permissionReadWrite;
 }
 
-class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
+class _AppLocalizationsDelegate
+    extends LocalizationsDelegate<AppLocalizations> {
   const _AppLocalizationsDelegate();
 
   @override
@@ -2157,7 +2227,8 @@ class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> 
   }
 
   @override
-  bool isSupported(Locale locale) => <String>['de', 'en', 'es', 'fr', 'it'].contains(locale.languageCode);
+  bool isSupported(Locale locale) =>
+      <String>['de', 'en', 'es', 'fr', 'it'].contains(locale.languageCode);
 
   @override
   bool shouldReload(_AppLocalizationsDelegate old) => false;

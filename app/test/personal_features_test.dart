@@ -125,6 +125,68 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  Future<void> openInfo(WidgetTester tester, ListItem item, ProductInfo info) async {
+    tester.view.physicalSize = const Size(360, 780);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    await tester.pumpWidget(
+      _app(
+        Builder(
+          builder: (context) => Scaffold(
+            body: TextButton(
+              onPressed: () => showProductInfo(context, item: item, info: Future.value(info)),
+              child: const Text('apri'),
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.tap(find.text('apri'));
+    await tester.pumpAndSettle();
+  }
+
+  testWidgets("scheda Info di un'acqua: minerali in mg/L, niente calorie né voci non indicate", (tester) async {
+    final info = ProductInfo.fromJson({
+      'barcode': '80412021',
+      'name': 'Acqua minerale naturale frizzante Lete',
+      'kind': 'water',
+      'nutriments': {'energy-kcal': 0, 'fat': 0},
+      'minerals': {'calcium': 305, 'magnesium': 13.3, 'sodium': 5, 'bicarbonate': 940, 'nitrate': null},
+      'gluten_free': null,
+      'vegan': null,
+    });
+    expect(info.isWater, isTrue);
+    await openInfo(tester, const ListItem(id: 1, listId: 1, name: 'Lete', icon: '💧'), info);
+
+    expect(find.text('Composizione per litro'), findsOneWidget);
+    expect(find.text('Calcio'), findsOneWidget);
+    expect(find.text('305 mg/L'), findsOneWidget);
+    expect(find.text('13,3 mg/L'), findsOneWidget);
+    expect(find.text('940 mg/L'), findsOneWidget);
+    expect(find.text('Nitrati'), findsNothing);
+    expect(find.text('Valori nutrizionali per 100 g'), findsNothing);
+    expect(find.textContaining('kcal'), findsNothing);
+    expect(find.textContaining('Celiaci'), findsNothing);
+    expect(find.textContaining('non indicato'), findsNothing);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('scheda Info senza valori nutrizionali: lo dice, e niente voci vuote', (tester) async {
+    // Un oggetto vuoto da PHP arriva come lista vuota.
+    final info = ProductInfo.fromJson({
+      'barcode': '8001234567890',
+      'name': 'Torta della nonna',
+      'kind': 'food',
+      'nutriments': {'energy-kcal': null, 'fat': null},
+      'minerals': [],
+    });
+    await openInfo(tester, const ListItem(id: 1, listId: 1, name: 'Torta della nonna'), info);
+
+    expect(find.text('Non ci sono informazioni nutrizionali'), findsOneWidget);
+    expect(find.byType(Chip), findsNothing);
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('scheda Info senza prodotto trovato', (tester) async {
     await tester.pumpWidget(
       _app(

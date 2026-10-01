@@ -207,52 +207,57 @@ class _ListDetailScreenState extends State<ListDetailScreen> {
     final action = await showModalBottomSheet<String>(
       context: context,
       showDragHandle: true,
+      // Sette voci non stanno nella metà di schermo che un foglio ha di solito: alto quanto serve, e scorre
+      // sui telefoni piccoli invece di andare in overflow.
+      isScrollControlled: true,
       builder: (context) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-              child: Text('${item.icon}  ${item.name}', style: Theme.of(context).textTheme.titleMedium),
-            ),
-            ListTile(
-              leading: Icon(item.checked ? Icons.check_box : Icons.check_box_outline_blank),
-              title: Text(item.checked ? l.putBackToBuy : l.takenInCart),
-              onTap: () => Navigator.pop(context, 'taken'),
-            ),
-            ListTile(
-              leading: Icon(item.missing ? Icons.cancel : Icons.cancel_outlined),
-              title: Text(item.missing ? l.putBackToBuy : l.notFound),
-              onTap: () => Navigator.pop(context, 'missing'),
-            ),
-            ListTile(
-              leading: const Icon(Icons.edit_outlined),
-              title: Text(l.edit),
-              onTap: () => Navigator.pop(context, 'edit'),
-            ),
-            ListTile(
-              leading: const Icon(Icons.add_a_photo_outlined),
-              title: Text(item.imageVersion == null ? l.addPhoto : l.changePhoto),
-              onTap: () => Navigator.pop(context, 'photo'),
-            ),
-            ListTile(
-              leading: const Icon(Icons.info_outline),
-              title: Text(l.info),
-              onTap: () => Navigator.pop(context, 'info'),
-            ),
-            ListTile(
-              leading: const Icon(Icons.euro),
-              title: Text(l.myPrice),
-              onTap: () => Navigator.pop(context, 'myPrice'),
-            ),
-            const Divider(),
-            ListTile(
-              leading: Icon(Icons.delete_outline, color: error),
-              title: Text(l.deleteFromList, style: TextStyle(color: error)),
-              subtitle: Text(l.deleteFromListInfo),
-              onTap: () => Navigator.pop(context, 'delete'),
-            ),
-          ],
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+                child: Text('${item.icon}  ${item.name}', style: Theme.of(context).textTheme.titleMedium),
+              ),
+              ListTile(
+                leading: Icon(item.checked ? Icons.check_box : Icons.check_box_outline_blank),
+                title: Text(item.checked ? l.putBackToBuy : l.takenInCart),
+                onTap: () => Navigator.pop(context, 'taken'),
+              ),
+              ListTile(
+                leading: Icon(item.missing ? Icons.cancel : Icons.cancel_outlined),
+                title: Text(item.missing ? l.putBackToBuy : l.notFound),
+                onTap: () => Navigator.pop(context, 'missing'),
+              ),
+              ListTile(
+                leading: const Icon(Icons.edit_outlined),
+                title: Text(l.edit),
+                onTap: () => Navigator.pop(context, 'edit'),
+              ),
+              ListTile(
+                leading: const Icon(Icons.add_a_photo_outlined),
+                title: Text(item.imageVersion == null ? l.addPhoto : l.changePhoto),
+                onTap: () => Navigator.pop(context, 'photo'),
+              ),
+              ListTile(
+                leading: const Icon(Icons.info_outline),
+                title: Text(l.info),
+                onTap: () => Navigator.pop(context, 'info'),
+              ),
+              ListTile(
+                leading: const Icon(Icons.euro),
+                title: Text(l.myPrice),
+                onTap: () => Navigator.pop(context, 'myPrice'),
+              ),
+              const Divider(),
+              ListTile(
+                leading: Icon(Icons.delete_outline, color: error),
+                title: Text(l.deleteFromList, style: TextStyle(color: error)),
+                subtitle: Text(l.deleteFromListInfo),
+                onTap: () => Navigator.pop(context, 'delete'),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -1030,6 +1035,7 @@ class _AddItemBarState extends State<_AddItemBar> {
   }
 
   /// Prodotto di marca toccato: nome, peso o volume della confezione; marca, codice e foto arrivano al server.
+  /// Poi si apre il popup di peso/volume e quantità, già compilato con la confezione.
   void _useBranded(BrandedProduct product) {
     setState(() {
       _chosen = product;
@@ -1043,19 +1049,20 @@ class _AddItemBarState extends State<_AddItemBar> {
       text: product.name,
       selection: TextSelection.collapsed(offset: product.name.length),
     );
-    _focus.requestFocus();
+    _editMeasure();
   }
 
   void _refresh() {
     if (mounted) setState(() {});
   }
 
+  /// Suggerimento toccato: scrive il nome e apre il popup di peso/volume e quantità.
   void _useSuggestion(ProductSuggestion suggestion) {
     _name.value = TextEditingValue(
       text: suggestion.name,
       selection: TextSelection.collapsed(offset: suggestion.name.length),
     );
-    _focus.requestFocus();
+    _editMeasure();
   }
 
   @override

@@ -204,6 +204,8 @@ class ProductsTest extends TestCase
             ->assertJsonPath('data.images', ['https://img/front.jpg', 'https://img/ingr.jpg'])
             ->assertJsonPath('data.nutriments.energy-kcal', 539)
             ->assertJsonPath('data.nutriments.proteins', null)
+            ->assertJsonPath('data.kind', 'food')
+            ->assertJsonPath('data.minerals', [])
             ->assertJsonPath('data.ingredients', 'Zucchero, olio di palma, nocciole 13%')
             ->assertJsonPath('data.allergens', ['milk', 'nuts', 'soybeans'])
             ->assertJsonPath('data.gluten_free', true)
@@ -217,6 +219,54 @@ class ProductsTest extends TestCase
 
         Sanctum::actingAs(User::factory()->create());
         $this->getJson("/api/lists/{$list->id}/items/{$branded}/info")->assertForbidden();
+    }
+
+    public function test_water_info_has_minerals_in_milligrams_per_litre(): void
+    {
+        config(['services.openfoodfacts.enabled' => true]);
+        Http::fake([
+            'world.openfoodfacts.org/*' => Http::response(['status' => 1, 'product' => [
+                'code' => '80412021', 'product_name' => 'Acqua minerale naturale frizzante Lete',
+                'categories_tags' => ['en:beverages', 'en:waters', 'en:mineral-waters', 'en:natural-mineral-waters'],
+                // Open Food Facts: grammi per 100 ml.
+                'nutriments' => [
+                    'calcium_100g' => 0.0305, 'magnesium_100g' => 0.00133, 'sodium_100g' => 0.0005,
+                    'bicarbonate_100g' => 0.094, 'fluoride_100g' => 3e-05, 'energy-kcal_100g' => 0,
+                ],
+            ]]),
+        ]);
+        $list = ShoppingList::factory()->create();
+        Sanctum::actingAs($list->owner);
+        $id = $this->postJson("/api/lists/{$list->id}/items", ['name' => 'Lete', 'barcode' => '80412021'])->json('data.id');
+
+        $this->getJson("/api/lists/{$list->id}/items/{$id}/info")
+            ->assertOk()
+            ->assertJsonPath('data.kind', 'water')
+            ->assertJsonPath('data.minerals.calcium', 305)
+            ->assertJsonPath('data.minerals.magnesium', 13.3)
+            ->assertJsonPath('data.minerals.sodium', 5)
+            ->assertJsonPath('data.minerals.bicarbonate', 940)
+            ->assertJsonPath('data.minerals.fluoride', 0.3)
+            ->assertJsonPath('data.minerals.nitrate', null);
+    }
+
+    public function test_flavoured_water_is_food(): void
+    {
+        config(['services.openfoodfacts.enabled' => true]);
+        Http::fake([
+            'world.openfoodfacts.org/*' => Http::response(['status' => 1, 'product' => [
+                'code' => '8001234567890', 'product_name' => 'Acqua al limone',
+                'categories_tags' => ['en:beverages', 'en:waters', 'en:flavoured-waters'],
+                'nutriments' => ['energy-kcal_100g' => 20, 'sugars_100g' => 4.8],
+            ]]),
+        ]);
+        $list = ShoppingList::factory()->create();
+        Sanctum::actingAs($list->owner);
+        $id = $this->postJson("/api/lists/{$list->id}/items", ['name' => 'Acqua al limone', 'barcode' => '8001234567890'])->json('data.id');
+
+        $this->getJson("/api/lists/{$list->id}/items/{$id}/info")
+            ->assertJsonPath('data.kind', 'food')
+            ->assertJsonPath('data.nutriments.sugars', 4.8);
     }
 
     public function test_item_info_is_null_when_nothing_is_found(): void
