@@ -88,6 +88,15 @@ class OpenFoodFacts
         'energy-kcal', 'fat', 'saturated-fat', 'carbohydrates', 'sugars', 'fiber', 'proteins', 'salt',
     ];
 
+    /** Minerali delle acque, in mg/L come sulle etichette (Open Food Facts li tiene in g per 100 ml). */
+    public const MINERALS = [
+        'calcium', 'magnesium', 'sodium', 'potassium', 'bicarbonate', 'chloride', 'sulphate', 'nitrate', 'fluoride',
+        'silica',
+    ];
+
+    /** Categorie delle acque (le aromatizzate no: hanno zuccheri e calorie come una bibita). */
+    private const WATER_CATEGORIES = ['waters', 'mineral-waters', 'natural-mineral-waters', 'spring-waters'];
+
     /**
      * Scheda del prodotto: foto, valori nutrizionali, ingredienti, allergeni, tracce e se è adatto a celiaci,
      * vegetariani e vegani (true = sì, false = no, null = non si sa). Null se il prodotto non c'è.
@@ -157,6 +166,9 @@ class OpenFoodFacts
             ? true
             : (in_array($no, $analysis, true) ? false : null);
         $nutriments = (array) ($p['nutriments'] ?? []);
+        $categories = $tags('categories_tags');
+        $water = array_intersect(self::WATER_CATEGORIES, $categories) !== []
+            && array_intersect(['flavoured-waters', 'flavored-waters'], $categories) === [];
 
         return [
             'barcode' => (string) ($p['code'] ?? ''),
@@ -171,6 +183,13 @@ class OpenFoodFacts
             'nutriments' => collect(self::NUTRIMENTS)
                 ->mapWithKeys(fn (string $n) => [$n => is_numeric($nutriments[$n.'_100g'] ?? null) ? round((float) $nutriments[$n.'_100g'], 2) : null])
                 ->all(),
+            // Acqua: minerali al posto dei valori nutrizionali (g per 100 ml × 10.000 = mg/L).
+            'kind' => $water ? 'water' : 'food',
+            'minerals' => $water
+                ? collect(self::MINERALS)
+                    ->mapWithKeys(fn (string $m) => [$m => is_numeric($nutriments[$m.'_100g'] ?? null) ? round((float) $nutriments[$m.'_100g'] * 10000, 2) : null])
+                    ->all()
+                : [],
             'ingredients' => trim((string) ($p['ingredients_text_it'] ?? '') ?: (string) ($p['ingredients_text'] ?? '')) ?: null,
             'allergens' => $allergens,
             'traces' => $tags('traces_tags'),

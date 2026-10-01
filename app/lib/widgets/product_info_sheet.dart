@@ -9,7 +9,8 @@ import 'photo_gallery.dart';
 import 'ui.dart';
 
 /// Scheda "Info" di un articolo (menu ⋮): codice a barre, foto, se è adatto a celiaci, vegetariani e vegani,
-/// calorie e valori nutrizionali, allergeni, ingredienti, Nutri-Score e NOVA, da Open Food Facts.
+/// calorie e valori nutrizionali (per le acque i minerali in mg/L), allergeni, ingredienti, Nutri-Score e NOVA,
+/// da Open Food Facts.
 Future<void> showProductInfo(BuildContext context, {required ListItem item, required Future<ProductInfo?> info}) =>
     showModalBottomSheet<void>(
       context: context,
@@ -96,6 +97,7 @@ class _Details extends StatelessWidget {
     final muted = theme.colorScheme.onSurfaceVariant;
     final p = product;
     final kcal = p.nutriments['energy-kcal'];
+    String number(double v) => v == v.roundToDouble() ? v.toInt().toString() : v.toString().replaceAll('.', ',');
     final nutrients = {
       'fat': l.nutrientFat,
       'saturated-fat': l.nutrientSaturatedFat,
@@ -105,7 +107,45 @@ class _Details extends StatelessWidget {
       'proteins': l.nutrientProteins,
       'salt': l.nutrientSalt,
     };
-    String number(double v) => v == v.roundToDouble() ? v.toInt().toString() : v.toString().replaceAll('.', ',');
+    final minerals = {
+      'calcium': l.mineralCalcium,
+      'magnesium': l.mineralMagnesium,
+      'sodium': l.mineralSodium,
+      'potassium': l.mineralPotassium,
+      'bicarbonate': l.mineralBicarbonate,
+      'chloride': l.mineralChloride,
+      'sulphate': l.mineralSulphate,
+      'nitrate': l.mineralNitrate,
+      'fluoride': l.mineralFluoride,
+      'silica': l.mineralSilica,
+    };
+    // Solo le voci con un valore: "non indicato" non dice niente a chi legge.
+    final suitability = [
+      if (p.glutenFree != null)
+        _Suitability(label: l.forCoeliacs, value: p.glutenFree!, yes: l.glutenFree, no: l.containsGluten),
+      if (p.vegetarian != null) _Suitability(label: l.vegetarian, value: p.vegetarian!, yes: l.yes, no: l.no),
+      if (p.vegan != null) _Suitability(label: l.vegan, value: p.vegan!, yes: l.yes, no: l.no),
+      if (p.palmOilFree != null)
+        _Suitability(label: l.palmOil, value: p.palmOilFree!, yes: l.palmOilFree, no: l.containsPalmOil),
+      if (p.lactoseFree == true) _Suitability(label: l.lactose, value: true, yes: l.lactoseFree, no: ''),
+    ];
+    Widget row(String label, String value) => Padding(
+      padding: const EdgeInsets.symmetric(vertical: 2),
+      child: Row(
+        children: [
+          Expanded(child: Text(label)),
+          Text(value),
+        ],
+      ),
+    );
+    final mineralRows = [
+      for (final MapEntry(key: key, value: label) in minerals.entries)
+        if (p.minerals[key] != null) row(label, '${number(p.minerals[key]!)} mg/L'),
+    ];
+    final nutrientRows = [
+      for (final MapEntry(key: key, value: label) in nutrients.entries)
+        if (p.nutriments[key] != null) row(label, '${number(p.nutriments[key]!)} g'),
+    ];
 
     return ListView(
       shrinkWrap: true,
@@ -163,34 +203,19 @@ class _Details extends StatelessWidget {
               },
             ),
           ),
-        Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          children: [
-            _Suitability(label: l.forCoeliacs, value: p.glutenFree, yes: l.glutenFree, no: l.containsGluten),
-            _Suitability(label: l.vegetarian, value: p.vegetarian, yes: l.yes, no: l.no),
-            _Suitability(label: l.vegan, value: p.vegan, yes: l.yes, no: l.no),
-            _Suitability(label: l.palmOil, value: p.palmOilFree, yes: l.palmOilFree, no: l.containsPalmOil),
-            if (p.lactoseFree == true) _Suitability(label: l.lactose, value: true, yes: l.lactoseFree, no: ''),
-          ],
-        ),
-        if (kcal != null || nutrients.keys.any((k) => p.nutriments[k] != null)) ...[
-          const SizedBox(height: 16),
+        if (suitability.isNotEmpty) Wrap(spacing: 8, runSpacing: 8, children: suitability),
+        const SizedBox(height: 16),
+        // Acqua: i minerali in mg/L. Cibo e bevande: calorie e valori nutrizionali per 100 g.
+        if (p.isWater && mineralRows.isNotEmpty) ...[
+          Text(l.waterMinerals, style: theme.textTheme.titleSmall),
+          ...mineralRows,
+        ] else if (!p.isWater && (kcal != null || nutrientRows.isNotEmpty)) ...[
           Text(l.nutritionPer100, style: theme.textTheme.titleSmall),
           if (kcal != null)
             Text('${number(kcal)} kcal', style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700)),
-          for (final MapEntry(key: key, value: label) in nutrients.entries)
-            if (p.nutriments[key] != null)
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 2),
-                child: Row(
-                  children: [
-                    Expanded(child: Text(label)),
-                    Text('${number(p.nutriments[key]!)} g'),
-                  ],
-                ),
-              ),
-        ],
+          ...nutrientRows,
+        ] else
+          Text(l.noNutritionInfo, style: theme.textTheme.bodyMedium?.copyWith(color: muted)),
         if (p.allergens.isNotEmpty || p.traces.isNotEmpty) ...[
           const SizedBox(height: 16),
           Text(l.allergens, style: theme.textTheme.titleSmall),
@@ -232,24 +257,21 @@ class _Details extends StatelessWidget {
   }
 }
 
-/// Adatto sì / no / non indicato, con un colore.
+/// Adatto sì / no, con un colore.
 class _Suitability extends StatelessWidget {
   const _Suitability({required this.label, required this.value, required this.yes, required this.no});
 
   final String label;
-  final bool? value;
+  final bool value;
   final String yes;
   final String no;
 
   @override
   Widget build(BuildContext context) {
-    final l = context.l10n;
     final scheme = Theme.of(context).colorScheme;
-    final (icon, color, text) = switch (value) {
-      true => (Icons.check_circle, Colors.green.shade700, yes),
-      false => (Icons.cancel, scheme.error, no),
-      null => (Icons.help_outline, scheme.onSurfaceVariant, l.notIndicated),
-    };
+    final (icon, color, text) = value
+        ? (Icons.check_circle, Colors.green.shade700, yes)
+        : (Icons.cancel, scheme.error, no);
     return Chip(
       avatar: Icon(icon, size: 18, color: color),
       label: Text('$label: $text'),
