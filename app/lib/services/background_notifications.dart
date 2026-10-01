@@ -64,8 +64,9 @@ abstract final class BackgroundNotifications {
       final result = await FlutterForegroundTask.startService(
         serviceId: 700,
         serviceTypes: [ForegroundServiceTypes.remoteMessaging],
+        // Android vuole una notifica fissa per il servizio: solo il nome dell'app, senza altre scritte.
         notificationTitle: 'Lista Spesa Facile',
-        notificationText: appL10n.serviceNotificationText,
+        notificationText: '',
         // Carrello bianco (vedi meta-data nel manifest): l'icona dell'app nella barra di stato sarebbe un quadrato.
         notificationIcon: const NotificationIcon(metaDataName: 'it.listaspesafacile.NOTIFICATION_ICON'),
         callback: backgroundNotificationsCallback,

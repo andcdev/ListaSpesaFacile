@@ -128,7 +128,8 @@ sonda() {                          # $1 = host, $2 = percorso — riuscita se ri
   docker compose exec -T caddy wget -q -O /dev/null -T 10 \
     --header "Host: $1" --header "X-App-Key: $CHIAVE" "http://127.0.0.1$2" 2>/dev/null
 }
-sano() { sonda "$SITO" / && sonda "api.$SITO" /up && sonda "api.$SITO" /api/config; }
+# Il sito è per lingua: / rimanda (302) a /it/, /en/…; /it/ c'è dal sito multilingua, / basta per quello di prima.
+sano() { { sonda "$SITO" /it/ || sonda "$SITO" /; } && sonda "api.$SITO" /up && sonda "api.$SITO" /api/config; }
 attende() {                        # fino a due minuti
   local _
   for _ in $(seq 1 40); do sano && return 0; sleep 3; done

@@ -320,7 +320,6 @@
   "you": "Tu",
   "serviceChannelName": "Collegamento in background",
   "serviceChannelDescription": "Tiene l'app collegata per ricevere liste e messaggi anche quando è chiusa",
-  "serviceNotificationText": "Pronta a ricevere liste e messaggi",
   "reminderTitle": "Promemoria: {name}",
   "@reminderTitle": {
     "placeholders": {
@@ -582,9 +581,8 @@
   "acceptPrivacySuffix": "",
   "privacyPolicy": "informativa privacy",
   "newsletterConsent": "Voglio ricevere la newsletter di Lista Spesa Facile",
-  "newsletterOptional": "Facoltativo: puoi cambiarlo quando vuoi dal menu del profilo",
+  "newsletterOptional": "Facoltativo",
   "socialPrivacyNotice": "Continuando con Google o Amazon accetti l'",
-  "newsletter": "Newsletter",
   "myPrices": "I miei prezzi",
   "myPrice": "Il mio prezzo",
   "addMyPrice": "Aggiungi prezzo",

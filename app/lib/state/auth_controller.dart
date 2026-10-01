@@ -106,12 +106,6 @@ class AuthController extends ChangeNotifier {
     await _signedIn(token, user);
   }
 
-  /// Consenso alla newsletter (menu del profilo).
-  Future<void> setNewsletter(bool enabled) async {
-    user = await api.setNewsletter(enabled);
-    notifyListeners();
-  }
-
   /// Foto profilo (dalla galleria o dalla fotocamera), mostrata agli altri accanto ai messaggi della chat.
   Future<void> setAvatar(String filePath) async {
     user = await api.uploadAvatar(filePath);

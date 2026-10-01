@@ -141,3 +141,11 @@ footer.piede a { color: var(--testo-2); }
   color: var(--verde); text-decoration: underline; text-underline-offset: 2px; cursor: pointer;
 }
 .messaggio { color: var(--arancio); font-weight: 600; }
+
+/* ── Lingue ──────────────────────────────────────────────── */
+nav.lingue { display: flex; gap: 4px; font-size: 13px; font-weight: 600; }
+nav.lingue a {
+  color: var(--testo-2); text-decoration: none; padding: 4px 7px; border-radius: 8px; letter-spacing: 0.04em;
+}
+nav.lingue a:hover { color: var(--verde); }
+nav.lingue a[aria-current="true"] { background: var(--verde-chiaro); color: var(--verde); }

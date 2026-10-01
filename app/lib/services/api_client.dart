@@ -192,10 +192,6 @@ class ApiClient {
 
   Future<AppUser> me() async => AppUser.fromJson((await _send('GET', '/me'))['data'] as Map<String, dynamic>);
 
-  /// Consenso alla newsletter, dal menu del profilo.
-  Future<AppUser> setNewsletter(bool enabled) async =>
-      _data(await _send('PATCH', '/me', {'newsletter': enabled}), AppUser.fromJson);
-
   Future<void> logout() => _send('POST', '/logout');
 
   /// Elimina definitivamente l'account e tutti i suoi dati (liste, foto, chat).

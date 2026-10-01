@@ -167,13 +167,16 @@ tail -f /var/log/lsf-aggiorna.log
 
 | Nome | Risposta |
 |---|---|
-| `listaspesafacile.com` | Sito vetrina, file statici da `site/` (Home, Privacy, Elimina account, Supporto) |
+| `listaspesafacile.com` | Sito vetrina in cinque lingue, file statici da `site/{it,en,fr,de,es}/` (Home, Privacy, Elimina account, Supporto). Gli indirizzi senza lingua (`/`, `/privacy`, …) rimandano alla lingua del browser (`Accept-Language`; altre lingue → inglese, nessuna → italiano) |
 | `listaspesafacile.com/api/account-deletion/*` | Eliminazione dell'account dalla pagina del sito (codice via email), senza chiave |
 | `api.listaspesafacile.com` | API e WebSocket, solo con `X-App-Key` uguale a `CLIENT_KEY`; senza → 404 vuoto |
 | `api.…/auth/*` | Login social, aperto senza chiave (lo apre il browser di sistema) |
 | `api.…/robots.txt` | `Disallow: /`, e `X-Robots-Tag: noindex` su ogni risposta dell'API |
 
 In locale il sito si apre su <http://sito.localhost> e, con `CLIENT_KEY` vuota, l'API non chiede la chiave.
+
+Il sito non si modifica in `site/`: le pagine si scrivono per lingua in `site-src/{lingua}/` e si rigenerano con
+`python3 site-src/build.py` (testata, selettore della lingua, `hreflang` e `sitemap.xml` li aggiunge lo script).
 
 ### Servizi
 

@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Konto löschen — Lista Spesa Facile</title>
+  <meta name="description" content="Lösche dein Konto bei Lista Spesa Facile und alle deine Daten, direkt hier.">
+  <link rel="canonical" href="https://listaspesafacile.com/de/elimina-account">
+  <link rel="alternate" hreflang="it" href="https://listaspesafacile.com/it/elimina-account">
+  <link rel="alternate" hreflang="en" href="https://listaspesafacile.com/en/elimina-account">
+  <link rel="alternate" hreflang="fr" href="https://listaspesafacile.com/fr/elimina-account">
+  <link rel="alternate" hreflang="de" href="https://listaspesafacile.com/de/elimina-account">
+  <link rel="alternate" hreflang="es" href="https://listaspesafacile.com/es/elimina-account">
+  <link rel="alternate" hreflang="x-default" href="https://listaspesafacile.com/elimina-account">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/style.css">
+  <script src="/elimina-account.js" defer></script>
+</head>
+<body>
+  <header class="testata">
+    <div class="contenitore">
+      <a class="marchio" href="/de/"><img src="/favicon.svg" alt="" width="32" height="32">Lista Spesa Facile</a>
+      <nav class="menu" aria-label="Menü">
+        <a href="/de/supporto">Hilfe</a>
+        <a href="/de/privacy">Datenschutz</a>
+      </nav>
+      <nav class="lingue" aria-label="Sprache">
+        <a href="/it/elimina-account" hreflang="it" lang="it" title="Italiano">IT</a>
+        <a href="/en/elimina-account" hreflang="en" lang="en" title="English">EN</a>
+        <a href="/fr/elimina-account" hreflang="fr" lang="fr" title="Français">FR</a>
+        <a href="/de/elimina-account" hreflang="de" lang="de" title="Deutsch" aria-current="true">DE</a>
+        <a href="/es/elimina-account" hreflang="es" lang="es" title="Español">ES</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="pagina">
+    <div class="contenitore testo">
+      <h1>Dein Konto löschen</h1>
+      <p class="aggiornata">Lista Spesa Facile — Löschung des Kontos und aller Daten</p>
+
+      <p>Gib die E-Mail ein, mit der du die App nutzt: Wir schicken dir einen Code, um zu bestätigen, dass das Postfach
+        dir gehört. Das gilt auch, wenn du dich mit Google oder Amazon anmeldest: Nutze dann die E-Mail dieses
+        Kontos.</p>
+
+      <form id="passo-email" class="modulo" novalidate>
+        <label for="email">E-Mail</label>
+        <input id="email" name="email" type="email" autocomplete="email" required>
+        <button type="submit" class="pulsante">Code senden</button>
+      </form>
+
+      <form id="passo-codice" class="modulo" hidden novalidate>
+        <p>Wenn <strong id="email-scelta"></strong> registriert ist, bekommst du gleich einen 6-stelligen Code (gültig
+          30 Minuten). Sieh auch im Spam-Ordner nach.</p>
+        <label for="codice">Code</label>
+        <input id="codice" name="codice" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}"
+          maxlength="6" required>
+        <label class="spunta"><input id="capito" type="checkbox" required> Mir ist klar, dass die Löschung endgültig ist
+          und nicht rückgängig gemacht werden kann.</label>
+        <button type="submit" class="pulsante pericolo">Mein Konto endgültig löschen</button>
+        <button type="button" id="rimanda" class="collegamento">Nicht angekommen? E-Mail ändern oder erneut anfordern</button>
+      </form>
+
+      <div id="fatto" class="riquadro" hidden role="status">
+        <p><strong>Konto gelöscht.</strong> Deine Daten wurden gelöscht. Du kannst die App deinstallieren: Wenn du sie
+          wieder öffnest, wirst du gebeten, dich anzumelden.</p>
+      </div>
+
+      <p id="messaggio" class="messaggio" role="alert" hidden></p>
+
+      <h2>Was gelöscht wird</h2>
+      <ul>
+        <li>das Konto: Name, E-Mail, Passwort, Sprache und Profilfoto;</li>
+        <li>die Verknüpfung mit Google oder Amazon, falls du sie zur Anmeldung genutzt hast;</li>
+        <li>die Listen, die du erstellt hast, mit Artikeln, Fotos, Erinnerungen und Chat, auch für die Personen, mit
+          denen du sie geteilt hast;</li>
+        <li>die Freigaben: Du verschwindest aus den Listen anderer, an denen du teilgenommen hast;</li>
+        <li>die Nachrichten und Fotos, die du in den Chats geschrieben hast;</li>
+        <li>die Preise, die du dir notiert hast („Meine Preise“);</li>
+        <li>die Benachrichtigungen und die Anmeldungen deiner Telefone, die abgemeldet werden.</li>
+      </ul>
+
+      <h2>Was bleibt</h2>
+      <p>Die Artikel, die du zu Listen anderer Personen hinzugefügt hast, bleiben in deren Listen, ohne deinen Namen.
+        Die technischen Zugriffsdaten (IP-Adresse, Datum und Uhrzeit) löschen sich von selbst, normalerweise innerhalb
+        von 30 Tagen, wie in der <a href="/de/privacy">Datenschutzerklärung</a> beschrieben.</p>
+
+      <div class="riquadro">
+        <p><strong>Du bekommst den Code nicht?</strong> Schreib an
+          <a href="mailto:supporto@listaspesafacile.com?subject=Konto%20l%C3%B6schen">supporto@listaspesafacile.com</a>
+          von der Adresse, mit der du registriert bist, mit dem Betreff „Konto löschen“: Wir löschen es innerhalb von
+          30 Tagen.</p>
+        <p><strong>Du willst nur einige Daten entfernen?</strong> In der App kannst du eine Liste, ihre Artikel und
+          Fotos, deine Nachrichten, dein Profilfoto und deine Benachrichtigungen löschen, ohne das Konto zu
+          schließen.</p>
+      </div>
+    </div>
+  </main>
+
+  <footer class="piede">
+    <div class="contenitore">
+      <span>© 2026 Lista Spesa Facile</span>
+      <nav aria-label="Informationen">
+        <a href="/de/supporto">Hilfe</a>
+        <a href="/de/privacy">Datenschutz</a>
+        <a href="/de/elimina-account">Konto löschen</a>
+      </nav>
+    </div>
+  </footer>
+</body>
+</html>
