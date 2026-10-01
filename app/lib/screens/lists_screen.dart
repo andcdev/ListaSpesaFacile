@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../l10n/l10n.dart';
+import '../models/app_user.dart';
+import '../models/list_filter.dart';
 import '../models/shopping_list.dart';
 import '../services/api_client.dart';
 import '../services/notification_service.dart';
@@ -30,6 +33,51 @@ class ListsScreen extends StatefulWidget {
 
 class _ListsScreenState extends State<ListsScreen> {
   bool _showPast = false;
+
+  /// Filtri e ordine di ciascuna sezione (false = in programma, true = passate).
+  final _filters = <bool, ListFilter>{false: const ListFilter(), true: const ListFilter()};
+
+  /// Lente: popup dei filtri della sezione aperta; la ricerca per prodotto la fa il server.
+  Future<void> _openFilters(ListsController controller, int? meId) async {
+    final current = _filters[_showPast]!;
+    final past = _showPast;
+    final result = await showModalBottomSheet<ListFilter>(
+      context: context,
+      showDragHandle: true,
+      isScrollControlled: true,
+      builder: (_) => _FilterSheet(initial: current, past: past, people: peopleIn(controller.lists, meId)),
+    );
+    if (result == null || !mounted) return;
+    try {
+      final next = await _searchProduct(result);
+      if (mounted) setState(() => _filters[past] = next);
+    } catch (e) {
+      if (mounted) showError(context, e);
+    }
+  }
+
+  /// Le liste che contengono il prodotto cercato (dal server), se il filtro ne ha uno.
+  Future<ListFilter> _searchProduct(ListFilter filter) async {
+    if (filter.product.isEmpty) return filter.copyWith(productListIds: () => null);
+    final found = await context.read<ApiClient>().lists(product: filter.product);
+    return filter.copyWith(productListIds: () => {for (final list in found) list.id});
+  }
+
+  /// Tira per aggiornare: liste e ricerche per prodotto.
+  Future<void> _refresh(ListsController controller) async {
+    await controller.load();
+    for (final past in [false, true]) {
+      final filter = _filters[past]!;
+      if (filter.product.isEmpty) continue;
+      try {
+        final next = await _searchProduct(filter);
+        if (mounted) setState(() => _filters[past] = next);
+      } catch (_) {
+        // Resta il risultato di prima.
+      }
+    }
+  }
+
   late final NotificationService _notifications;
 
   @override
@@ -203,7 +251,9 @@ class _ListsScreenState extends State<ListsScreen> {
     final past = controller.past;
     final l = context.l10n;
 
-    final shown = _showPast ? past : upcoming;
+    final filter = _filters[_showPast]!;
+    final shown = filter.apply(_showPast ? past : upcoming, past: _showPast, now: DateTime.now());
+    final people = {for (final person in peopleIn(controller.lists, me?.id)) person.id: person};
 
     return Scaffold(
       // Il nome dell'app sta nella pagina, sopra "Le mie liste": nella barra lo coprivano i pulsanti.
@@ -282,7 +332,7 @@ class _ListsScreenState extends State<ListsScreen> {
       ),
       body: Wallpaper(
         child: RefreshIndicator(
-          onRefresh: controller.load,
+          onRefresh: () => _refresh(controller),
           child: controller.lists.isEmpty
               ? _EmptyState(loading: controller.loading, error: controller.error)
               : ListView(
@@ -290,25 +340,46 @@ class _ListsScreenState extends State<ListsScreen> {
                   children: [
                     Padding(padding: const EdgeInsets.symmetric(horizontal: 4), child: PageHeading(l.myLists)),
                     const SizedBox(height: 16),
-                    // In programma / passate.
-                    Wrap(
-                      spacing: 8,
+                    // In programma / passate, e la lente dei filtri della sezione.
+                    Row(
                       children: [
-                        ChoiceChip(
-                          label: Text(l.upcomingTab),
-                          selected: !_showPast,
-                          showCheckmark: false,
-                          onSelected: (_) => setState(() => _showPast = false),
-                        ),
-                        if (past.isNotEmpty || _showPast)
-                          ChoiceChip(
-                            label: Text(l.pastTab(past.length)),
-                            selected: _showPast,
-                            showCheckmark: false,
-                            onSelected: (_) => setState(() => _showPast = true),
+                        Expanded(
+                          child: Wrap(
+                            spacing: 8,
+                            children: [
+                              ChoiceChip(
+                                label: Text(l.upcomingTab),
+                                selected: !_showPast,
+                                showCheckmark: false,
+                                onSelected: (_) => setState(() => _showPast = false),
+                              ),
+                              if (past.isNotEmpty || _showPast)
+                                ChoiceChip(
+                                  label: Text(l.pastTab(past.length)),
+                                  selected: _showPast,
+                                  showCheckmark: false,
+                                  onSelected: (_) => setState(() => _showPast = true),
+                                ),
+                            ],
                           ),
+                        ),
+                        IconButton.filledTonal(
+                          tooltip: l.filterLists,
+                          onPressed: () => _openFilters(controller, me?.id),
+                          icon: Badge(isLabelVisible: filter.isActive, smallSize: 8, child: const Icon(Icons.search)),
+                        ),
                       ],
                     ),
+                    if (filter.isActive)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 8),
+                        child: _ActiveFilters(
+                          filter: filter,
+                          past: _showPast,
+                          people: people,
+                          onChanged: (next) => setState(() => _filters[_showPast] = next),
+                        ),
+                      ),
                     const SizedBox(height: 12),
                     if (controller.error != null)
                       MaterialBanner(
@@ -318,7 +389,7 @@ class _ListsScreenState extends State<ListsScreen> {
                     if (shown.isEmpty)
                       Padding(
                         padding: const EdgeInsets.all(24),
-                        child: Text(l.noUpcoming, textAlign: TextAlign.center),
+                        child: Text(filter.isActive ? l.noListsMatch : l.noUpcoming, textAlign: TextAlign.center),
                       ),
                     for (final list in shown)
                       Padding(
@@ -539,6 +610,217 @@ class _NotificationsButton extends StatelessWidget {
         isLabelVisible: unread > 0,
         label: Text(unread > 99 ? '99+' : '$unread'),
         child: Icon(unread > 0 ? Icons.notifications : Icons.notifications_none),
+      ),
+    );
+  }
+}
+
+String _dayLabel(DateTime day) => DateFormat('d MMM y').format(day);
+
+/// Testo del periodo scelto ("Ultimi 15 giorni", "1 ott 2026 – 15 ott 2026"…).
+String _periodLabel(ListFilter filter, bool past, AppLocalizations l) => switch (filter.period) {
+  ListPeriod.all => l.allDates,
+  ListPeriod.days15 => past ? l.last15Days : l.next15Days,
+  ListPeriod.days30 => past ? l.last30Days : l.next30Days,
+  ListPeriod.range =>
+    filter.from == null || filter.to == null
+        ? l.chooseDates
+        : l.dateRange(_dayLabel(filter.from!), _dayLabel(filter.to!)),
+};
+
+/// Filtri attivi sotto le sezioni: uno per riga di popup, ciascuno si toglie con la X.
+class _ActiveFilters extends StatelessWidget {
+  const _ActiveFilters({required this.filter, required this.past, required this.people, required this.onChanged});
+
+  final ListFilter filter;
+  final bool past;
+  final Map<int, AppUser> people;
+  final ValueChanged<ListFilter> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final l = context.l10n;
+    Widget chip(IconData icon, String label, ListFilter cleared) => InputChip(
+      avatar: Icon(icon, size: 18),
+      label: Text(label),
+      visualDensity: VisualDensity.compact,
+      onDeleted: () => onChanged(cleared),
+    );
+    return Wrap(
+      spacing: 6,
+      runSpacing: 6,
+      children: [
+        if (filter.ascending != null)
+          chip(
+            Icons.swap_vert,
+            filter.ascending! ? l.dateAscending : l.dateDescending,
+            filter.copyWith(ascending: () => null),
+          ),
+        if (filter.personId != null)
+          chip(
+            Icons.person_outline,
+            people[filter.personId]?.name ?? l.filterPerson,
+            filter.copyWith(personId: () => null),
+          ),
+        if (filter.period != ListPeriod.all)
+          chip(
+            Icons.event_outlined,
+            _periodLabel(filter, past, l),
+            filter.copyWith(period: ListPeriod.all, from: () => null, to: () => null),
+          ),
+        if (filter.product.isNotEmpty)
+          chip(
+            Icons.shopping_basket_outlined,
+            l.containsProduct(filter.product),
+            filter.copyWith(product: '', productListIds: () => null),
+          ),
+      ],
+    );
+  }
+}
+
+/// Popup della lente: ordine per data, persona, periodo (15 o 30 giorni, oppure da… a…) e prodotto nella lista.
+class _FilterSheet extends StatefulWidget {
+  const _FilterSheet({required this.initial, required this.past, required this.people});
+
+  final ListFilter initial;
+  final bool past;
+  final List<AppUser> people;
+
+  @override
+  State<_FilterSheet> createState() => _FilterSheetState();
+}
+
+class _FilterSheetState extends State<_FilterSheet> {
+  late bool? _ascending = widget.initial.ascending;
+  late int? _personId = widget.people.any((p) => p.id == widget.initial.personId) ? widget.initial.personId : null;
+  late ListPeriod _period = widget.initial.period;
+  late DateTime? _from = widget.initial.from;
+  late DateTime? _to = widget.initial.to;
+  late final _product = TextEditingController(text: widget.initial.product);
+
+  @override
+  void dispose() {
+    _product.dispose();
+    super.dispose();
+  }
+
+  Future<void> _pickRange() async {
+    final now = DateTime.now();
+    final picked = await showDateRangePicker(
+      context: context,
+      firstDate: DateTime(2020),
+      lastDate: DateTime(2100),
+      initialDateRange: _from != null && _to != null ? DateTimeRange(start: _from!, end: _to!) : null,
+      currentDate: now,
+    );
+    if (picked == null) return;
+    setState(() {
+      _period = ListPeriod.range;
+      _from = picked.start;
+      _to = picked.end;
+    });
+  }
+
+  void _apply() {
+    final product = _product.text.trim();
+    final range = _period == ListPeriod.range && _from != null && _to != null;
+    Navigator.pop(
+      context,
+      ListFilter(
+        ascending: _ascending,
+        personId: _personId,
+        period: _period == ListPeriod.range && !range ? ListPeriod.all : _period,
+        from: range ? _from : null,
+        to: range ? _to : null,
+        product: product,
+        productListIds: product == widget.initial.product ? widget.initial.productListIds : null,
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l = context.l10n;
+    final text = Theme.of(context).textTheme;
+    final filterNow = ListFilter(period: _period, from: _from, to: _to);
+    Widget title(String s) => Padding(
+      padding: const EdgeInsets.only(top: 16, bottom: 8),
+      child: Text(s, style: text.titleSmall),
+    );
+    return Padding(
+      padding: EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(context).bottom),
+      child: SafeArea(
+        top: false,
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(l.filterLists, style: text.titleLarge),
+              title(l.sortOrder),
+              SegmentedButton<bool>(
+                segments: [
+                  ButtonSegment(value: true, icon: const Icon(Icons.arrow_upward), label: Text(l.dateAscending)),
+                  ButtonSegment(value: false, icon: const Icon(Icons.arrow_downward), label: Text(l.dateDescending)),
+                ],
+                selected: {_ascending ?? !widget.past},
+                onSelectionChanged: (value) => setState(() => _ascending = value.first),
+              ),
+              if (widget.people.isNotEmpty) ...[
+                title(l.filterPerson),
+                DropdownButtonFormField<int?>(
+                  initialValue: _personId,
+                  isExpanded: true,
+                  items: [
+                    DropdownMenuItem(value: null, child: Text(l.everyone)),
+                    for (final person in widget.people)
+                      DropdownMenuItem(
+                        value: person.id,
+                        child: Text(person.name, overflow: TextOverflow.ellipsis),
+                      ),
+                  ],
+                  onChanged: (value) => setState(() => _personId = value),
+                ),
+              ],
+              title(l.filterPeriod),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  for (final period in [ListPeriod.all, ListPeriod.days15, ListPeriod.days30])
+                    ChoiceChip(
+                      label: Text(_periodLabel(ListFilter(period: period), widget.past, l)),
+                      selected: _period == period,
+                      onSelected: (_) => setState(() => _period = period),
+                    ),
+                  ChoiceChip(
+                    avatar: const Icon(Icons.date_range, size: 18),
+                    label: Text(_periodLabel(filterNow.copyWith(period: ListPeriod.range), widget.past, l)),
+                    selected: _period == ListPeriod.range,
+                    onSelected: (_) => _pickRange(),
+                  ),
+                ],
+              ),
+              title(l.productInLists),
+              TextField(
+                controller: _product,
+                textInputAction: TextInputAction.search,
+                onSubmitted: (_) => _apply(),
+                decoration: InputDecoration(hintText: l.productInListsHint, prefixIcon: const Icon(Icons.search)),
+              ),
+              const SizedBox(height: 20),
+              Row(
+                children: [
+                  TextButton(onPressed: () => Navigator.pop(context, const ListFilter()), child: Text(l.resetFilters)),
+                  const Spacer(),
+                  FilledButton(onPressed: _apply, child: Text(l.applyFilters)),
+                ],
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

@@ -1038,6 +1038,70 @@ class AppLocalizationsDe extends AppLocalizations {
   String get myPriceSaved => 'Preis in „Meine Preise“ gespeichert';
 
   @override
+  String get filterLists => 'Listen filtern';
+
+  @override
+  String get sortOrder => 'Reihenfolge';
+
+  @override
+  String get dateAscending => 'Datum aufsteigend';
+
+  @override
+  String get dateDescending => 'Datum absteigend';
+
+  @override
+  String get filterPerson => 'Geteilt mit';
+
+  @override
+  String get everyone => 'Alle';
+
+  @override
+  String get filterPeriod => 'Datum des Einkaufs';
+
+  @override
+  String get allDates => 'Alle';
+
+  @override
+  String get last15Days => 'Letzte 15 Tage';
+
+  @override
+  String get last30Days => 'Letzte 30 Tage';
+
+  @override
+  String get next15Days => 'Nächste 15 Tage';
+
+  @override
+  String get next30Days => 'Nächste 30 Tage';
+
+  @override
+  String get chooseDates => 'Von … bis …';
+
+  @override
+  String dateRange(String from, String to) {
+    return '$from – $to';
+  }
+
+  @override
+  String get productInLists => 'Produkt in der Liste';
+
+  @override
+  String get productInListsHint => 'z. B. Milch';
+
+  @override
+  String containsProduct(String product) {
+    return 'Mit „$product“';
+  }
+
+  @override
+  String get resetFilters => 'Zurücksetzen';
+
+  @override
+  String get applyFilters => 'Anwenden';
+
+  @override
+  String get noListsMatch => 'Keine Liste passt zu diesen Filtern.';
+
+  @override
   String get searchMyPrices => 'Produkt oder Supermarkt suchen';
 
   @override

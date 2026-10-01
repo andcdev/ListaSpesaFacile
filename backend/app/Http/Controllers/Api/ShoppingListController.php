@@ -31,10 +31,20 @@ class ShoppingListController extends Controller
      */
     public function index(Request $request): AnonymousResourceCollection
     {
+        // "product": solo le liste con un articolo che contiene tutte le parole scritte (ricerca dall'elenco).
+        $data = $request->validate(['product' => ['sometimes', 'nullable', 'string', 'max:100']]);
+        $words = preg_split('/\s+/', trim((string) ($data['product'] ?? '')), -1, PREG_SPLIT_NO_EMPTY);
+
         $lists = ShoppingList::query()
             ->accessibleBy($request->user())
-            ->with('owner')
+            // Con chi è condivisa: l'app filtra l'elenco per persona.
+            ->with(['owner', 'sharedWith'])
             ->withCount(['items', 'items as checked_items_count' => fn (Builder $q) => $q->where('checked', true)])
+            ->when($words, fn (Builder $q) => $q->whereHas('items', function (Builder $items) use ($words) {
+                foreach ($words as $word) {
+                    $items->whereRaw('LOWER(name) LIKE ?', ['%'.mb_strtolower(addcslashes($word, '%_\\')).'%']);
+                }
+            }))
             ->orderBy('scheduled_at')
             ->orderBy('id')
             ->get();
