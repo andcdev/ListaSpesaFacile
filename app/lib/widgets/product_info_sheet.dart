@@ -244,24 +244,46 @@ class _Details extends StatelessWidget {
             style: theme.textTheme.titleSmall,
           ),
         ],
-        const SizedBox(height: 16),
-        if (p.url != null)
-          Align(
-            alignment: Alignment.centerLeft,
-            child: TextButton.icon(
-              onPressed: () => launchUrl(Uri.parse(p.url!), mode: LaunchMode.externalApplication),
-              icon: const Icon(Icons.open_in_new),
-              label: Text(l.viewOnSource(p.source)),
-            ),
+        // Da dove viene ogni cosa mostrata, con la licenza (toccando si apre la scheda originale).
+        const SizedBox(height: 20),
+        Text(l.sources, style: theme.textTheme.titleSmall),
+        for (final source in productSources(p, l))
+          ListTile(
+            contentPadding: EdgeInsets.zero,
+            dense: true,
+            leading: Icon(source.icon),
+            title: Text(source.name),
+            subtitle: Text(source.detail),
+            trailing: source.url == null ? null : const Icon(Icons.open_in_new, size: 20),
+            onTap: source.url == null
+                ? null
+                : () => launchUrl(Uri.parse(source.url!), mode: LaunchMode.externalApplication),
           ),
-        Text(
-          l.dataSource(p.source, p.matchedGeneric ? 'CC BY 4.0' : 'ODbL'),
-          style: theme.textTheme.bodySmall?.copyWith(color: muted),
-        ),
+        Text(l.dataMayBeIncomplete, style: theme.textTheme.bodySmall?.copyWith(color: muted)),
       ],
     );
   }
 }
+
+/// Una fonte citata nella scheda Info: nome, cosa viene da lì con la licenza, link alla scheda originale.
+typedef ProductSource = ({IconData icon, String name, String detail, String? url});
+
+/// Le fonti della scheda: i valori medi CIQUAL per gli sfusi; per i prodotti di marca i dati della banca dati Open
+/// (licenza ODbL) e, se ci sono, le sue foto (licenza CC BY-SA).
+List<ProductSource> productSources(ProductInfo p, AppLocalizations l) => [
+  if (p.matchedGeneric)
+    (
+      icon: Icons.menu_book_outlined,
+      name: 'Tabella CIQUAL 2020 (ANSES)',
+      detail: l.sourceAverageValues('CC BY 4.0'),
+      url: p.url,
+    )
+  else ...[
+    (icon: Icons.inventory_2_outlined, name: p.source, detail: l.sourceProductData('ODbL'), url: p.url),
+    if (p.images.isNotEmpty)
+      (icon: Icons.photo_library_outlined, name: p.source, detail: l.sourcePhotos('CC BY-SA'), url: p.url),
+  ],
+];
 
 /// Adatto sì / no, con un colore.
 class _Suitability extends StatelessWidget {

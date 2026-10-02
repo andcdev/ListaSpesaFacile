@@ -1128,14 +1128,26 @@ class AppLocalizationsEs extends AppLocalizations {
       'No se ha encontrado información para este producto.';
 
   @override
-  String viewOnSource(String source) {
-    return 'Ver en $source';
+  String get sources => 'Fuentes';
+
+  @override
+  String sourceProductData(String licence) {
+    return 'Datos del producto · licencia $licence';
   }
 
   @override
-  String dataSource(String source, String licence) {
-    return 'Datos de $source (licencia $licence): pueden estar incompletos, revisa siempre la etiqueta.';
+  String sourcePhotos(String licence) {
+    return 'Fotos · licencia $licence';
   }
+
+  @override
+  String sourceAverageValues(String licence) {
+    return 'Valores nutricionales medios · licencia $licence';
+  }
+
+  @override
+  String get dataMayBeIncomplete =>
+      'Los datos pueden estar incompletos: revisa siempre la etiqueta.';
 
   @override
   String get genericValuesNotice =>

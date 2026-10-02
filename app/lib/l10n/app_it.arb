@@ -658,25 +658,32 @@
   },
   "info": "Info",
   "noProductInfo": "Nessuna informazione trovata per questo prodotto.",
-  "viewOnSource": "Vedi su {source}",
-  "@viewOnSource": {
+  "sources": "Fonti",
+  "sourceProductData": "Dati del prodotto · licenza {licence}",
+  "@sourceProductData": {
     "placeholders": {
-      "source": {
-        "type": "String"
-      }
-    }
-  },
-  "dataSource": "Dati da {source} (licenza {licence}): possono essere incompleti, controlla sempre l'etichetta.",
-  "@dataSource": {
-    "placeholders": {
-      "source": {
-        "type": "String"
-      },
       "licence": {
         "type": "String"
       }
     }
   },
+  "sourcePhotos": "Foto · licenza {licence}",
+  "@sourcePhotos": {
+    "placeholders": {
+      "licence": {
+        "type": "String"
+      }
+    }
+  },
+  "sourceAverageValues": "Valori nutrizionali medi · licenza {licence}",
+  "@sourceAverageValues": {
+    "placeholders": {
+      "licence": {
+        "type": "String"
+      }
+    }
+  },
+  "dataMayBeIncomplete": "I dati possono essere incompleti: controlla sempre l'etichetta.",
   "genericValuesNotice": "Valori medi per 100 g di questo alimento, dalla tabella nutrizionale ufficiale CIQUAL.",
   "similarProductNotice": "Prodotto simile trovato dal nome: potrebbe non essere esattamente il tuo.",
   "barcode": "Codice a barre",
