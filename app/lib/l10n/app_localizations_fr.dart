@@ -1046,6 +1046,51 @@ class AppLocalizationsFr extends AppLocalizations {
   String get myPriceSaved => 'Prix enregistré dans « Mes prix »';
 
   @override
+  String get guide => 'Guide';
+
+  @override
+  String guideStep(int step, int count) {
+    return 'Étape $step sur $count';
+  }
+
+  @override
+  String get guideNext => 'Suivant';
+
+  @override
+  String get guideGotIt => 'J\'ai compris';
+
+  @override
+  String get skipGuide => 'Passer le guide';
+
+  @override
+  String get guideNewListTitle => 'Créez votre première liste';
+
+  @override
+  String get guideNewListText =>
+      'Touchez « Nouvelle liste » : choisissez un nom, le jour et l\'heure des courses et, si vous voulez, une photo et avec qui la partager. La liste s\'ouvre ensuite, prête pour les produits.';
+
+  @override
+  String get guideAddTitle => 'Écrivez un produit';
+
+  @override
+  String get guideAddText =>
+      'Écrivez ici ou dictez avec le micro. Pendant que vous écrivez, des suggestions apparaissent : ce que vous achetez le plus souvent et des produits de marque avec photo. Touchez-en une pour la choisir.';
+
+  @override
+  String get guidePlusTitle => 'Ajouter à la liste';
+
+  @override
+  String get guidePlusText =>
+      'Touchez + (ou une suggestion) : choisissez la quantité, le poids ou le volume selon le produit et appuyez sur « OK ». Le produit va dans son rayon et ceux qui partagent la liste le voient aussitôt.';
+
+  @override
+  String get guideShareTitle => 'Faites les courses ensemble';
+
+  @override
+  String get guideShareText =>
+      'Invitez d\'ici ceux qui font les courses avec vous : vous verrez la même liste, en temps réel. Au supermarché, touchez le cercle à côté d\'un produit pour le marquer comme pris.';
+
+  @override
   String get filterLists => 'Filtrer les listes';
 
   @override

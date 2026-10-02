@@ -714,6 +714,62 @@ S = {
                         'Nur du siehst deine Preise.', 'Solo tú ves tus precios.'),
     'myPriceSaved': ('Prezzo salvato in "I miei prezzi"', 'Price saved in "My prices"', 'Prix enregistré dans « Mes prix »',
                      'Preis in „Meine Preise“ gespeichert', 'Precio guardado en «Mis precios»'),
+    # ── Guida passo passo ────────────────────────────────────────
+    'guide': ('Guida', 'Guide', 'Guide', 'Anleitung', 'Guía'),
+    'guideStep': ('Passo {step} di {count}', 'Step {step} of {count}', 'Étape {step} sur {count}',
+                  'Schritt {step} von {count}', 'Paso {step} de {count}', {'step': 'int', 'count': 'int'}),
+    'guideNext': ('Avanti', 'Next', 'Suivant', 'Weiter', 'Siguiente'),
+    'guideGotIt': ('Ho capito', 'Got it', "J'ai compris", 'Verstanden', 'Entendido'),
+    'skipGuide': ('Salta guida', 'Skip guide', 'Passer le guide', 'Anleitung überspringen', 'Saltar guía'),
+    'guideNewListTitle': ('Crea la tua prima lista', 'Create your first list', 'Créez votre première liste',
+                          'Erstelle deine erste Liste', 'Crea tu primera lista'),
+    'guideNewListText': ('Tocca «Nuova lista»: scegli nome, giorno e ora della spesa e, se vuoi, una foto e con chi '
+                         'condividerla. Poi si apre la lista, pronta per i prodotti.',
+                         'Tap "New list": choose a name, the day and time of your shopping and, if you like, a photo '
+                         'and who to share it with. The list then opens, ready for products.',
+                         "Touchez « Nouvelle liste » : choisissez un nom, le jour et l'heure des courses et, si vous "
+                         "voulez, une photo et avec qui la partager. La liste s'ouvre ensuite, prête pour les produits.",
+                         'Tippe auf „Neue Liste“: Wähle Namen, Tag und Uhrzeit des Einkaufs und, wenn du willst, ein '
+                         'Foto und mit wem du sie teilst. Dann öffnet sich die Liste, bereit für die Produkte.',
+                         'Toca «Nueva lista»: elige el nombre, el día y la hora de la compra y, si quieres, una foto y '
+                         'con quién compartirla. Luego se abre la lista, lista para los productos.'),
+    'guideAddTitle': ('Scrivi un prodotto', 'Type a product', 'Écrivez un produit', 'Schreib ein Produkt',
+                      'Escribe un producto'),
+    'guideAddText': ('Scrivi qui o detta con il microfono. Mentre scrivi compaiono i suggerimenti: quelli che compri '
+                     'più spesso e i prodotti di marca con la foto. Toccane uno per sceglierlo.',
+                     'Type here or dictate with the microphone. As you type, suggestions appear: what you buy most '
+                     'often and branded products with a photo. Tap one to pick it.',
+                     "Écrivez ici ou dictez avec le micro. Pendant que vous écrivez, des suggestions apparaissent : "
+                     "ce que vous achetez le plus souvent et des produits de marque avec photo. Touchez-en une pour la choisir.",
+                     'Schreib hier oder diktiere mit dem Mikrofon. Beim Schreiben erscheinen Vorschläge: was du am '
+                     'häufigsten kaufst und Markenprodukte mit Foto. Tippe auf einen, um ihn zu wählen.',
+                     'Escribe aquí o dicta con el micrófono. Mientras escribes aparecen sugerencias: lo que más '
+                     'compras y productos de marca con foto. Toca una para elegirla.'),
+    'guidePlusTitle': ('Aggiungi alla lista', 'Add to the list', 'Ajouter à la liste', 'Zur Liste hinzufügen',
+                       'Añadir a la lista'),
+    'guidePlusText': ('Tocca + (o un suggerimento): scegli quantità, peso o volume secondo il prodotto e premi '
+                      '«Fatto». Il prodotto finisce nel suo reparto e lo vede subito chi condivide la lista.',
+                      'Tap + (or a suggestion): choose quantity, weight or volume depending on the product and press '
+                      '"Done". The product goes into its aisle and everyone sharing the list sees it right away.',
+                      "Touchez + (ou une suggestion) : choisissez la quantité, le poids ou le volume selon le produit "
+                      "et appuyez sur « OK ». Le produit va dans son rayon et ceux qui partagent la liste le voient aussitôt.",
+                      'Tippe auf + (oder einen Vorschlag): Wähle je nach Produkt Menge, Gewicht oder Volumen und '
+                      'drücke „Fertig“. Das Produkt landet in seiner Abteilung, und alle, die die Liste teilen, sehen es sofort.',
+                      'Toca + (o una sugerencia): elige cantidad, peso o volumen según el producto y pulsa «Hecho». '
+                      'El producto va a su sección y quien comparte la lista lo ve enseguida.'),
+    'guideShareTitle': ('Fai la spesa insieme', 'Shop together', 'Faites les courses ensemble', 'Gemeinsam einkaufen',
+                        'Haz la compra juntos'),
+    'guideShareText': ('Da qui inviti chi fa la spesa con te: vedrete la stessa lista, in tempo reale. Al supermercato '
+                       'tocca il cerchio accanto a un prodotto per segnarlo come preso.',
+                       'Invite the people you shop with from here: you will all see the same list, in real time. At '
+                       'the supermarket, tap the circle next to a product to mark it as taken.',
+                       "Invitez d'ici ceux qui font les courses avec vous : vous verrez la même liste, en temps réel. "
+                       "Au supermarché, touchez le cercle à côté d'un produit pour le marquer comme pris.",
+                       'Lade hier ein, wer mit dir einkauft: Ihr seht dieselbe Liste in Echtzeit. Im Supermarkt tippst '
+                       'du auf den Kreis neben einem Produkt, um es als genommen zu markieren.',
+                       'Desde aquí invitas a quien hace la compra contigo: veréis la misma lista, en tiempo real. En '
+                       'el súper, toca el círculo junto a un producto para marcarlo como cogido.'),
+
     # ── Filtri dell'elenco delle liste ─────────────────────────────
     'filterLists': ('Filtra le liste', 'Filter lists', 'Filtrer les listes', 'Listen filtern', 'Filtrar las listas'),
     'sortOrder': ('Ordine', 'Order', 'Ordre', 'Reihenfolge', 'Orden'),

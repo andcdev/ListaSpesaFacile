@@ -25,6 +25,9 @@ class ListsController extends ChangeNotifier {
   bool loading = false;
   String? error;
 
+  /// L'elenco è arrivato dal server almeno una volta (prima, "nessuna lista" non vuol dire niente).
+  bool loaded = false;
+
   void start() {
     realtime.subscribe(_userChannel);
     _subs
@@ -50,6 +53,7 @@ class ListsController extends ChangeNotifier {
     notifyListeners();
     try {
       lists = await api.lists();
+      loaded = true;
       error = null;
       await notifications?.syncReminders(lists);
     } on ApiException catch (e) {

@@ -1862,6 +1862,84 @@ abstract class AppLocalizations {
   /// **'Prezzo salvato in \"I miei prezzi\"'**
   String get myPriceSaved;
 
+  /// No description provided for @guide.
+  ///
+  /// In it, this message translates to:
+  /// **'Guida'**
+  String get guide;
+
+  /// No description provided for @guideStep.
+  ///
+  /// In it, this message translates to:
+  /// **'Passo {step} di {count}'**
+  String guideStep(int step, int count);
+
+  /// No description provided for @guideNext.
+  ///
+  /// In it, this message translates to:
+  /// **'Avanti'**
+  String get guideNext;
+
+  /// No description provided for @guideGotIt.
+  ///
+  /// In it, this message translates to:
+  /// **'Ho capito'**
+  String get guideGotIt;
+
+  /// No description provided for @skipGuide.
+  ///
+  /// In it, this message translates to:
+  /// **'Salta guida'**
+  String get skipGuide;
+
+  /// No description provided for @guideNewListTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Crea la tua prima lista'**
+  String get guideNewListTitle;
+
+  /// No description provided for @guideNewListText.
+  ///
+  /// In it, this message translates to:
+  /// **'Tocca «Nuova lista»: scegli nome, giorno e ora della spesa e, se vuoi, una foto e con chi condividerla. Poi si apre la lista, pronta per i prodotti.'**
+  String get guideNewListText;
+
+  /// No description provided for @guideAddTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Scrivi un prodotto'**
+  String get guideAddTitle;
+
+  /// No description provided for @guideAddText.
+  ///
+  /// In it, this message translates to:
+  /// **'Scrivi qui o detta con il microfono. Mentre scrivi compaiono i suggerimenti: quelli che compri più spesso e i prodotti di marca con la foto. Toccane uno per sceglierlo.'**
+  String get guideAddText;
+
+  /// No description provided for @guidePlusTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Aggiungi alla lista'**
+  String get guidePlusTitle;
+
+  /// No description provided for @guidePlusText.
+  ///
+  /// In it, this message translates to:
+  /// **'Tocca + (o un suggerimento): scegli quantità, peso o volume secondo il prodotto e premi «Fatto». Il prodotto finisce nel suo reparto e lo vede subito chi condivide la lista.'**
+  String get guidePlusText;
+
+  /// No description provided for @guideShareTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Fai la spesa insieme'**
+  String get guideShareTitle;
+
+  /// No description provided for @guideShareText.
+  ///
+  /// In it, this message translates to:
+  /// **'Da qui inviti chi fa la spesa con te: vedrete la stessa lista, in tempo reale. Al supermercato tocca il cerchio accanto a un prodotto per segnarlo come preso.'**
+  String get guideShareText;
+
   /// No description provided for @filterLists.
   ///
   /// In it, this message translates to:

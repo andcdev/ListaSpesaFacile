@@ -1024,6 +1024,51 @@ class AppLocalizationsEn extends AppLocalizations {
   String get myPriceSaved => 'Price saved in \"My prices\"';
 
   @override
+  String get guide => 'Guide';
+
+  @override
+  String guideStep(int step, int count) {
+    return 'Step $step of $count';
+  }
+
+  @override
+  String get guideNext => 'Next';
+
+  @override
+  String get guideGotIt => 'Got it';
+
+  @override
+  String get skipGuide => 'Skip guide';
+
+  @override
+  String get guideNewListTitle => 'Create your first list';
+
+  @override
+  String get guideNewListText =>
+      'Tap \"New list\": choose a name, the day and time of your shopping and, if you like, a photo and who to share it with. The list then opens, ready for products.';
+
+  @override
+  String get guideAddTitle => 'Type a product';
+
+  @override
+  String get guideAddText =>
+      'Type here or dictate with the microphone. As you type, suggestions appear: what you buy most often and branded products with a photo. Tap one to pick it.';
+
+  @override
+  String get guidePlusTitle => 'Add to the list';
+
+  @override
+  String get guidePlusText =>
+      'Tap + (or a suggestion): choose quantity, weight or volume depending on the product and press \"Done\". The product goes into its aisle and everyone sharing the list sees it right away.';
+
+  @override
+  String get guideShareTitle => 'Shop together';
+
+  @override
+  String get guideShareText =>
+      'Invite the people you shop with from here: you will all see the same list, in real time. At the supermarket, tap the circle next to a product to mark it as taken.';
+
+  @override
   String get filterLists => 'Filter lists';
 
   @override

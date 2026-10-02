@@ -1038,6 +1038,51 @@ class AppLocalizationsDe extends AppLocalizations {
   String get myPriceSaved => 'Preis in „Meine Preise“ gespeichert';
 
   @override
+  String get guide => 'Anleitung';
+
+  @override
+  String guideStep(int step, int count) {
+    return 'Schritt $step von $count';
+  }
+
+  @override
+  String get guideNext => 'Weiter';
+
+  @override
+  String get guideGotIt => 'Verstanden';
+
+  @override
+  String get skipGuide => 'Anleitung überspringen';
+
+  @override
+  String get guideNewListTitle => 'Erstelle deine erste Liste';
+
+  @override
+  String get guideNewListText =>
+      'Tippe auf „Neue Liste“: Wähle Namen, Tag und Uhrzeit des Einkaufs und, wenn du willst, ein Foto und mit wem du sie teilst. Dann öffnet sich die Liste, bereit für die Produkte.';
+
+  @override
+  String get guideAddTitle => 'Schreib ein Produkt';
+
+  @override
+  String get guideAddText =>
+      'Schreib hier oder diktiere mit dem Mikrofon. Beim Schreiben erscheinen Vorschläge: was du am häufigsten kaufst und Markenprodukte mit Foto. Tippe auf einen, um ihn zu wählen.';
+
+  @override
+  String get guidePlusTitle => 'Zur Liste hinzufügen';
+
+  @override
+  String get guidePlusText =>
+      'Tippe auf + (oder einen Vorschlag): Wähle je nach Produkt Menge, Gewicht oder Volumen und drücke „Fertig“. Das Produkt landet in seiner Abteilung, und alle, die die Liste teilen, sehen es sofort.';
+
+  @override
+  String get guideShareTitle => 'Gemeinsam einkaufen';
+
+  @override
+  String get guideShareText =>
+      'Lade hier ein, wer mit dir einkauft: Ihr seht dieselbe Liste in Echtzeit. Im Supermarkt tippst du auf den Kreis neben einem Produkt, um es als genommen zu markieren.';
+
+  @override
   String get filterLists => 'Listen filtern';
 
   @override
