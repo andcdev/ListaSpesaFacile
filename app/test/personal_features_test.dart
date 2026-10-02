@@ -187,6 +187,47 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets('scheda Info di uno sfuso: valori medi CIQUAL, con la fonte giusta', (tester) async {
+    final info = ProductInfo.fromJson({
+      'barcode': '',
+      'name': '',
+      'kind': 'food',
+      'nutriments': {'energy-kcal': 52.4, 'carbohydrates': 11.6, 'sugars': 9.35},
+      'minerals': [],
+      'vegan': true,
+      'matched_by': 'generic',
+      'source': 'CIQUAL (ANSES)',
+      'url': 'https://ciqual.anses.fr/#/aliments/13039',
+    });
+    await openInfo(tester, const ListItem(id: 1, listId: 1, name: 'Mele', icon: '🍎'), info);
+
+    expect(find.text('Mele'), findsOneWidget);
+    expect(find.textContaining('tabella nutrizionale ufficiale CIQUAL'), findsOneWidget);
+    expect(find.text('52,4 kcal'), findsOneWidget);
+    expect(find.text('Vedi su CIQUAL (ANSES)'), findsOneWidget);
+    expect(find.textContaining('CC BY 4.0'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('scheda Info di uno shampoo: niente valori nutrizionali, fonte Open Beauty Facts', (tester) async {
+    final info = ProductInfo.fromJson({
+      'barcode': '8001090662231',
+      'name': 'Shampoo Coconut Milk',
+      'kind': 'other',
+      'nutriments': {'energy-kcal': null},
+      'ingredients': 'Aqua, Sodium Laureth Sulfate',
+      'source': 'Open Beauty Facts',
+      'url': 'https://world.openbeautyfacts.org/product/8001090662231',
+    });
+    await openInfo(tester, const ListItem(id: 1, listId: 1, name: 'Shampoo', icon: '🧴'), info);
+
+    expect(find.text('Non ci sono informazioni nutrizionali'), findsNothing);
+    expect(find.text('Valori nutrizionali per 100 g'), findsNothing);
+    expect(find.text('Aqua, Sodium Laureth Sulfate'), findsOneWidget);
+    expect(find.text('Vedi su Open Beauty Facts'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('scheda Info senza prodotto trovato', (tester) async {
     await tester.pumpWidget(
       _app(

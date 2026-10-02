@@ -657,7 +657,27 @@
     }
   },
   "info": "Info",
-  "noProductInfo": "Nessuna informazione trovata su Open Food Facts per questo prodotto.",
+  "noProductInfo": "Nessuna informazione trovata per questo prodotto.",
+  "viewOnSource": "Vedi su {source}",
+  "@viewOnSource": {
+    "placeholders": {
+      "source": {
+        "type": "String"
+      }
+    }
+  },
+  "dataSource": "Dati da {source} (licenza {licence}): possono essere incompleti, controlla sempre l'etichetta.",
+  "@dataSource": {
+    "placeholders": {
+      "source": {
+        "type": "String"
+      },
+      "licence": {
+        "type": "String"
+      }
+    }
+  },
+  "genericValuesNotice": "Valori medi per 100 g di questo alimento, dalla tabella nutrizionale ufficiale CIQUAL.",
   "similarProductNotice": "Prodotto simile trovato dal nome: potrebbe non essere esattamente il tuo.",
   "barcode": "Codice a barre",
   "copy": "Copia",
@@ -704,8 +724,6 @@
     }
   },
   "ingredients": "Ingredienti",
-  "openFoodFactsPage": "Vedi su Open Food Facts",
-  "openFoodFactsSource": "Dati da Open Food Facts (licenza ODbL): possono essere incompleti, controlla sempre l'etichetta.",
   "allergenGluten": "Glutine",
   "allergenCrustaceans": "Crostacei",
   "allergenEggs": "Uova",

@@ -279,4 +279,60 @@ class ProductsTest extends TestCase
 
         $this->getJson("/api/lists/{$list->id}/items/{$id}/info")->assertOk()->assertJsonPath('data', null);
     }
+
+    public function test_loose_items_get_average_values_from_ciqual_without_calling_open_food_facts(): void
+    {
+        config(['services.openfoodfacts.enabled' => true]);
+        Http::fake();
+        $list = ShoppingList::factory()->create();
+        Sanctum::actingAs($list->owner);
+        $apples = $this->postJson("/api/lists/{$list->id}/items", ['name' => 'Mele golden'])->json('data.id');
+        $ham = $this->postJson("/api/lists/{$list->id}/items", ['name' => 'Prosciutto crudo'])->json('data.id');
+
+        $this->getJson("/api/lists/{$list->id}/items/{$apples}/info")
+            ->assertOk()
+            ->assertJsonPath('data.matched_by', 'generic')
+            ->assertJsonPath('data.source', 'CIQUAL (ANSES)')
+            ->assertJsonPath('data.kind', 'food')
+            ->assertJsonPath('data.nutriments.energy-kcal', 52.4)
+            ->assertJsonPath('data.vegan', true)
+            ->assertJsonPath('data.gluten_free', true);
+        $this->getJson("/api/lists/{$list->id}/items/{$ham}/info")
+            ->assertJsonPath('data.nutriments.salt', 5.67)
+            ->assertJsonPath('data.vegetarian', false);
+        Http::assertNothingSent();
+    }
+
+    public function test_hygiene_and_household_products_come_from_the_sister_databases(): void
+    {
+        config(['services.openfoodfacts.enabled' => true]);
+        Http::fake([
+            'world.openbeautyfacts.org/cgi/search.pl*' => Http::response(['products' => [
+                ['code' => '8001090662231', 'product_name' => 'Shampoo Coconut Milk', 'brands' => 'Herbal Essences, P&G',
+                    'quantity' => '400 ml', 'product_quantity' => 400, 'product_quantity_unit' => 'ml', 'image_front_url' => 'https://images.openbeautyfacts.org/s.jpg'],
+            ]]),
+            'world.openfoodfacts.org/*' => Http::response(['status' => 0]),
+            'world.openbeautyfacts.org/api/v2/product/*' => Http::response(['status' => 1, 'product' => [
+                'code' => '8001090662231', 'product_name' => 'Shampoo Coconut Milk', 'brands' => 'Herbal Essences',
+                'ingredients_text' => 'Aqua, Sodium Laureth Sulfate', 'labels_tags' => ['en:vegan'],
+            ]]),
+            '*' => Http::response(['hits' => []]),
+        ]);
+        $list = ShoppingList::factory()->create();
+        Sanctum::actingAs($list->owner);
+
+        $this->getJson('/api/products/search?q=shampoo')
+            ->assertOk()
+            ->assertJsonPath('data.0.name', 'Shampoo Coconut Milk Herbal Essences')
+            ->assertJsonPath('data.0.amount', 400)
+            ->assertJsonPath('data.0.image_url', 'https://images.openbeautyfacts.org/s.jpg');
+
+        $id = $this->postJson("/api/lists/{$list->id}/items", ['name' => 'Shampoo', 'barcode' => '8001090662231'])->json('data.id');
+        $this->getJson("/api/lists/{$list->id}/items/{$id}/info")
+            ->assertJsonPath('data.source', 'Open Beauty Facts')
+            ->assertJsonPath('data.kind', 'other')
+            ->assertJsonPath('data.url', 'https://world.openbeautyfacts.org/product/8001090662231')
+            ->assertJsonPath('data.ingredients', 'Aqua, Sodium Laureth Sulfate');
+        Http::assertNotSent(fn ($request) => str_contains($request->url(), 'search.openfoodfacts.org'));
+    }
 }

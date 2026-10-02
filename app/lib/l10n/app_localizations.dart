@@ -2015,8 +2015,26 @@ abstract class AppLocalizations {
   /// No description provided for @noProductInfo.
   ///
   /// In it, this message translates to:
-  /// **'Nessuna informazione trovata su Open Food Facts per questo prodotto.'**
+  /// **'Nessuna informazione trovata per questo prodotto.'**
   String get noProductInfo;
+
+  /// No description provided for @viewOnSource.
+  ///
+  /// In it, this message translates to:
+  /// **'Vedi su {source}'**
+  String viewOnSource(String source);
+
+  /// No description provided for @dataSource.
+  ///
+  /// In it, this message translates to:
+  /// **'Dati da {source} (licenza {licence}): possono essere incompleti, controlla sempre l\'etichetta.'**
+  String dataSource(String source, String licence);
+
+  /// No description provided for @genericValuesNotice.
+  ///
+  /// In it, this message translates to:
+  /// **'Valori medi per 100 g di questo alimento, dalla tabella nutrizionale ufficiale CIQUAL.'**
+  String get genericValuesNotice;
 
   /// No description provided for @similarProductNotice.
   ///
@@ -2251,18 +2269,6 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Ingredienti'**
   String get ingredients;
-
-  /// No description provided for @openFoodFactsPage.
-  ///
-  /// In it, this message translates to:
-  /// **'Vedi su Open Food Facts'**
-  String get openFoodFactsPage;
-
-  /// No description provided for @openFoodFactsSource.
-  ///
-  /// In it, this message translates to:
-  /// **'Dati da Open Food Facts (licenza ODbL): possono essere incompleti, controlla sempre l\'etichetta.'**
-  String get openFoodFactsSource;
 
   /// No description provided for @allergenGluten.
   ///
