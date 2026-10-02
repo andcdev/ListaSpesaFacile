@@ -75,15 +75,34 @@ class OpenFoodFacts
      */
     public static function search(string $text, ?string $country = 'IT', int $limit = 8): array
     {
+        $products = self::searchAll($text, $country, $limit);
+        // Niente con tutte le parole: si riprova senza quelle che dicono solo il tipo di prodotto ("Calgon detersivo"
+        // → "Calgon"), perché i nomi in banca dati spesso non le contengono o sono in un'altra lingua.
+        if ($products === []) {
+            $specific = array_filter(self::words($text), fn (string $word) => ProductCatalog::productKey($word) === null);
+            $rest = implode(' ', $specific);
+            if ($specific !== [] && $rest !== implode(' ', self::words($text))) {
+                $products = self::searchAll($rest, $country, $limit, self::sourceFor($text));
+            }
+        }
+
+        return $products;
+    }
+
+    /**
+     * @return array<int, array{barcode: string, name: string, brand: string|null, quantity: string|null, amount: float|null, unit: string|null, image_url: string|null}>
+     */
+    private static function searchAll(string $text, ?string $country, int $limit, ?string $source = null): array
+    {
         $words = self::words($text);
         if ($words === [] || mb_strlen(implode('', $words)) < 3) {
             return [];
         }
         // Igiene, casa, animali: le banche dati sorelle. Un nome non riconosciuto che Open Food Facts non conosce
         // può essere un prodotto per la casa o per l'igiene.
-        $source = self::sourceFor($text);
+        $source ??= self::sourceFor($text);
         if ($source !== 'food') {
-            return self::searchSister($source, $text, $limit);
+            return self::searchSister($source, $text, $limit, $country);
         }
         $last = array_pop($words);
         $terms = [...$words, mb_strlen($last) >= 3 ? "($last OR $last*)" : $last];
@@ -106,7 +125,7 @@ class OpenFoodFacts
         $products = array_slice(array_values($products), 0, $limit);
         if ($products === [] && ProductCatalog::detect($text)['category'] === ProductCatalog::DEFAULT_CATEGORY) {
             foreach (['products', 'beauty'] as $sister) {
-                if ($products = self::searchSister($sister, $text, $limit)) {
+                if ($products = self::searchSister($sister, $text, $limit, $country)) {
                     break;
                 }
             }
@@ -121,18 +140,18 @@ class OpenFoodFacts
      *
      * @return array<int, array{barcode: string, name: string, brand: string|null, quantity: string|null, amount: float|null, unit: string|null, image_url: string|null}>
      */
-    public static function searchSister(string $source, string $text, int $limit = 8): array
+    public static function searchSister(string $source, string $text, int $limit = 8, ?string $country = null): array
     {
         $host = self::SOURCES[$source]['host'] ?? null;
         if ($host === null || ! config('services.openfoodfacts.enabled')) {
             return [];
         }
         $terms = implode(' ', self::words($text));
-        $hits = Cache::remember("off:$source:search:".md5($terms), now()->addDay(), function () use ($host, $terms) {
+        $hits = Cache::remember("off:$source:search:v2:".md5($terms), now()->addDay(), function () use ($host, $terms) {
             try {
                 $response = Http::withUserAgent(self::userAgent())->timeout(6)->get("https://$host/cgi/search.pl", [
                     'search_terms' => $terms, 'search_simple' => 1, 'json' => 1, 'page_size' => 20,
-                    'fields' => 'code,product_name,product_name_it,brands,quantity,product_quantity,product_quantity_unit,image_front_url',
+                    'fields' => 'code,product_name,product_name_it,brands,quantity,product_quantity,product_quantity_unit,image_front_url,countries_tags',
                 ]);
 
                 return $response->successful() ? (array) $response->json('products', []) : [];
@@ -143,6 +162,12 @@ class OpenFoodFacts
             }
         });
 
+        // Prima quelli venduti nel paese dell'utente (la ricerca classica non filtra per paese).
+        $tag = $country === null ? null : (self::COUNTRIES[$country] ?? null);
+        if ($tag !== null) {
+            usort($hits, fn ($a, $b) => in_array($tag, (array) ($b['countries_tags'] ?? []), true)
+                <=> in_array($tag, (array) ($a['countries_tags'] ?? []), true));
+        }
         $products = [];
         foreach ($hits as $hit) {
             $product = self::fromHit((array) $hit);

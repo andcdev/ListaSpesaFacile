@@ -335,4 +335,27 @@ class ProductsTest extends TestCase
             ->assertJsonPath('data.ingredients', 'Aqua, Sodium Laureth Sulfate');
         Http::assertNotSent(fn ($request) => str_contains($request->url(), 'search.openfoodfacts.org'));
     }
+
+    public function test_brand_with_a_generic_word_is_searched_again_by_brand_with_local_products_first(): void
+    {
+        config(['services.openfoodfacts.enabled' => true]);
+        Http::fake(function ($request) {
+            if (! str_contains($request->url(), 'world.openproductsfacts.org/cgi/search.pl')) {
+                return Http::response(['hits' => [], 'products' => []]);
+            }
+
+            // Nessun nome contiene "detersivo": si trova solo cercando la marca.
+            return Http::response(['products' => $request['search_terms'] === 'calgon' ? [
+                ['code' => '1', 'product_name' => 'Calgon Wasmachinereiniger', 'brands' => 'Calgon', 'countries_tags' => ['en:netherlands']],
+                ['code' => '2', 'product_name' => 'Calgon Gel 3 in 1', 'brands' => 'Calgon', 'countries_tags' => ['en:italy']],
+            ] : []]);
+        });
+        $list = ShoppingList::factory()->create();
+        Sanctum::actingAs($list->owner);
+
+        $this->getJson('/api/products/search?q=calgon%20detersivo')
+            ->assertOk()
+            ->assertJsonCount(2, 'data')
+            ->assertJsonPath('data.0.name', 'Calgon Gel 3 in 1');
+    }
 }
