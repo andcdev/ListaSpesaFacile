@@ -96,6 +96,8 @@ void main() {
       'palm_oil_free': false,
       'nutriscore': 'e',
       'nova': 4,
+      'images': ['https://img/front.jpg'],
+      'url': 'https://world.openfoodfacts.org/product/3017620422003',
     });
 
     await tester.pumpWidget(
@@ -121,7 +123,16 @@ void main() {
     expect(find.text('539 kcal'), findsOneWidget);
     expect(find.text('Latte, Frutta a guscio, Soia'), findsOneWidget);
     expect(find.text('Può contenere tracce di: Glutine'), findsOneWidget);
+    // In fondo (con le foto la scheda è più lunga): Nutri-Score e fonti, dati e foto ciascuno con la sua licenza.
+    await tester.scrollUntilVisible(
+      find.text('Foto · licenza CC BY-SA'),
+      200,
+      scrollable: find.byWidgetPredicate((w) => w is Scrollable && w.axisDirection == AxisDirection.down).last,
+    );
     expect(find.textContaining('Nutri-Score E'), findsOneWidget);
+    expect(find.text('Fonti'), findsOneWidget);
+    expect(find.text('Dati del prodotto · licenza ODbL'), findsOneWidget);
+    expect(find.text('Open Food Facts'), findsNWidgets(2));
     expect(tester.takeException(), isNull);
   });
 
@@ -204,8 +215,9 @@ void main() {
     expect(find.text('Mele'), findsOneWidget);
     expect(find.textContaining('tabella nutrizionale ufficiale CIQUAL'), findsOneWidget);
     expect(find.text('52,4 kcal'), findsOneWidget);
-    expect(find.text('Vedi su CIQUAL (ANSES)'), findsOneWidget);
-    expect(find.textContaining('CC BY 4.0'), findsOneWidget);
+    expect(find.text('Fonti'), findsOneWidget);
+    expect(find.text('Tabella CIQUAL 2020 (ANSES)'), findsOneWidget);
+    expect(find.text('Valori nutrizionali medi · licenza CC BY 4.0'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 
@@ -224,7 +236,9 @@ void main() {
     expect(find.text('Non ci sono informazioni nutrizionali'), findsNothing);
     expect(find.text('Valori nutrizionali per 100 g'), findsNothing);
     expect(find.text('Aqua, Sodium Laureth Sulfate'), findsOneWidget);
-    expect(find.text('Vedi su Open Beauty Facts'), findsOneWidget);
+    expect(find.text('Open Beauty Facts'), findsOneWidget);
+    expect(find.text('Dati del prodotto · licenza ODbL'), findsOneWidget);
+    expect(find.text('Foto · licenza CC BY-SA'), findsNothing, reason: 'senza foto non si citano le foto');
     expect(tester.takeException(), isNull);
   });
 

@@ -2018,17 +2018,35 @@ abstract class AppLocalizations {
   /// **'Nessuna informazione trovata per questo prodotto.'**
   String get noProductInfo;
 
-  /// No description provided for @viewOnSource.
+  /// No description provided for @sources.
   ///
   /// In it, this message translates to:
-  /// **'Vedi su {source}'**
-  String viewOnSource(String source);
+  /// **'Fonti'**
+  String get sources;
 
-  /// No description provided for @dataSource.
+  /// No description provided for @sourceProductData.
   ///
   /// In it, this message translates to:
-  /// **'Dati da {source} (licenza {licence}): possono essere incompleti, controlla sempre l\'etichetta.'**
-  String dataSource(String source, String licence);
+  /// **'Dati del prodotto · licenza {licence}'**
+  String sourceProductData(String licence);
+
+  /// No description provided for @sourcePhotos.
+  ///
+  /// In it, this message translates to:
+  /// **'Foto · licenza {licence}'**
+  String sourcePhotos(String licence);
+
+  /// No description provided for @sourceAverageValues.
+  ///
+  /// In it, this message translates to:
+  /// **'Valori nutrizionali medi · licenza {licence}'**
+  String sourceAverageValues(String licence);
+
+  /// No description provided for @dataMayBeIncomplete.
+  ///
+  /// In it, this message translates to:
+  /// **'I dati possono essere incompleti: controlla sempre l\'etichetta.'**
+  String get dataMayBeIncomplete;
 
   /// No description provided for @genericValuesNotice.
   ///
