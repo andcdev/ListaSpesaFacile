@@ -18,7 +18,12 @@ class AuthController extends Controller
     public function register(Request $request): JsonResponse
     {
         $data = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
+            // Ogni nome è unico (senza badare alle maiuscole): è quello che gli altri vedono nelle liste.
+            'name' => ['required', 'string', 'max:255', function (string $attribute, mixed $value, \Closure $fail) {
+                if (is_string($value) && User::nameTaken($value)) {
+                    $fail(__('app.errors.name_taken'));
+                }
+            }],
             // Indirizzo valido secondo lo standard, senza forme strane (es. "mario@localhost", spazi, punti doppi).
             'email' => ['required', 'string', 'lowercase', 'email:rfc,strict', 'regex:/^[^@\s]+@[^@\s]+\.[a-z]{2,}$/i', 'max:255', 'unique:users,email'],
             'password' => ['required', 'confirmed', Password::defaults()],
@@ -37,7 +42,8 @@ class AuthController extends Controller
 
         $newsletter = (bool) ($data['newsletter'] ?? false);
         $user = User::create([
-            ...collect($data)->only(['name', 'email', 'password'])->all(),
+            ...collect($data)->only(['email', 'password'])->all(),
+            'name' => trim($data['name']),
             'locale' => app()->getLocale(),
             'privacy_accepted_at' => now(),
             'terms_accepted_at' => now(),

@@ -4,6 +4,7 @@
 
 return [
     'errors' => [
+        'name_taken' => 'Questo nome è già usato da un altro utente: scegline un altro.',
         'update_app_for_terms' => 'Aggiorna l\'app per accettare le condizioni d\'uso e registrarti.',
         'social_only' => 'Questo account usa l\'accesso con :providers.',
         'invalid_credentials' => 'Credenziali non valide.',

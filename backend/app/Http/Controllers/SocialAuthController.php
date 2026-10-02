@@ -107,7 +107,8 @@ class SocialAuthController extends Controller
             }
 
             $user = User::firstWhere('email', $email) ?? tap(new User([
-                'name' => $providerUser->getName() ?: $providerUser->getNickname() ?: Str::before($email, '@'),
+                // Nome già usato da un altro utente: il nome con 4 caratteri casuali in fondo ("Anna X7K2").
+                'name' => User::uniqueName($providerUser->getName() ?: $providerUser->getNickname() ?: Str::before($email, '@')),
                 'email' => $email,
                 'locale' => app()->getLocale(),
             ]), function (User $user) {
