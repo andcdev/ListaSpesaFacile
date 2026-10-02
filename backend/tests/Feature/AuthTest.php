@@ -53,6 +53,20 @@ class AuthTest extends TestCase
         $this->assertDatabaseCount('users', 0);
     }
 
+    public function test_names_are_unique_ignoring_case_and_spaces(): void
+    {
+        User::factory()->create(['name' => 'Mario Rossi']);
+        $data = ['email' => 'mario@example.com', 'password' => 'password123', 'password_confirmation' => 'password123',
+            'privacy' => true, 'terms' => true];
+
+        $this->postJson('/api/register', [...$data, 'name' => '  mario ROSSI '])
+            ->assertJsonValidationErrors(['name' => 'Questo nome è già usato da un altro utente: scegline un altro.']);
+        $this->postJson('/api/register', [...$data, 'name' => ' Mario Bianchi '])->assertCreated()->assertJsonPath('user.name', 'Mario Bianchi');
+
+        $this->assertSame('Luigi', User::uniqueName('Luigi'));
+        $this->assertMatchesRegularExpression('/^mario rossi [A-Z0-9]{4}$/', User::uniqueName('mario rossi'));
+    }
+
     public function test_newsletter_consent_at_registration_and_from_the_profile(): void
     {
         $token = $this->postJson('/api/register', [

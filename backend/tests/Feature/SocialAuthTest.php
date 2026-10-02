@@ -46,6 +46,18 @@ class SocialAuthTest extends TestCase
         $this->withToken($response->json('token'))->getJson('/api/me')->assertOk();
     }
 
+    public function test_new_social_user_with_a_taken_name_gets_four_random_characters(): void
+    {
+        User::factory()->create(['name' => 'giulia verdi']);
+
+        $params = $this->loginVia('google', $this->socialUser('g-9', 'giulia2@example.com'));
+        $this->postJson('/api/auth/social/exchange', ['code' => $params['code'], 'code_verifier' => self::VERIFIER])->assertOk();
+
+        $name = User::firstWhere('email', 'giulia2@example.com')->name;
+        $this->assertMatchesRegularExpression('/^Giulia Verdi [A-Z0-9]{4}$/', $name);
+        $this->assertSame(1, User::where('name', $name)->count());
+    }
+
     public function test_existing_email_is_linked_and_same_user_returned_for_each_provider(): void
     {
         $existing = User::factory()->create(['email' => 'giulia@example.com']);

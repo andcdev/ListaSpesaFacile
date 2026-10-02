@@ -4,6 +4,7 @@
 
 return [
     'errors' => [
+        'name_taken' => 'This name is already used by another user: choose a different one.',
         'update_app_for_terms' => 'Update the app to accept the terms of use and sign up.',
         'social_only' => 'This account signs in with :providers.',
         'invalid_credentials' => 'Invalid email or password.',

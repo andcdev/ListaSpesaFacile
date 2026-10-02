@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Laravel\Sanctum\HasApiTokens;
 
 #[Fillable(['name', 'email', 'password', 'locale', 'privacy_accepted_at', 'terms_accepted_at', 'newsletter', 'newsletter_consented_at'])]
@@ -129,5 +130,29 @@ class User extends Authenticatable implements HasLocalePreference
         return $this->belongsToMany(User::class, 'global_shares', 'user_id', 'owner_id')
             ->withPivot('can_edit')
             ->withTimestamps();
+    }
+
+    /**
+     * Il nome è già di un altro utente? Senza badare a maiuscole e spazi ai lati: ogni nome è unico, perché è
+     * quello che gli altri vedono nelle liste condivise e nella chat.
+     */
+    public static function nameTaken(string $name): bool
+    {
+        return static::query()->whereRaw('LOWER(name) = ?', [mb_strtolower(trim($name))])->exists();
+    }
+
+    /**
+     * [name] se è libero, altrimenti "name XXXX" con 4 caratteri alfanumerici casuali, finché non ce n'è uno
+     * libero (accesso con Google o Amazon, dove il nome arriva dal provider e non si può chiedere di cambiarlo).
+     */
+    public static function uniqueName(string $name): string
+    {
+        $base = Str::limit(trim($name), 240, '');
+        $candidate = $base;
+        while (static::nameTaken($candidate)) {
+            $candidate = $base.' '.Str::upper(Str::random(4));
+        }
+
+        return $candidate;
     }
 }
