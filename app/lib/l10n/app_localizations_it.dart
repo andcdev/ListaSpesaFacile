@@ -1123,7 +1123,21 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get noProductInfo =>
-      'Nessuna informazione trovata su Open Food Facts per questo prodotto.';
+      'Nessuna informazione trovata per questo prodotto.';
+
+  @override
+  String viewOnSource(String source) {
+    return 'Vedi su $source';
+  }
+
+  @override
+  String dataSource(String source, String licence) {
+    return 'Dati da $source (licenza $licence): possono essere incompleti, controlla sempre l\'etichetta.';
+  }
+
+  @override
+  String get genericValuesNotice =>
+      'Valori medi per 100 g di questo alimento, dalla tabella nutrizionale ufficiale CIQUAL.';
 
   @override
   String get similarProductNotice =>
@@ -1244,13 +1258,6 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get ingredients => 'Ingredienti';
-
-  @override
-  String get openFoodFactsPage => 'Vedi su Open Food Facts';
-
-  @override
-  String get openFoodFactsSource =>
-      'Dati da Open Food Facts (licenza ODbL): possono essere incompleti, controlla sempre l\'etichetta.';
 
   @override
   String get allergenGluten => 'Glutine';

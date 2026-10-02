@@ -19,6 +19,25 @@ class OpenFoodFacts
 {
     public const SEARCH_URL = 'https://search.openfoodfacts.org/search';
 
+    /**
+     * Le banche dati "sorelle" di Open Food Facts, con la stessa API, per quello che non si mangia: igiene, casa e
+     * animali. Reparto dell'articolo → fonte in cui cercarlo per prima.
+     */
+    public const SOURCES = [
+        'food' => ['name' => 'Open Food Facts', 'host' => 'world.openfoodfacts.org'],
+        'beauty' => ['name' => 'Open Beauty Facts', 'host' => 'world.openbeautyfacts.org'],
+        'products' => ['name' => 'Open Products Facts', 'host' => 'world.openproductsfacts.org'],
+        'petfood' => ['name' => 'Open Pet Food Facts', 'host' => 'world.openpetfoodfacts.org'],
+    ];
+
+    private const SOURCE_FOR_CATEGORY = ['igiene' => 'beauty', 'casa' => 'products', 'animali' => 'petfood'];
+
+    /** Fonte in cui cercare per prima un prodotto con questo nome (dal reparto riconosciuto). */
+    public static function sourceFor(string $name): string
+    {
+        return self::SOURCE_FOR_CATEGORY[ProductCatalog::detect($name)['category']] ?? 'food';
+    }
+
     /** Paesi (ISO) → tag di Open Food Facts, per cercare i prodotti venduti nel paese del telefono. */
     public const COUNTRIES = [
         'IT' => 'en:italy', 'SM' => 'en:san-marino', 'VA' => 'en:vatican-city', 'CH' => 'en:switzerland', 'FR' => 'en:france',
@@ -60,6 +79,12 @@ class OpenFoodFacts
         if ($words === [] || mb_strlen(implode('', $words)) < 3) {
             return [];
         }
+        // Igiene, casa, animali: le banche dati sorelle. Un nome non riconosciuto che Open Food Facts non conosce
+        // può essere un prodotto per la casa o per l'igiene.
+        $source = self::sourceFor($text);
+        if ($source !== 'food') {
+            return self::searchSister($source, $text, $limit);
+        }
         $last = array_pop($words);
         $terms = [...$words, mb_strlen($last) >= 3 ? "($last OR $last*)" : $last];
         if ($country !== null && ($tag = self::COUNTRIES[$country] ?? null)) {
@@ -72,6 +97,55 @@ class OpenFoodFacts
         $products = [];
         foreach ($hits as $hit) {
             $product = self::fromHit($hit);
+            $key = Str::lower($product['name'].'|'.$product['brand'].'|'.$product['quantity']);
+            if ($product['name'] !== '' && ! isset($products[$key])) {
+                $products[$key] = $product;
+            }
+        }
+
+        $products = array_slice(array_values($products), 0, $limit);
+        if ($products === [] && ProductCatalog::detect($text)['category'] === ProductCatalog::DEFAULT_CATEGORY) {
+            foreach (['products', 'beauty'] as $sister) {
+                if ($products = self::searchSister($sister, $text, $limit)) {
+                    break;
+                }
+            }
+        }
+
+        return $products;
+    }
+
+    /**
+     * Ricerca nelle banche dati sorelle (non hanno il motore di search.openfoodfacts.org: si usa la ricerca
+     * classica per parole).
+     *
+     * @return array<int, array{barcode: string, name: string, brand: string|null, quantity: string|null, amount: float|null, unit: string|null, image_url: string|null}>
+     */
+    public static function searchSister(string $source, string $text, int $limit = 8): array
+    {
+        $host = self::SOURCES[$source]['host'] ?? null;
+        if ($host === null || ! config('services.openfoodfacts.enabled')) {
+            return [];
+        }
+        $terms = implode(' ', self::words($text));
+        $hits = Cache::remember("off:$source:search:".md5($terms), now()->addDay(), function () use ($host, $terms) {
+            try {
+                $response = Http::withUserAgent(self::userAgent())->timeout(6)->get("https://$host/cgi/search.pl", [
+                    'search_terms' => $terms, 'search_simple' => 1, 'json' => 1, 'page_size' => 20,
+                    'fields' => 'code,product_name,product_name_it,brands,quantity,product_quantity,product_quantity_unit,image_front_url',
+                ]);
+
+                return $response->successful() ? (array) $response->json('products', []) : [];
+            } catch (Throwable $e) {
+                Log::warning("$host non raggiungibile: ".$e->getMessage());
+
+                return [];
+            }
+        });
+
+        $products = [];
+        foreach ($hits as $hit) {
+            $product = self::fromHit((array) $hit);
             $key = Str::lower($product['name'].'|'.$product['brand'].'|'.$product['quantity']);
             if ($product['name'] !== '' && ! isset($products[$key])) {
                 $products[$key] = $product;
@@ -103,16 +177,34 @@ class OpenFoodFacts
      *
      * @return array<string, mixed>|null
      */
-    public static function product(string $barcode): ?array
+    public static function product(string $barcode, string $first = 'food'): ?array
     {
         if (! config('services.openfoodfacts.enabled') || ! preg_match('/^\d{4,20}$/', $barcode)) {
             return null;
         }
-        $data = Cache::remember('off:product:'.$barcode, now()->addDay(), function () use ($barcode) {
+        // Prima la fonte del reparto, poi le altre: un codice a barre sta in una sola banca dati.
+        $sources = array_unique([$first, ...array_keys(self::SOURCES)]);
+        foreach ($sources as $source) {
+            if ($product = self::productFrom($source, $barcode)) {
+                return $product;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @return array<string, mixed>|null
+     */
+    private static function productFrom(string $source, string $barcode): ?array
+    {
+        $host = self::SOURCES[$source]['host'];
+        $key = $source === 'food' ? 'off:product:'.$barcode : "off:$source:product:$barcode";
+        $data = Cache::remember($key, now()->addDay(), function () use ($host, $barcode) {
             try {
                 $response = Http::withUserAgent(self::userAgent())
                     ->timeout(8)
-                    ->get(self::PRODUCT_URL.$barcode.'.json', ['fields' => implode(',', [
+                    ->get("https://$host/api/v2/product/$barcode.json", ['fields' => implode(',', [
                         'code', 'product_name', 'product_name_it', 'brands', 'quantity', 'image_front_url',
                         'image_ingredients_url', 'image_nutrition_url', 'image_packaging_url', 'nutriments',
                         'ingredients_text_it', 'ingredients_text', 'allergens_tags', 'traces_tags', 'labels_tags',
@@ -121,13 +213,13 @@ class OpenFoodFacts
 
                 return $response->successful() && $response->json('status') === 1 ? (array) $response->json('product') : [];
             } catch (Throwable $e) {
-                Log::warning('Open Food Facts non raggiungibile: '.$e->getMessage());
+                Log::warning("$host non raggiungibile: ".$e->getMessage());
 
                 return null;
             }
         });
 
-        return $data ? self::describe($data) : null;
+        return $data ? self::describe($data, $source) : null;
     }
 
     /**
@@ -137,11 +229,17 @@ class OpenFoodFacts
      */
     public static function productFor(?string $barcode, string $name, ?string $country): ?array
     {
-        if ($barcode && ($product = self::product($barcode))) {
+        $source = self::sourceFor($name);
+        if ($barcode && ($product = self::product($barcode, $source))) {
             return [...$product, 'matched_by' => 'barcode'];
         }
+        // Sfuso scritto a mano (frutta, verdura, salumi e formaggi al banco…): i valori medi della tabella CIQUAL,
+        // più giusti di un prodotto confezionato "simile".
+        if (! $barcode && ($generic = Ciqual::productFor($name))) {
+            return [...$generic, 'matched_by' => 'generic'];
+        }
         foreach (self::search($name, $country, 5) as $hit) {
-            if ($hit['barcode'] !== '' && ($product = self::product($hit['barcode']))) {
+            if ($hit['barcode'] !== '' && ($product = self::product($hit['barcode'], $source))) {
                 return [...$product, 'matched_by' => 'name'];
             }
         }
@@ -153,7 +251,7 @@ class OpenFoodFacts
      * @param  array<string, mixed>  $p
      * @return array<string, mixed>
      */
-    private static function describe(array $p): array
+    private static function describe(array $p, string $source = 'food'): array
     {
         $tags = fn (string $key) => array_values(array_map(
             fn ($t) => Str::after((string) $t, ':'),
@@ -184,7 +282,8 @@ class OpenFoodFacts
                 ->mapWithKeys(fn (string $n) => [$n => is_numeric($nutriments[$n.'_100g'] ?? null) ? round((float) $nutriments[$n.'_100g'], 2) : null])
                 ->all(),
             // Acqua: minerali al posto dei valori nutrizionali (g per 100 ml × 10.000 = mg/L).
-            'kind' => $water ? 'water' : 'food',
+            // Igiene e casa non si mangiano: niente valori nutrizionali nella scheda.
+            'kind' => in_array($source, ['beauty', 'products'], true) ? 'other' : ($water ? 'water' : 'food'),
             'minerals' => $water
                 ? collect(self::MINERALS)
                     ->mapWithKeys(fn (string $m) => [$m => is_numeric($nutriments[$m.'_100g'] ?? null) ? round((float) $nutriments[$m.'_100g'] * 10000, 2) : null])
@@ -203,7 +302,8 @@ class OpenFoodFacts
             'palm_oil_free' => in_array('palm-oil-free', $analysis, true) ? true : (in_array('palm-oil', $analysis, true) ? false : null),
             'nutriscore' => in_array($p['nutriscore_grade'] ?? null, ['a', 'b', 'c', 'd', 'e'], true) ? $p['nutriscore_grade'] : null,
             'nova' => is_numeric($p['nova_group'] ?? null) ? (int) $p['nova_group'] : null,
-            'url' => 'https://world.openfoodfacts.org/product/'.($p['code'] ?? ''),
+            'url' => 'https://'.self::SOURCES[$source]['host'].'/product/'.($p['code'] ?? ''),
+            'source' => self::SOURCES[$source]['name'],
         ];
     }
 
@@ -239,7 +339,9 @@ class OpenFoodFacts
      */
     private static function fromHit(array $hit): array
     {
-        $brands = array_values(array_filter(array_map('trim', (array) ($hit['brands'] ?? []))));
+        $brands = $hit['brands'] ?? [];
+        // La ricerca classica (banche dati sorelle) dà le marche in una stringa "A, B".
+        $brands = array_values(array_filter(array_map('trim', is_string($brands) ? explode(',', $brands) : (array) $brands)));
         $brand = $brands[0] ?? null;
         $name = trim((string) ($hit['product_name_it'] ?? $hit['product_name'] ?? ''));
         // "Latte intero" di Parmalat → "Latte intero Parmalat"; il nome che contiene già la marca resta com'è.

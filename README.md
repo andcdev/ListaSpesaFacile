@@ -73,7 +73,9 @@ Sorgente modificabile: [`docs/architettura.svg`](docs/architettura.svg).
   verso sinistra. Si aggiungono anche dal menu ⋮ di un prodotto della lista (*Il mio prezzo*).
 - **Info prodotto** (menu ⋮ → *Info*): codice a barre, foto, se è adatto a celiaci (senza glutine), vegetariani e
   vegani, olio di palma, calorie e valori nutrizionali per 100 g, allergeni e tracce, ingredienti, Nutri-Score e
-  NOVA, da **Open Food Facts**. Per un prodotto scritto a mano si mostra il prodotto più simile al nome, con un avviso.
+  NOVA, da **Open Food Facts** (igiene, casa e animali da Open Beauty Facts, Open Products Facts e Open Pet Food
+  Facts). Per gli sfusi scritti a mano (frutta, verdura, salumi e formaggi al banco, carne, pesce) i valori medi della
+  tabella **CIQUAL** dell'ANSES; per gli altri prodotti scritti a mano il prodotto più simile al nome, con un avviso.
 - **Galleria**: toccando la foto di un prodotto si apre la galleria (si scorre di lato, si ingrandisce con due
   dita) con la sua foto e quelle del prodotto su Open Food Facts (confezione, ingredienti, tabella nutrizionale).
 - **Prodotti di marca**: scrivendo un prodotto compaiono, dopo una breve pausa, i prodotti di marca di **Open Food
@@ -368,10 +370,17 @@ Tutte le rotte sono sotto `/api`. Le rotte protette richiedono `Authorization: B
 
 Le date viaggiano in ISO 8601; il server le salva in UTC e l'app le mostra nel fuso del dispositivo.
 
-### Open Food Facts
+### Fonti dei prodotti
 
-Ricerche e foto di Open Food Facts restano in cache un giorno; con `OPENFOODFACTS_ENABLED=false` nel `.env` il
-server non contatta Open Food Facts (niente suggerimenti di marca, foto automatiche né info dei prodotti).
+| Fonte | Per cosa | Licenza |
+|---|---|---|
+| Open Food Facts (`search.openfoodfacts.org`, `world.openfoodfacts.org`) | cibo e bevande di marca | ODbL |
+| Open Beauty Facts, Open Products Facts, Open Pet Food Facts (`world.open*facts.org`, ricerca `cgi/search.pl`) | igiene, casa e pulizia, animali (dal reparto del nome); un nome non riconosciuto che Open Food Facts non trova si cerca in casa e igiene | ODbL |
+| Tabella CIQUAL 2020 dell'ANSES (`backend/resources/data/ciqual.json`) | valori medi per 100 g degli sfusi scritti a mano, una voce per ogni radice del catalogo; le calorie mancanti calcolate con i fattori del Reg. UE 1169/2011 | CC BY 4.0 |
+
+Ricerche e schede restano in cache un giorno; un codice a barre si cerca prima nella fonte del suo reparto, poi nelle
+altre. CIQUAL è un file nel server, senza chiamate esterne. Con `OPENFOODFACTS_ENABLED=false` nel `.env` il server non
+contatta le banche dati Open (niente suggerimenti di marca né schede dei prodotti di marca).
 
 ### Canali ed eventi WebSocket
 

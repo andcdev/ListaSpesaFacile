@@ -9,6 +9,7 @@ class ProductInfo {
     this.images = const [],
     this.nutriments = const {},
     this.isWater = false,
+    this.kind = 'food',
     this.minerals = const {},
     this.ingredients,
     this.allergens = const [],
@@ -22,6 +23,8 @@ class ProductInfo {
     this.nova,
     this.url,
     this.matchedByName = false,
+    this.matchedGeneric = false,
+    this.source = 'Open Food Facts',
   });
 
   final String barcode;
@@ -38,6 +41,9 @@ class ProductInfo {
   /// Acqua: al posto dei valori nutrizionali ha i minerali in mg/L (calcium, magnesium, sodium, potassium,
   /// bicarbonate, chloride, sulphate, nitrate, fluoride, silica).
   final bool isWater;
+
+  /// food, water oppure other (igiene, casa).
+  final String kind;
   final Map<String, double?> minerals;
   final String? ingredients;
 
@@ -60,6 +66,15 @@ class ProductInfo {
   /// L'articolo era scritto a mano: è il prodotto più simile al nome, non quello esatto.
   final bool matchedByName;
 
+  /// Sfuso scritto a mano: valori medi dell'alimento (tabella CIQUAL), non un prodotto di marca.
+  final bool matchedGeneric;
+
+  /// Da dove vengono i dati: Open Food Facts, Open Beauty Facts, Open Products Facts, Open Pet Food Facts o CIQUAL.
+  final String source;
+
+  /// Igiene e casa: niente valori nutrizionali.
+  bool get isFood => kind != 'other';
+
   factory ProductInfo.fromJson(Map<String, dynamic> json) {
     List<String> strings(String key) => (json[key] as List<dynamic>? ?? []).whereType<String>().toList();
     // Un oggetto JSON vuoto arriva da PHP come lista vuota.
@@ -75,6 +90,7 @@ class ProductInfo {
       images: strings('images'),
       nutriments: numbers('nutriments'),
       isWater: json['kind'] == 'water',
+      kind: json['kind'] as String? ?? 'food',
       minerals: numbers('minerals'),
       ingredients: json['ingredients'] as String?,
       allergens: strings('allergens'),
@@ -88,6 +104,8 @@ class ProductInfo {
       nova: json['nova'] as int?,
       url: json['url'] as String?,
       matchedByName: json['matched_by'] == 'name',
+      matchedGeneric: json['matched_by'] == 'generic',
+      source: json['source'] as String? ?? 'Open Food Facts',
     );
   }
 }

@@ -154,10 +154,13 @@ class _Details extends StatelessWidget {
         Text(p.name.isEmpty ? item.name : p.name, style: theme.textTheme.titleLarge),
         if (p.brand != null || p.quantity != null)
           Text([?p.brand, ?p.quantity].join(' · '), style: theme.textTheme.bodyMedium?.copyWith(color: muted)),
-        if (p.matchedByName)
+        if (p.matchedByName || p.matchedGeneric)
           Padding(
             padding: const EdgeInsets.only(top: 8),
-            child: Text(l.similarProductNotice, style: theme.textTheme.bodySmall?.copyWith(color: muted)),
+            child: Text(
+              p.matchedGeneric ? l.genericValuesNotice : l.similarProductNotice,
+              style: theme.textTheme.bodySmall?.copyWith(color: muted),
+            ),
           ),
         if (p.images.isNotEmpty) ...[
           const SizedBox(height: 12),
@@ -209,12 +212,12 @@ class _Details extends StatelessWidget {
         if (p.isWater && mineralRows.isNotEmpty) ...[
           Text(l.waterMinerals, style: theme.textTheme.titleSmall),
           ...mineralRows,
-        ] else if (!p.isWater && (kcal != null || nutrientRows.isNotEmpty)) ...[
+        ] else if (p.isFood && !p.isWater && (kcal != null || nutrientRows.isNotEmpty)) ...[
           Text(l.nutritionPer100, style: theme.textTheme.titleSmall),
           if (kcal != null)
             Text('${number(kcal)} kcal', style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700)),
           ...nutrientRows,
-        ] else
+        ] else if (p.isFood)
           Text(l.noNutritionInfo, style: theme.textTheme.bodyMedium?.copyWith(color: muted)),
         if (p.allergens.isNotEmpty || p.traces.isNotEmpty) ...[
           const SizedBox(height: 16),
@@ -248,10 +251,13 @@ class _Details extends StatelessWidget {
             child: TextButton.icon(
               onPressed: () => launchUrl(Uri.parse(p.url!), mode: LaunchMode.externalApplication),
               icon: const Icon(Icons.open_in_new),
-              label: Text(l.openFoodFactsPage),
+              label: Text(l.viewOnSource(p.source)),
             ),
           ),
-        Text(l.openFoodFactsSource, style: theme.textTheme.bodySmall?.copyWith(color: muted)),
+        Text(
+          l.dataSource(p.source, p.matchedGeneric ? 'CC BY 4.0' : 'ODbL'),
+          style: theme.textTheme.bodySmall?.copyWith(color: muted),
+        ),
       ],
     );
   }

@@ -1,0 +1,1864 @@
+{
+ "aglio": {
+  "code": 11000,
+  "name": "Garlic, fresh",
+  "nutriments": {
+   "carbohydrates": 18.6,
+   "energy-kcal": 111.0,
+   "fat": 0.0,
+   "fiber": 5.8,
+   "proteins": 5.31,
+   "salt": 0.02,
+   "saturated-fat": 0.0,
+   "sugars": 1.2
+  }
+ },
+ "agnello": {
+  "code": 21502,
+  "name": "Lamb, leg, raw",
+  "nutriments": {
+   "carbohydrates": 0.48,
+   "energy-kcal": 128.0,
+   "fat": 5.13,
+   "fiber": 0.0,
+   "proteins": 20.0,
+   "salt": 0.12,
+   "saturated-fat": 1.97,
+   "sugars": 0.0
+  }
+ },
+ "albicocc": {
+  "code": 13000,
+  "name": "Apricot, pitted, raw",
+  "nutriments": {
+   "carbohydrates": 9.01,
+   "energy-kcal": 45.9,
+   "fat": 0.0,
+   "fiber": 1.7,
+   "proteins": 0.81,
+   "salt": 0.0,
+   "saturated-fat": 0.0,
+   "sugars": 6.7
+  }
+ },
+ "ananas": {
+  "code": 13002,
+  "name": "Pineapple, pulp, raw",
+  "nutriments": {
+   "carbohydrates": 11.7,
+   "energy-kcal": 54.4,
+   "fat": 0.0,
+   "fiber": 1.2,
+   "proteins": 0.0,
+   "salt": 0.0,
+   "saturated-fat": 0.0,
+   "sugars": 10.5
+  }
+ },
+ "anguri": {
+  "code": 13036,
+  "name": "Watermelon, pulp, raw",
+  "nutriments": {
+   "carbohydrates": 8.33,
+   "energy-kcal": 38.9,
+   "fat": 0.0,
+   "fiber": 0.5,
+   "proteins": 0.69,
+   "salt": 0.0,
+   "saturated-fat": 0.0,
+   "sugars": 7.9
+  }
+ },
+ "aranc": {
+  "code": 13034,
+  "name": "Orange, pulp, raw",
+  "nutriments": {
+   "carbohydrates": 8.03,
+   "energy-kcal": 45.5,
+   "fat": 0.0,
+   "fiber": 2.7,
+   "proteins": 0.75,
+   "salt": 0.0,
+   "saturated-fat": 0.0,
+   "sugars": 7.6
+  }
+ },
+ "arrosto": {
+  "code": 28300,
+  "name": "Pork, roast, raw",
+  "nutriments": {
+   "carbohydrates": 0.5,
+   "energy-kcal": 153.0,
+   "fat": 6.86,
+   "fiber": 0.0,
+   "proteins": 22.3,
+   "salt": 0.1,
+   "saturated-fat": 2.84,
+   "sugars": 0.0
+  }
+ },
+ "asiago": {
+  "code": 12761,
+  "name": "Asiago cheese, from cow's milk",
+  "nutriments": {
+   "carbohydrates": 0.0,
+   "energy-kcal": 356.0,
+   "fat": 25.6,
+   "fiber": 0.0,
+   "proteins": 32.1,
+   "salt": 1.9,
+   "saturated-fat": 15.9,
+   "sugars": 0.0
+  }
+ },
+ "asparag": {
+  "code": 20279,
+  "name": "Asparagus, green, raw",
+  "nutriments": {
+   "carbohydrates": 2.03,
+   "energy-kcal": 24.7,
+   "fat": 0.27,
+   "fiber": 2.15,
+   "proteins": 2.46,
+   "salt": 0.01,
+   "saturated-fat": 0.07,
+   "sugars": 1.5
+  }
+ },
+ "avocado": {
+  "code": 13004,
+  "name": "Avocado, pulp, raw",
+  "nutriments": {
+   "carbohydrates": 0.83,
+   "energy-kcal": 205.0,
+   "fat": 20.6,
+   "fiber": 3.6,
+   "proteins": 1.56,
+   "salt": 0.01,
+   "saturated-fat": 4.51,
+   "sugars": 0.4
+  }
+ },
+ "banan": {
+  "code": 13005,
+  "name": "Banana, pulp, raw",
+  "nutriments": {
+   "carbohydrates": 19.7,
+   "energy-kcal": 90.5,
+   "fat": 0.0,
+   "fiber": 2.7,
+   "proteins": 1.06,
+   "salt": 0.0,
+   "saturated-fat": 0.0,
+   "sugars": 15.6
+  }
+ },
+ "barbabietol": {
+  "code": 20091,
+  "name": "Beetroot, raw",
+  "nutriments": {
+   "carbohydrates": 9.1,
+   "energy-kcal": 50.6,
+   "fat": 0.24,
+   "fiber": 2.55,
+   "proteins": 1.74,
+   "salt": 0.15,
+   "saturated-fat": 0.04,
+   "sugars": 6.76
+  }
+ },
+ "basilic": {
+  "code": 11033,
+  "name": "Basil, fresh",
+  "nutriments": {
+   "carbohydrates": 2.55,
+   "energy-kcal": 34.8,
+   "fat": 0.47,
+   "fiber": 3.47,
+   "proteins": 3.35,
+   "salt": 0.03,
+   "saturated-fat": 0.13,
+   "sugars": 0.37
+  }
+ },
+ "bietol": {
+  "code": 20004,
+  "name": "Swiss chard, raw",
+  "nutriments": {
+   "carbohydrates": 1.63,
+   "energy-kcal": 16.4,
+   "fat": 0.0,
+   "fiber": 1.8,
+   "proteins": 1.0,
+   "salt": 0.57,
+   "saturated-fat": 0.0,
+   "sugars": 1.2
+  }
+ },
+ "bistecc": {
+  "code": 6103,
+  "name": "Beef, rib steak, raw",
+  "nutriments": {
+   "carbohydrates": 0.0,
+   "energy-kcal": 231.0,
+   "fat": 17.1,
+   "fiber": 0.0,
+   "proteins": 19.4,
+   "salt": 0.07,
+   "saturated-fat": 8.07,
+   "sugars": 0.0
+  }
+ },
+ "braciol": {
+  "code": 28100,
+  "name": "Pork, chop, raw",
+  "nutriments": {
+   "carbohydrates": 0.38,
+   "energy-kcal": 164.0,
+   "fat": 9.3,
+   "fiber": 0.0,
+   "proteins": 19.8,
+   "salt": 0.12,
+   "saturated-fat": 3.75,
+   "sugars": 0.0
+  }
+ },
+ "branzin": {
+  "code": 26206,
+  "name": "Mediterranean bass, raw, farmed",
+  "nutriments": {
+   "carbohydrates": 0.0,
+   "energy-kcal": 124.0,
+   "fat": 4.25,
+   "fiber": 0.0,
+   "proteins": 21.4,
+   "salt": 0.12,
+   "saturated-fat": 1.04,
+   "sugars": 0.0
+  }
+ },
+ "bresaol": {
+  "code": 28503,
+  "name": "Bresaola",
+  "nutriments": {
+   "carbohydrates": 0.0,
+   "energy-kcal": 165.0,
+   "fat": 4.3,
+   "fiber": 0.0,
+   "proteins": 31.6,
+   "salt": 3.46,
+   "saturated-fat": 2.04,
+   "sugars": 0.0
+  }
+ },
+ "broccol": {
+  "code": 20057,
+  "name": "Broccoli, raw",
+  "nutriments": {
+   "carbohydrates": 1.7,
+   "energy-kcal": 32.7,
+   "fat": 0.48,
+   "fiber": 2.9,
+   "proteins": 3.95,
+   "salt": 0.05,
+   "saturated-fat": 0.06,
+   "sugars": 1.7
+  }
+ },
+ "cachi": {
+  "code": 13066,
+  "name": "Persimmon, pulp, raw",
+  "nutriments": {
+   "carbohydrates": 14.3,
+   "energy-kcal": 68.6,
+   "fat": 0.0,
+   "fiber": 3.4,
+   "proteins": 0.88,
+   "salt": 0.0,
+   "saturated-fat": 0.0,
+   "sugars": 13.9
+  }
+ },
+ "calamar": {
+  "code": 10001,
+  "name": "Squid, raw",
+  "nutriments": {
+   "carbohydrates": 2.17,
+   "energy-kcal": 77.0,
+   "fat": 1.19,
+   "fiber": 0.0,
+   "proteins": 14.4,
+   "salt": 0.61,
+   "saturated-fat": 0.28,
+   "sugars": 0.0
+  }
+ },
+ "capocoll": {
+  "code": 28850,
+  "name": "Coppa",
+  "nutriments": {
+   "carbohydrates": 1.0,
+   "energy-kcal": 284.0,
+   "fat": 20.0,
+   "fiber": 0.0,
+   "proteins": 25.0,
+   "salt": 4.5,
+   "saturated-fat": 6.83,
+   "sugars": 0.5
+  }
+ },
+ "carciof": {
+  "code": 20052,
+  "name": "Artichoke, globe, raw",
+  "nutriments": {
+   "carbohydrates": 4.92,
+   "energy-kcal": 44.9,
+   "fat": 0.18,
+   "fiber": 5.4,
+   "proteins": 3.2,
+   "salt": 0.15,
+   "saturated-fat": 0.04,
+   "sugars": 0.99
+  }
+ },
+ "carne": {
+  "code": 6102,
+  "name": "Beef, round, raw",
+  "nutriments": {
+   "carbohydrates": 0.0,
+   "energy-kcal": 148.0,
+   "fat": 7.05,
+   "fiber": 0.0,
+   "proteins": 21.3,
+   "salt": 0.14,
+   "saturated-fat": 2.72,
+   "sugars": 0.0
+  }
+ },
+ "carot": {
+  "code": 20009,
+  "name": "Carrot, raw",
+  "nutriments": {
+   "carbohydrates": 7.59,
+   "energy-kcal": 40.2,
+   "fat": 0.0,
+   "fiber": 2.7,
+   "proteins": 0.63,
+   "salt": 0.11,
+   "saturated-fat": 0.0,
+   "sugars": 6.0
+  }
+ },
+ "castagn": {
+  "code": 15024,
+  "name": "Chestnut, raw",
+  "nutriments": {
+   "carbohydrates": 36.5,
+   "energy-kcal": 188.2,
+   "fat": 2.23,
+   "fiber": 7.45,
+   "proteins": 1.81,
+   "salt": 0.01,
+   "saturated-fat": 0.37,
+   "sugars": 7.86
+  }
+ },
+ "cavol": {
+  "code": 20016,
+  "name": "Cauliflower, raw",
+  "nutriments": {
+   "carbohydrates": 2.13,
+   "energy-kcal": 26.2,
+   "fat": 0.7,
+   "fiber": 2.2,
+   "proteins": 1.81,
+   "salt": 0.01,
+   "saturated-fat": 0.24,
+   "sugars": 1.7
+  }
+ },
+ "cavolini": {
+  "code": 20058,
+  "name": "Brussels sprout, raw",
+  "nutriments": {
+   "carbohydrates": 5.67,
+   "energy-kcal": 50.1,
+   "fat": 0.4,
+   "fiber": 3.95,
+   "proteins": 3.98,
+   "salt": 0.04,
+   "saturated-fat": 0.07,
+   "sugars": 2.2
+  }
+ },
+ "cetriol": {
+  "code": 20019,
+  "name": "Cucumber, pulp and peel, raw",
+  "nutriments": {
+   "carbohydrates": 2.54,
+   "energy-kcal": 15.6,
+   "fat": 0.11,
+   "fiber": 0.6,
+   "proteins": 0.64,
+   "salt": 0.01,
+   "saturated-fat": 0.04,
+   "sugars": 1.67
+  }
+ },
+ "champignon": {
+  "code": 20056,
+  "name": "Button mushroom or cultivated mushroom, raw",
+  "nutriments": {
+   "carbohydrates": 3.15,
+   "energy-kcal": 28.0,
+   "fat": 0.36,
+   "fiber": 1.0,
+   "proteins": 2.62,
+   "salt": 0.1,
+   "saturated-fat": 0.07,
+   "sugars": 2.5
+  }
+ },
+ "cicori": {
+  "code": 20026,
+  "name": "Chicory, raw",
+  "nutriments": {
+   "carbohydrates": 2.83,
+   "energy-kcal": 20.2,
+   "fat": 0.0,
+   "fiber": 1.1,
+   "proteins": 1.19,
+   "salt": 0.0,
+   "saturated-fat": 0.0,
+   "sugars": 2.4
+  }
+ },
+ "ciliegi": {
+  "code": 13008,
+  "name": "Cherry, pitted, raw",
+  "nutriments": {
+   "carbohydrates": 13.0,
+   "energy-kcal": 55.7,
+   "fat": 0.0,
+   "fiber": 1.6,
+   "proteins": 0.81,
+   "salt": 0.0,
+   "saturated-fat": 0.0,
+   "sugars": 10.0
+  }
+ },
+ "cipoll": {
+  "code": 20034,
+  "name": "Onion, raw",
+  "nutriments": {
+   "carbohydrates": 6.25,
+   "energy-kcal": 38.4,
+   "fat": 0.62,
+   "fiber": 1.7,
+   "proteins": 1.1,
+   "salt": 0.1,
+   "saturated-fat": 0.2,
+   "sugars": 4.8
+  }
+ },
+ "clementin": {
+  "code": 13024,
+  "name": "Clementine or Mandarin orange, pulp, raw -> ARCHIVE",
+  "nutriments": {
+   "carbohydrates": 9.17,
+   "energy-kcal": 47.3,
+   "fat": 0.0,
+   "fiber": 1.7,
+   "proteins": 0.81,
+   "salt": 0.0,
+   "saturated-fat": 0.0,
+   "sugars": 8.6
+  }
+ },
+ "cocco": {
+  "code": 15006,
+  "name": "Coconut, ripe kernel, fresh",
+  "nutriments": {
+   "carbohydrates": 6.22,
+   "energy-kcal": 357.7,
+   "fat": 33.5,
+   "fiber": 9.0,
+   "proteins": 3.33,
+   "salt": 0.05,
+   "saturated-fat": 29.7,
+   "sugars": 6.22
+  }
+ },
+ "coppa": {
+  "code": 28850,
+  "name": "Coppa",
+  "nutriments": {
+   "carbohydrates": 1.0,
+   "energy-kcal": 284.0,
+   "fat": 20.0,
+   "fiber": 0.0,
+   "proteins": 25.0,
+   "salt": 4.5,
+   "saturated-fat": 6.83,
+   "sugars": 0.5
+  }
+ },
+ "cosce": {
+  "code": 36024,
+  "name": "Chicken, leg, meat, raw",
+  "nutriments": {
+   "carbohydrates": 0.0,
+   "energy-kcal": 114.0,
+   "fat": 4.05,
+   "fiber": 0.0,
+   "proteins": 19.3,
+   "salt": 0.23,
+   "saturated-fat": 1.03,
+   "sugars": 0.0
+  }
+ },
+ "cozze": {
+  "code": 10026,
+  "name": "Mediterranean mussel, raw",
+  "nutriments": {
+   "carbohydrates": 2.77,
+   "energy-kcal": 68.7,
+   "fat": 1.67,
+   "fiber": 0.0,
+   "proteins": 10.7,
+   "salt": null,
+   "saturated-fat": null,
+   "sugars": null
+  }
+ },
+ "culatell": {
+  "code": 28800,
+  "name": "Cured ham, raw",
+  "nutriments": {
+   "carbohydrates": 0.76,
+   "energy-kcal": 225.0,
+   "fat": 13.2,
+   "fiber": 0.0,
+   "proteins": 25.9,
+   "salt": 5.67,
+   "saturated-fat": 5.09,
+   "sugars": 0.75
+  }
+ },
+ "emmental": {
+  "code": 12115,
+  "name": "Emmental cheese, from cow's milk",
+  "nutriments": {
+   "carbohydrates": 0.0,
+   "energy-kcal": 373.0,
+   "fat": 28.8,
+   "fiber": 0.0,
+   "proteins": 27.9,
+   "salt": 0.61,
+   "saturated-fat": 19.7,
+   "sugars": 0.0
+  }
+ },
+ "fagiolin": {
+  "code": 20061,
+  "name": "French bean, raw",
+  "nutriments": {
+   "carbohydrates": 4.14,
+   "energy-kcal": 31.6,
+   "fat": 0.21,
+   "fiber": 2.85,
+   "proteins": 1.85,
+   "salt": 0.01,
+   "saturated-fat": 0.06,
+   "sugars": 3.26
+  }
+ },
+ "fave": {
+  "code": 20541,
+  "name": "Broad bean, peeled, frozen, raw",
+  "nutriments": {
+   "carbohydrates": 14.9,
+   "energy-kcal": 134.9,
+   "fat": 0.3,
+   "fiber": 6.5,
+   "proteins": 14.9,
+   "salt": 0.04,
+   "saturated-fat": 0.0,
+   "sugars": 2.0
+  }
+ },
+ "fichi": {
+  "code": 13012,
+  "name": "Fig, raw",
+  "nutriments": {
+   "carbohydrates": 13.5,
+   "energy-kcal": 69.4,
+   "fat": 0.0,
+   "fiber": 4.1,
+   "proteins": 1.19,
+   "salt": 0.01,
+   "saturated-fat": 0.0,
+   "sugars": 12.2
+  }
+ },
+ "fico": {
+  "code": 13012,
+  "name": "Fig, raw",
+  "nutriments": {
+   "carbohydrates": 13.5,
+   "energy-kcal": 69.4,
+   "fat": 0.0,
+   "fiber": 4.1,
+   "proteins": 1.19,
+   "salt": 0.01,
+   "saturated-fat": 0.0,
+   "sugars": 12.2
+  }
+ },
+ "finocch": {
+  "code": 20028,
+  "name": "Fennel, raw",
+  "nutriments": {
+   "carbohydrates": 2.63,
+   "energy-kcal": 21.8,
+   "fat": 0.0,
+   "fiber": 2.6,
+   "proteins": 1.0,
+   "salt": 0.06,
+   "saturated-fat": 0.0,
+   "sugars": 2.2
+  }
+ },
+ "fontal": {
+  "code": 12121,
+  "name": "Fontina cheese, from cow's milk",
+  "nutriments": {
+   "carbohydrates": 0.0,
+   "energy-kcal": 381.0,
+   "fat": 31.1,
+   "fiber": 0.0,
+   "proteins": 25.6,
+   "salt": 2.0,
+   "saturated-fat": 19.2,
+   "sugars": 0.0
+  }
+ },
+ "fontin": {
+  "code": 12121,
+  "name": "Fontina cheese, from cow's milk",
+  "nutriments": {
+   "carbohydrates": 0.0,
+   "energy-kcal": 381.0,
+   "fat": 31.1,
+   "fiber": 0.0,
+   "proteins": 25.6,
+   "salt": 2.0,
+   "saturated-fat": 19.2,
+   "sugars": 0.0
+  }
+ },
+ "fragol": {
+  "code": 13014,
+  "name": "Strawberry, raw",
+  "nutriments": {
+   "carbohydrates": 6.03,
+   "energy-kcal": 38.6,
+   "fat": 0.0,
+   "fiber": 3.8,
+   "proteins": 0.63,
+   "salt": 0.0,
+   "saturated-fat": 0.0,
+   "sugars": 5.6
+  }
+ },
+ "funghi": {
+  "code": 20056,
+  "name": "Button mushroom or cultivated mushroom, raw",
+  "nutriments": {
+   "carbohydrates": 3.15,
+   "energy-kcal": 28.0,
+   "fat": 0.36,
+   "fiber": 1.0,
+   "proteins": 2.62,
+   "salt": 0.1,
+   "saturated-fat": 0.07,
+   "sugars": 2.5
+  }
+ },
+ "fungo": {
+  "code": 20056,
+  "name": "Button mushroom or cultivated mushroom, raw",
+  "nutriments": {
+   "carbohydrates": 3.15,
+   "energy-kcal": 28.0,
+   "fat": 0.36,
+   "fiber": 1.0,
+   "proteins": 2.62,
+   "salt": 0.1,
+   "saturated-fat": 0.07,
+   "sugars": 2.5
+  }
+ },
+ "gamber": {
+  "code": 10021,
+  "name": "Shrimp or prawn, raw",
+  "nutriments": {
+   "carbohydrates": 3.21,
+   "energy-kcal": 99.0,
+   "fat": 0.84,
+   "fiber": 0.0,
+   "proteins": 19.7,
+   "salt": 0.45,
+   "saturated-fat": 0.19,
+   "sugars": 0.0
+  }
+ },
+ "gorgonzol": {
+  "code": 12524,
+  "name": "Gorgonzola cheese, from cow's milk",
+  "nutriments": {
+   "carbohydrates": 0.0,
+   "energy-kcal": 312.0,
+   "fat": 26.4,
+   "fiber": 0.0,
+   "proteins": 19.0,
+   "salt": 1.77,
+   "saturated-fat": 16.9,
+   "sugars": 0.0
+  }
+ },
+ "grana": {
+  "code": 12120,
+  "name": "Parmesan cheese, from cow's milk",
+  "nutriments": {
+   "carbohydrates": 0.0,
+   "energy-kcal": 406.0,
+   "fat": 31.0,
+   "fiber": 0.0,
+   "proteins": 31.1,
+   "salt": 1.57,
+   "saturated-fat": 20.6,
+   "sugars": 0.0
+  }
+ },
+ "guancial": {
+  "code": 28727,
+  "name": "Bacon, back",
+  "nutriments": {
+   "carbohydrates": 0.7,
+   "energy-kcal": 118.0,
+   "fat": 2.6,
+   "fiber": 0.0,
+   "proteins": 23.1,
+   "salt": 3.18,
+   "saturated-fat": 1.02,
+   "sugars": 0.0
+  }
+ },
+ "indivi": {
+  "code": 20012,
+  "name": "Curly endive, raw",
+  "nutriments": {
+   "carbohydrates": 2.4,
+   "energy-kcal": 22.7,
+   "fat": 0.25,
+   "fiber": 2.45,
+   "proteins": 1.48,
+   "salt": 0.08,
+   "saturated-fat": 0.06,
+   "sugars": 0.7
+  }
+ },
+ "insalat": {
+  "code": 20031,
+  "name": "Lettuce, raw",
+  "nutriments": {
+   "carbohydrates": 1.33,
+   "energy-kcal": 14.7,
+   "fat": 0.2,
+   "fiber": 1.2,
+   "proteins": 1.3,
+   "salt": 0.02,
+   "saturated-fat": 0.02,
+   "sugars": 0.73
+  }
+ },
+ "kiwi": {
+  "code": 13021,
+  "name": "Kiwi fruit, pulp and seeds, raw",
+  "nutriments": {
+   "carbohydrates": 11.0,
+   "energy-kcal": 60.5,
+   "fat": 0.6,
+   "fiber": 2.4,
+   "proteins": 0.88,
+   "salt": 0.0,
+   "saturated-fat": 0.13,
+   "sugars": 8.9
+  }
+ },
+ "lampon": {
+  "code": 13015,
+  "name": "Raspberry, raw",
+  "nutriments": {
+   "carbohydrates": 5.83,
+   "energy-kcal": 49.2,
+   "fat": 0.8,
+   "fiber": 4.3,
+   "proteins": 1.19,
+   "salt": 0.0,
+   "saturated-fat": 0.13,
+   "sugars": 5.4
+  }
+ },
+ "lattug": {
+  "code": 20031,
+  "name": "Lettuce, raw",
+  "nutriments": {
+   "carbohydrates": 1.33,
+   "energy-kcal": 14.7,
+   "fat": 0.2,
+   "fiber": 1.2,
+   "proteins": 1.3,
+   "salt": 0.02,
+   "saturated-fat": 0.02,
+   "sugars": 0.73
+  }
+ },
+ "lime": {
+  "code": 13067,
+  "name": "Lime, pulp, raw",
+  "nutriments": {
+   "carbohydrates": 3.14,
+   "energy-kcal": 40.2,
+   "fat": 0.0,
+   "fiber": 4.3,
+   "proteins": 1.13,
+   "salt": 0.01,
+   "saturated-fat": 0.0,
+   "sugars": 2.1
+  }
+ },
+ "limon": {
+  "code": 13009,
+  "name": "Lemon, pulp, raw",
+  "nutriments": {
+   "carbohydrates": 1.56,
+   "energy-kcal": 27.6,
+   "fat": 0.0,
+   "fiber": 0.0,
+   "proteins": 0.0,
+   "salt": 0.0,
+   "saturated-fat": 0.0,
+   "sugars": 0.8
+  }
+ },
+ "macinat": {
+  "code": 6254,
+  "name": "Beef, minced steak, 15% fat, raw",
+  "nutriments": {
+   "carbohydrates": 0.47,
+   "energy-kcal": 209.0,
+   "fat": 14.1,
+   "fiber": 0.0,
+   "proteins": 20.2,
+   "salt": 0.1,
+   "saturated-fat": 5.71,
+   "sugars": 0.0
+  }
+ },
+ "maiale": {
+  "code": 28003,
+  "name": "Pork loin, raw",
+  "nutriments": {
+   "carbohydrates": 0.75,
+   "energy-kcal": 175.0,
+   "fat": 9.89,
+   "fiber": 0.0,
+   "proteins": 20.8,
+   "salt": 0.17,
+   "saturated-fat": 3.51,
+   "sugars": 0.0
+  }
+ },
+ "mandarin": {
+  "code": 13024,
+  "name": "Clementine or Mandarin orange, pulp, raw -> ARCHIVE",
+  "nutriments": {
+   "carbohydrates": 9.17,
+   "energy-kcal": 47.3,
+   "fat": 0.0,
+   "fiber": 1.7,
+   "proteins": 0.81,
+   "salt": 0.0,
+   "saturated-fat": 0.0,
+   "sugars": 8.6
+  }
+ },
+ "mango": {
+  "code": 13025,
+  "name": "Mango, pulp, raw",
+  "nutriments": {
+   "carbohydrates": 14.3,
+   "energy-kcal": 73.9,
+   "fat": 0.0,
+   "fiber": 1.6,
+   "proteins": 0.63,
+   "salt": 0.0,
+   "saturated-fat": 0.0,
+   "sugars": 12.9
+  }
+ },
+ "manzo": {
+  "code": 6102,
+  "name": "Beef, round, raw",
+  "nutriments": {
+   "carbohydrates": 0.0,
+   "energy-kcal": 148.0,
+   "fat": 7.05,
+   "fiber": 0.0,
+   "proteins": 21.3,
+   "salt": 0.14,
+   "saturated-fat": 2.72,
+   "sugars": 0.0
+  }
+ },
+ "mela": {
+  "code": 13039,
+  "name": "Apple, pulp and peel, raw",
+  "nutriments": {
+   "carbohydrates": 11.6,
+   "energy-kcal": 52.4,
+   "fat": 0.25,
+   "fiber": 1.4,
+   "proteins": 0.25,
+   "salt": 0.0,
+   "saturated-fat": 0.05,
+   "sugars": 9.35
+  }
+ },
+ "melagran": {
+  "code": 13018,
+  "name": "Pomegranate, pulp and pips, raw",
+  "nutriments": {
+   "carbohydrates": 14.3,
+   "energy-kcal": 80.6,
+   "fat": 1.2,
+   "fiber": 2.3,
+   "proteins": 1.44,
+   "salt": 0.0,
+   "saturated-fat": 0.07,
+   "sugars": 13.3
+  }
+ },
+ "melanzan": {
+  "code": 20053,
+  "name": "Eggplant, raw",
+  "nutriments": {
+   "carbohydrates": 2.39,
+   "energy-kcal": 20.7,
+   "fat": 0.14,
+   "fiber": 2.7,
+   "proteins": 1.12,
+   "salt": 0.01,
+   "saturated-fat": 0.03,
+   "sugars": 2.39
+  }
+ },
+ "mele": {
+  "code": 13039,
+  "name": "Apple, pulp and peel, raw",
+  "nutriments": {
+   "carbohydrates": 11.6,
+   "energy-kcal": 52.4,
+   "fat": 0.25,
+   "fiber": 1.4,
+   "proteins": 0.25,
+   "salt": 0.0,
+   "saturated-fat": 0.05,
+   "sugars": 9.35
+  }
+ },
+ "melon": {
+  "code": 13026,
+  "name": "Melon, cantaloupe (ex Cavaillon or Charentais melon), pulp, raw",
+  "nutriments": {
+   "carbohydrates": 14.8,
+   "energy-kcal": 62.7,
+   "fat": 0.0,
+   "fiber": 1.3,
+   "proteins": 1.13,
+   "salt": 0.06,
+   "saturated-fat": 0.0,
+   "sugars": 10.6
+  }
+ },
+ "menta": {
+  "code": 11027,
+  "name": "Mint, fresh",
+  "nutriments": {
+   "carbohydrates": 5.3,
+   "energy-kcal": 57.6,
+   "fat": 0.84,
+   "fiber": 7.4,
+   "proteins": 3.52,
+   "salt": 0.08,
+   "saturated-fat": 0.22,
+   "sugars": 5.3
+  }
+ },
+ "merluzz": {
+  "code": 26043,
+  "name": "Cod, raw",
+  "nutriments": {
+   "carbohydrates": 0.0,
+   "energy-kcal": 77.6,
+   "fat": 0.57,
+   "fiber": 0.0,
+   "proteins": 18.1,
+   "salt": 0.23,
+   "saturated-fat": 0.1,
+   "sugars": 0.0
+  }
+ },
+ "mirtill": {
+  "code": 13028,
+  "name": "Blueberry, raw",
+  "nutriments": {
+   "carbohydrates": 10.6,
+   "energy-kcal": 57.7,
+   "fat": 0.33,
+   "fiber": 2.4,
+   "proteins": 0.87,
+   "salt": 0.0,
+   "saturated-fat": 0.03,
+   "sugars": 9.96
+  }
+ },
+ "mortadell": {
+  "code": 30789,
+  "name": "Mortadella",
+  "nutriments": {
+   "carbohydrates": 1.4,
+   "energy-kcal": 305.0,
+   "fat": 26.7,
+   "fiber": 0.0,
+   "proteins": 15.0,
+   "salt": 2.13,
+   "saturated-fat": 10.6,
+   "sugars": 0.0
+  }
+ },
+ "orata": {
+  "code": 26088,
+  "name": "Gilthead seabream, raw, farmed",
+  "nutriments": {
+   "carbohydrates": 0.0,
+   "energy-kcal": 129.0,
+   "fat": 5.1,
+   "fiber": 0.0,
+   "proteins": 20.9,
+   "salt": 0.13,
+   "saturated-fat": 1.19,
+   "sugars": 0.0
+  }
+ },
+ "pancett": {
+  "code": 28727,
+  "name": "Bacon, back",
+  "nutriments": {
+   "carbohydrates": 0.7,
+   "energy-kcal": 118.0,
+   "fat": 2.6,
+   "fiber": 0.0,
+   "proteins": 23.1,
+   "salt": 3.18,
+   "saturated-fat": 1.02,
+   "sugars": 0.0
+  }
+ },
+ "pannocch": {
+  "code": 20108,
+  "name": "Sweet corn, on the cob, frozen, raw",
+  "nutriments": {
+   "carbohydrates": 17.0,
+   "energy-kcal": 97.4,
+   "fat": 1.19,
+   "fiber": 2.65,
+   "proteins": 3.36,
+   "salt": 0.01,
+   "saturated-fat": 0.19,
+   "sugars": 3.78
+  }
+ },
+ "papaya": {
+  "code": 13035,
+  "name": "Papaya, pulp, raw",
+  "nutriments": {
+   "carbohydrates": 8.53,
+   "energy-kcal": 42.2,
+   "fat": 0.0,
+   "fiber": 1.8,
+   "proteins": 0.75,
+   "salt": 0.0,
+   "saturated-fat": 0.0,
+   "sugars": 8.1
+  }
+ },
+ "parmigian": {
+  "code": 12120,
+  "name": "Parmesan cheese, from cow's milk",
+  "nutriments": {
+   "carbohydrates": 0.0,
+   "energy-kcal": 406.0,
+   "fat": 31.0,
+   "fiber": 0.0,
+   "proteins": 31.1,
+   "salt": 1.57,
+   "saturated-fat": 20.6,
+   "sugars": 0.0
+  }
+ },
+ "patat": {
+  "code": 4023,
+  "name": "New potato, raw",
+  "nutriments": {
+   "carbohydrates": 15.9,
+   "energy-kcal": 76.4,
+   "fat": 0.3,
+   "fiber": 1.3,
+   "proteins": 1.88,
+   "salt": 0.06,
+   "saturated-fat": 0.06,
+   "sugars": 0.2
+  }
+ },
+ "pecorin": {
+  "code": 12122,
+  "name": "Pecorino cheese, from ewe's milk",
+  "nutriments": {
+   "carbohydrates": 0.0,
+   "energy-kcal": null,
+   "fat": 28.8,
+   "fiber": 0.0,
+   "proteins": null,
+   "salt": 4.73,
+   "saturated-fat": 18.3,
+   "sugars": 0.0
+  }
+ },
+ "peperon": {
+  "code": 20087,
+  "name": "Sweet pepper, red, raw",
+  "nutriments": {
+   "carbohydrates": 5.98,
+   "energy-kcal": 36.6,
+   "fat": 0.0,
+   "fiber": 3.2,
+   "proteins": 1.06,
+   "salt": 0.0,
+   "saturated-fat": 0.0,
+   "sugars": 4.8
+  }
+ },
+ "peperoncin": {
+  "code": 20151,
+  "name": "Chili pepper, raw",
+  "nutriments": {
+   "carbohydrates": 7.7,
+   "energy-kcal": 44.5,
+   "fat": 0.32,
+   "fiber": 1.65,
+   "proteins": 1.87,
+   "salt": 0.02,
+   "saturated-fat": 0.03,
+   "sugars": 5.3
+  }
+ },
+ "pera": {
+  "code": 13037,
+  "name": "Pear, pulp and peel, raw",
+  "nutriments": {
+   "carbohydrates": 10.9,
+   "energy-kcal": 53.8,
+   "fat": 0.27,
+   "fiber": 2.9,
+   "proteins": 0.49,
+   "salt": 0.0,
+   "saturated-fat": 0.07,
+   "sugars": 9.01
+  }
+ },
+ "pere": {
+  "code": 13037,
+  "name": "Pear, pulp and peel, raw",
+  "nutriments": {
+   "carbohydrates": 10.9,
+   "energy-kcal": 53.8,
+   "fat": 0.27,
+   "fiber": 2.9,
+   "proteins": 0.49,
+   "salt": 0.0,
+   "saturated-fat": 0.07,
+   "sugars": 9.01
+  }
+ },
+ "pesca": {
+  "code": 13043,
+  "name": "Peach, pulp and peel, raw",
+  "nutriments": {
+   "carbohydrates": 9.0,
+   "energy-kcal": 46.5,
+   "fat": 0.33,
+   "fiber": 1.6,
+   "proteins": 1.08,
+   "salt": 0.01,
+   "saturated-fat": 0.03,
+   "sugars": 8.16
+  }
+ },
+ "pesce": {
+  "code": 26043,
+  "name": "Cod, raw",
+  "nutriments": {
+   "carbohydrates": 0.0,
+   "energy-kcal": 77.6,
+   "fat": 0.57,
+   "fiber": 0.0,
+   "proteins": 18.1,
+   "salt": 0.23,
+   "saturated-fat": 0.1,
+   "sugars": 0.0
+  }
+ },
+ "pesche": {
+  "code": 13043,
+  "name": "Peach, pulp and peel, raw",
+  "nutriments": {
+   "carbohydrates": 9.0,
+   "energy-kcal": 46.5,
+   "fat": 0.33,
+   "fiber": 1.6,
+   "proteins": 1.08,
+   "salt": 0.01,
+   "saturated-fat": 0.03,
+   "sugars": 8.16
+  }
+ },
+ "petto": {
+  "code": 36017,
+  "name": "Chicken, breast, without skin, raw",
+  "nutriments": {
+   "carbohydrates": 0.0,
+   "energy-kcal": 110.0,
+   "fat": 1.5,
+   "fiber": 0.0,
+   "proteins": 23.4,
+   "salt": 0.11,
+   "saturated-fat": 0.44,
+   "sugars": 0.0
+  }
+ },
+ "pollo": {
+  "code": 36003,
+  "name": "Chicken, meat, raw",
+  "nutriments": {
+   "carbohydrates": 0.0,
+   "energy-kcal": 113.0,
+   "fat": 3.73,
+   "fiber": 0.0,
+   "proteins": 20.0,
+   "salt": 0.2,
+   "saturated-fat": 0.85,
+   "sugars": 0.0
+  }
+ },
+ "polpo": {
+  "code": 10018,
+  "name": "Octopus, common, raw",
+  "nutriments": {
+   "carbohydrates": 0.97,
+   "energy-kcal": 60.1,
+   "fat": 0.5,
+   "fiber": 0.0,
+   "proteins": 12.9,
+   "salt": 0.68,
+   "saturated-fat": 0.16,
+   "sugars": 0.0
+  }
+ },
+ "pomodor": {
+  "code": 20047,
+  "name": "Tomato, raw",
+  "nutriments": {
+   "carbohydrates": 2.49,
+   "energy-kcal": 19.3,
+   "fat": 0.26,
+   "fiber": 1.2,
+   "proteins": 0.86,
+   "salt": 0.01,
+   "saturated-fat": 0.06,
+   "sugars": 2.48
+  }
+ },
+ "pompelm": {
+  "code": 13040,
+  "name": "Grapefruit, pulp, raw",
+  "nutriments": {
+   "carbohydrates": 8.02,
+   "energy-kcal": 39.8,
+   "fat": 0.0,
+   "fiber": 0.8,
+   "proteins": 0.0,
+   "salt": 0.0,
+   "saturated-fat": 0.0,
+   "sugars": 6.6
+  }
+ },
+ "porchett": {
+  "code": 28301,
+  "name": "Pork, roast, cooked",
+  "nutriments": {
+   "carbohydrates": 0.65,
+   "energy-kcal": 163.0,
+   "fat": 4.31,
+   "fiber": 0.0,
+   "proteins": 30.5,
+   "salt": 0.08,
+   "saturated-fat": 1.32,
+   "sugars": 0.0
+  }
+ },
+ "porri": {
+  "code": 20039,
+  "name": "Leek, raw",
+  "nutriments": {
+   "carbohydrates": 4.9,
+   "energy-kcal": 32.3,
+   "fat": 0.25,
+   "fiber": 2.27,
+   "proteins": 1.49,
+   "salt": 0.04,
+   "saturated-fat": 0.05,
+   "sugars": 3.15
+  }
+ },
+ "porro": {
+  "code": 20039,
+  "name": "Leek, raw",
+  "nutriments": {
+   "carbohydrates": 4.9,
+   "energy-kcal": 32.3,
+   "fat": 0.25,
+   "fiber": 2.27,
+   "proteins": 1.49,
+   "salt": 0.04,
+   "saturated-fat": 0.05,
+   "sugars": 3.15
+  }
+ },
+ "prezzemol": {
+  "code": 11014,
+  "name": "Parsley, fresh",
+  "nutriments": {
+   "carbohydrates": 3.48,
+   "energy-kcal": 43.0,
+   "fat": 0.63,
+   "fiber": 4.3,
+   "proteins": 3.71,
+   "salt": 0.59,
+   "saturated-fat": 0.1,
+   "sugars": 0.95
+  }
+ },
+ "prosciutt": {
+  "code": 28800,
+  "name": "Cured ham, raw",
+  "nutriments": {
+   "carbohydrates": 0.76,
+   "energy-kcal": 225.0,
+   "fat": 13.2,
+   "fiber": 0.0,
+   "proteins": 25.9,
+   "salt": 5.67,
+   "saturated-fat": 5.09,
+   "sugars": 0.75
+  }
+ },
+ "provol": {
+  "code": 12716,
+  "name": "Provolone cheese, from cow's milk",
+  "nutriments": {
+   "carbohydrates": 0.0,
+   "energy-kcal": 340.0,
+   "fat": 26.6,
+   "fiber": 0.0,
+   "proteins": 25.6,
+   "salt": 2.19,
+   "saturated-fat": 17.1,
+   "sugars": 0.0
+  }
+ },
+ "prugn": {
+  "code": 13100,
+  "name": "Plum, raw",
+  "nutriments": {
+   "carbohydrates": 9.92,
+   "energy-kcal": 47.9,
+   "fat": 0.29,
+   "fiber": 1.5,
+   "proteins": 0.66,
+   "salt": 0.01,
+   "saturated-fat": 0.04,
+   "sugars": 9.92
+  }
+ },
+ "ravanell": {
+  "code": 20045,
+  "name": "Radish, raw",
+  "nutriments": {
+   "carbohydrates": 1.53,
+   "energy-kcal": 14.5,
+   "fat": 0.0,
+   "fiber": 1.4,
+   "proteins": 0.94,
+   "salt": 0.04,
+   "saturated-fat": 0.0,
+   "sugars": 1.1
+  }
+ },
+ "ribes": {
+  "code": 13019,
+  "name": "Red currant, raw",
+  "nutriments": {
+   "carbohydrates": 7.06,
+   "energy-kcal": 68.5,
+   "fat": 0.7,
+   "fiber": 4.6,
+   "proteins": 1.56,
+   "salt": 0.0,
+   "saturated-fat": 0.21,
+   "sugars": 6.63
+  }
+ },
+ "rosmarin": {
+  "code": 11068,
+  "name": "Rosemary, fresh",
+  "nutriments": {
+   "carbohydrates": 6.6,
+   "energy-kcal": 121.0,
+   "fat": 5.86,
+   "fiber": 14.1,
+   "proteins": 3.31,
+   "salt": 0.07,
+   "saturated-fat": 2.84,
+   "sugars": null
+  }
+ },
+ "rucol": {
+  "code": 20217,
+  "name": "Roman rocket, raw",
+  "nutriments": {
+   "carbohydrates": 2.1,
+   "energy-kcal": 27.9,
+   "fat": 0.66,
+   "fiber": 1.6,
+   "proteins": 2.58,
+   "salt": 0.07,
+   "saturated-fat": 0.09,
+   "sugars": 2.05
+  }
+ },
+ "salame": {
+  "code": 30301,
+  "name": "Dry sausage, pure pork",
+  "nutriments": {
+   "carbohydrates": 1.79,
+   "energy-kcal": 417.0,
+   "fat": 32.3,
+   "fiber": 0.0,
+   "proteins": 28.7,
+   "salt": 4.46,
+   "saturated-fat": 12.2,
+   "sugars": 1.4
+  }
+ },
+ "salami": {
+  "code": 30301,
+  "name": "Dry sausage, pure pork",
+  "nutriments": {
+   "carbohydrates": 1.79,
+   "energy-kcal": 417.0,
+   "fat": 32.3,
+   "fiber": 0.0,
+   "proteins": 28.7,
+   "salt": 4.46,
+   "saturated-fat": 12.2,
+   "sugars": 1.4
+  }
+ },
+ "salmone": {
+  "code": 26036,
+  "name": "Salmon, raw, farmed",
+  "nutriments": {
+   "carbohydrates": 0.0,
+   "energy-kcal": 194.0,
+   "fat": 12.4,
+   "fiber": 0.0,
+   "proteins": 20.5,
+   "salt": 0.16,
+   "saturated-fat": 2.15,
+   "sugars": 0.0
+  }
+ },
+ "salsicc": {
+  "code": 30051,
+  "name": "Sausage meat, pure pork, raw",
+  "nutriments": {
+   "carbohydrates": 5.25,
+   "energy-kcal": 273.0,
+   "fat": 21.2,
+   "fiber": 0.0,
+   "proteins": 15.4,
+   "salt": 0.14,
+   "saturated-fat": 7.87,
+   "sugars": null
+  }
+ },
+ "salvia": {
+  "code": 11069,
+  "name": "Sage, fresh",
+  "nutriments": {
+   "carbohydrates": 0.97,
+   "energy-kcal": 36.7,
+   "fat": 0.0,
+   "fiber": 7.0,
+   "proteins": 4.0,
+   "salt": 0.03,
+   "saturated-fat": 0.0,
+   "sugars": 0.3
+  }
+ },
+ "scalogn": {
+  "code": 20097,
+  "name": "Shallot, raw",
+  "nutriments": {
+   "carbohydrates": 12.2,
+   "energy-kcal": 63.6,
+   "fat": 0.0,
+   "fiber": 2.6,
+   "proteins": 1.81,
+   "salt": 0.01,
+   "saturated-fat": 0.0,
+   "sugars": 3.3
+  }
+ },
+ "scampi": {
+  "code": 10024,
+  "name": "Norway lobster, raw",
+  "nutriments": {
+   "carbohydrates": 1.53,
+   "energy-kcal": 89.8,
+   "fat": 0.79,
+   "fiber": 0.0,
+   "proteins": 19.1,
+   "salt": 0.72,
+   "saturated-fat": 0.21,
+   "sugars": 0.0
+  }
+ },
+ "scarol": {
+  "code": 20090,
+  "name": "Escaroles",
+  "nutriments": {
+   "carbohydrates": 0.3,
+   "energy-kcal": 14.2,
+   "fat": 0.2,
+   "fiber": 3.1,
+   "proteins": 1.25,
+   "salt": 0.06,
+   "saturated-fat": 0.05,
+   "sugars": 0.23
+  }
+ },
+ "sedan": {
+  "code": 20023,
+  "name": "Celery stalk, raw",
+  "nutriments": {
+   "carbohydrates": 2.41,
+   "energy-kcal": 17.6,
+   "fat": 0.0,
+   "fiber": 2.2,
+   "proteins": 0.63,
+   "salt": 0.2,
+   "saturated-fat": 0.0,
+   "sugars": 1.3
+  }
+ },
+ "seppi": {
+  "code": 10016,
+  "name": "Cuttlefish, raw",
+  "nutriments": {
+   "carbohydrates": 0.51,
+   "energy-kcal": 76.3,
+   "fat": 1.05,
+   "fiber": 0.0,
+   "proteins": 16.2,
+   "salt": 0.93,
+   "saturated-fat": 0.35,
+   "sugars": 0.0
+  }
+ },
+ "sgombr": {
+  "code": 26051,
+  "name": "Mackerel, raw",
+  "nutriments": {
+   "carbohydrates": 0.0,
+   "energy-kcal": 194.0,
+   "fat": 13.5,
+   "fiber": 0.0,
+   "proteins": 18.1,
+   "salt": 0.16,
+   "saturated-fat": 3.22,
+   "sugars": 0.0
+  }
+ },
+ "soppressat": {
+  "code": 30300,
+  "name": "Dry sausage",
+  "nutriments": {
+   "carbohydrates": 2.41,
+   "energy-kcal": 418.0,
+   "fat": 34.5,
+   "fiber": 0.73,
+   "proteins": 24.2,
+   "salt": 4.75,
+   "saturated-fat": 11.3,
+   "sugars": 1.2
+  }
+ },
+ "speck": {
+  "code": 28801,
+  "name": "Cured ham, raw, smoked",
+  "nutriments": {
+   "carbohydrates": 0.98,
+   "energy-kcal": 246.0,
+   "fat": 16.1,
+   "fiber": 0.0,
+   "proteins": 24.2,
+   "salt": 5.17,
+   "saturated-fat": 6.72,
+   "sugars": 0.53
+  }
+ },
+ "spezzatin": {
+  "code": 6231,
+  "name": "Beef, stewing meat, raw",
+  "nutriments": {
+   "carbohydrates": 0.0,
+   "energy-kcal": 164.0,
+   "fat": 7.5,
+   "fiber": 0.0,
+   "proteins": 24.0,
+   "salt": 0.1,
+   "saturated-fat": 2.7,
+   "sugars": 0.0
+  }
+ },
+ "spigol": {
+  "code": 26206,
+  "name": "Mediterranean bass, raw, farmed",
+  "nutriments": {
+   "carbohydrates": 0.0,
+   "energy-kcal": 124.0,
+   "fat": 4.25,
+   "fiber": 0.0,
+   "proteins": 21.4,
+   "salt": 0.12,
+   "saturated-fat": 1.04,
+   "sugars": 0.0
+  }
+ },
+ "spinac": {
+  "code": 20059,
+  "name": "Spinach, raw",
+  "nutriments": {
+   "carbohydrates": 2.25,
+   "energy-kcal": 28.7,
+   "fat": 0.5,
+   "fiber": 2.37,
+   "proteins": 2.62,
+   "salt": 0.17,
+   "saturated-fat": 0.06,
+   "sugars": 0.32
+  }
+ },
+ "susin": {
+  "code": 13100,
+  "name": "Plum, raw",
+  "nutriments": {
+   "carbohydrates": 9.92,
+   "energy-kcal": 47.9,
+   "fat": 0.29,
+   "fiber": 1.5,
+   "proteins": 0.66,
+   "salt": 0.01,
+   "saturated-fat": 0.04,
+   "sugars": 9.92
+  }
+ },
+ "tacchin": {
+  "code": 36301,
+  "name": "Turkey, meat, raw",
+  "nutriments": {
+   "carbohydrates": 0.8,
+   "energy-kcal": 110.0,
+   "fat": 1.88,
+   "fiber": 0.0,
+   "proteins": 22.4,
+   "salt": 0.25,
+   "saturated-fat": 0.52,
+   "sugars": 0.14
+  }
+ },
+ "tonno": {
+  "code": 26053,
+  "name": "Tuna, raw",
+  "nutriments": {
+   "carbohydrates": 0.0,
+   "energy-kcal": 144.0,
+   "fat": 5.38,
+   "fiber": 0.0,
+   "proteins": 24.0,
+   "salt": 0.12,
+   "saturated-fat": 1.19,
+   "sugars": 0.0
+  }
+ },
+ "topinambur": {
+  "code": 20196,
+  "name": "Jerusalem artichoke, raw",
+  "nutriments": {
+   "carbohydrates": 11.5,
+   "energy-kcal": 60.7,
+   "fat": 0.31,
+   "fiber": 2.1,
+   "proteins": 1.94,
+   "salt": 0.01,
+   "saturated-fat": 0.11,
+   "sugars": 9.6
+  }
+ },
+ "totan": {
+  "code": 10001,
+  "name": "Squid, raw",
+  "nutriments": {
+   "carbohydrates": 2.17,
+   "energy-kcal": 77.0,
+   "fat": 1.19,
+   "fiber": 0.0,
+   "proteins": 14.4,
+   "salt": 0.61,
+   "saturated-fat": 0.28,
+   "sugars": 0.0
+  }
+ },
+ "uva": {
+  "code": 13044,
+  "name": "Grape, white, raw",
+  "nutriments": {
+   "carbohydrates": 16.6,
+   "energy-kcal": 73.4,
+   "fat": 0.0,
+   "fiber": 1.0,
+   "proteins": 0.75,
+   "salt": 0.0,
+   "saturated-fat": 0.0,
+   "sugars": 15.5
+  }
+ },
+ "valerian": {
+  "code": 20099,
+  "name": "Lamb's lettuce, raw",
+  "nutriments": {
+   "carbohydrates": 0.5,
+   "energy-kcal": 16.8,
+   "fat": 0.0,
+   "fiber": 2.3,
+   "proteins": 2.0,
+   "salt": 0.0,
+   "saturated-fat": 0.0,
+   "sugars": 0.0
+  }
+ },
+ "verza": {
+  "code": 20069,
+  "name": "Green cabbage, raw",
+  "nutriments": {
+   "carbohydrates": 1.92,
+   "energy-kcal": 27.6,
+   "fat": 0.41,
+   "fiber": 3.08,
+   "proteins": 2.53,
+   "salt": 0.07,
+   "saturated-fat": 0.05,
+   "sugars": 1.92
+  }
+ },
+ "vitell": {
+  "code": 6521,
+  "name": "Veal, escalope, raw",
+  "nutriments": {
+   "carbohydrates": 0.58,
+   "energy-kcal": 108.0,
+   "fat": 2.6,
+   "fiber": 0.0,
+   "proteins": 20.7,
+   "salt": 0.1,
+   "saturated-fat": 0.6,
+   "sugars": 0.0
+  }
+ },
+ "vongol": {
+  "code": 10017,
+  "name": "Clam, raw",
+  "nutriments": {
+   "carbohydrates": 2.66,
+   "energy-kcal": 80.5,
+   "fat": 2.65,
+   "fiber": 0.0,
+   "proteins": 11.5,
+   "salt": 0.82,
+   "saturated-fat": 0.21,
+   "sugars": 0.16
+  }
+ },
+ "zucca": {
+  "code": 20044,
+  "name": "Pumpkin, raw",
+  "nutriments": {
+   "carbohydrates": 3.5,
+   "energy-kcal": 19.9,
+   "fat": 0.1,
+   "fiber": 0.5,
+   "proteins": 1.0,
+   "salt": 0.0,
+   "saturated-fat": 0.05,
+   "sugars": 1.36
+  }
+ },
+ "zucchin": {
+  "code": 20020,
+  "name": "Courgette or zucchini, pulp and peel, raw",
+  "nutriments": {
+   "carbohydrates": 1.8,
+   "energy-kcal": 16.5,
+   "fat": 0.26,
+   "fiber": 1.05,
+   "proteins": 1.23,
+   "salt": 0.02,
+   "saturated-fat": 0.06,
+   "sugars": 1.79
+  }
+ }
+}
