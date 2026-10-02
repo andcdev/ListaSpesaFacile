@@ -15,6 +15,7 @@ import '../state/list_detail_controller.dart';
 import '../state/lists_controller.dart';
 import '../state/locale_controller.dart';
 import '../state/notifications_controller.dart';
+import '../widgets/guide.dart';
 import '../widgets/language_picker.dart';
 import '../widgets/photo_picker.dart';
 import '../widgets/ui.dart';
@@ -80,12 +81,41 @@ class _ListsScreenState extends State<ListsScreen> {
 
   late final NotificationService _notifications;
 
+  /// "Nuova lista": il primo passo della guida.
+  final _newListKey = GlobalKey();
+  bool _guideChecked = false;
+
   @override
   void initState() {
     super.initState();
     _notifications = context.read<NotificationService>()..openRequest.addListener(_onNotificationOpened);
     // L'app potrebbe essere stata aperta toccando una notifica.
     WidgetsBinding.instance.addPostFrameCallback((_) => _onNotificationOpened());
+  }
+
+  /// Guida passo passo al primo accesso di un account nuovo (nessuna lista): "Nuova lista", poi dentro la lista
+  /// come si aggiungono i prodotti. Chi ha già delle liste non la vede (si apre dal menu del profilo).
+  Future<void> _maybeStartGuide(ListsController controller) async {
+    final me = context.read<AuthController>().user;
+    if (_guideChecked || me == null || !controller.loaded || controller.loading) return;
+    _guideChecked = true;
+    final stage = await GuideProgress.stage(me.id);
+    if (stage != null) return;
+    if (controller.lists.isNotEmpty) {
+      await GuideProgress.set(me.id, GuideStage.done);
+      return;
+    }
+    await _startGuide(me.id);
+  }
+
+  Future<void> _startGuide(int userId) async {
+    final l = context.l10n;
+    await GuideProgress.set(userId, GuideStage.detail);
+    if (!mounted) return;
+    final completed = await showGuide(context, [
+      GuideStep(target: _newListKey, title: l.guideNewListTitle, text: l.guideNewListText),
+    ], total: guideSteps);
+    if (!completed) await GuideProgress.set(userId, GuideStage.done);
   }
 
   @override
@@ -244,6 +274,11 @@ class _ListsScreenState extends State<ListsScreen> {
   Widget build(BuildContext context) {
     final controller = context.watch<ListsController>();
     final auth = context.watch<AuthController>();
+    if (!_guideChecked && controller.loaded && !controller.loading) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _maybeStartGuide(controller);
+      });
+    }
     final api = context.read<ApiClient>();
     final me = auth.user;
     final avatar = me == null ? null : avatarImage(api, me);
@@ -278,6 +313,7 @@ class _ListsScreenState extends State<ListsScreen> {
                 await Navigator.push(context, MaterialPageRoute(builder: (_) => const MyPricesScreen()));
               }
               if (value == 'appearance') await _chooseAppearance();
+              if (value == 'guide' && me != null && context.mounted) await _startGuide(me.id);
               if (value == 'language' && context.mounted) await chooseLanguage(context);
               if (value == 'logout' &&
                   context.mounted &&
@@ -309,6 +345,7 @@ class _ListsScreenState extends State<ListsScreen> {
                 value: 'language',
                 child: Text(l.languageValue(languageLabel(context, context.read<LocaleController>()))),
               ),
+              PopupMenuItem(value: 'guide', child: Text(l.guide)),
               PopupMenuItem(value: 'logout', child: Text(l.logout)),
               PopupMenuItem(
                 value: 'deleteAccount',
@@ -325,6 +362,7 @@ class _ListsScreenState extends State<ListsScreen> {
         width: MediaQuery.sizeOf(context).width - 32,
         height: 58,
         child: FloatingActionButton.extended(
+          key: _newListKey,
           onPressed: _createList,
           icon: const Icon(Icons.add),
           label: Text(l.newList),

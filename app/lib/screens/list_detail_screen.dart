@@ -26,6 +26,7 @@ import '../widgets/photo_picker.dart';
 import '../widgets/prices.dart';
 import '../widgets/product_info_sheet.dart';
 import '../theme/app_theme.dart';
+import '../widgets/guide.dart';
 import '../widgets/ui.dart';
 import '../widgets/voice_input.dart';
 import 'list_form_screen.dart';
@@ -50,12 +51,40 @@ class _ListDetailScreenState extends State<ListDetailScreen> {
   late final NotificationService _notifications;
   late final int _listId;
 
+  /// Comandi illuminati dalla guida passo passo (dopo "Nuova lista").
+  final _addFieldKey = GlobalKey();
+  final _addButtonKey = GlobalKey();
+  final _shareKey = GlobalKey();
+  bool _guideChecked = false;
+
   @override
   void initState() {
     super.initState();
     // Mentre la lista è aperta le sue modifiche non generano notifiche e la sua conversazione sparisce.
     _listId = context.read<ListDetailController>().listId;
     _notifications = context.read<NotificationService>()..activeListId = _listId;
+  }
+
+  /// Seconda parte della guida, la prima volta che si apre una lista dopo "Nuova lista": scrivere un prodotto, il
+  /// + con quantità e peso, la condivisione.
+  Future<void> _maybeContinueGuide(ListDetailController detail) async {
+    final me = context.read<AuthController>().user;
+    if (_guideChecked || me == null || detail.list == null || !detail.canEdit) return;
+    _guideChecked = true;
+    if (await GuideProgress.stage(me.id) != GuideStage.detail || !mounted) return;
+    final l = context.l10n;
+    await GuideProgress.set(me.id, GuideStage.done);
+    if (!mounted) return;
+    await showGuide(
+      context,
+      [
+        GuideStep(target: _addFieldKey, title: l.guideAddTitle, text: l.guideAddText),
+        GuideStep(target: _addButtonKey, title: l.guidePlusTitle, text: l.guidePlusText),
+        GuideStep(target: _shareKey, title: l.guideShareTitle, text: l.guideShareText),
+      ],
+      first: 2,
+      total: guideSteps,
+    );
   }
 
   @override
@@ -343,6 +372,11 @@ class _ListDetailScreenState extends State<ListDetailScreen> {
   @override
   Widget build(BuildContext context) {
     final detail = context.watch<ListDetailController>();
+    if (!_guideChecked && detail.list != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _maybeContinueGuide(detail);
+      });
+    }
     final list = detail.list;
     if (detail.gone) _closeBecauseGone();
     final chat = _chatOpen && list != null;
@@ -383,6 +417,7 @@ class _ListDetailScreenState extends State<ListDetailScreen> {
             ),
           if (list != null && list.isOwner)
             IconButton(
+              key: _shareKey,
               style: round,
               tooltip: l.share,
               icon: const Icon(Icons.person_add_alt_outlined),
@@ -441,6 +476,8 @@ class _ListDetailScreenState extends State<ListDetailScreen> {
   }
 
   Widget _addBar(ListDetailController detail, {bool compact = false}) => _AddItemBar(
+    fieldKey: compact ? null : _addFieldKey,
+    addKey: compact ? null : _addButtonKey,
     units: _units,
     compact: compact,
     suggestions: detail.suggestions,
@@ -1043,6 +1080,8 @@ class _AddItemBar extends StatefulWidget {
     required this.units,
     required this.search,
     this.measureOf,
+    this.fieldKey,
+    this.addKey,
     this.compact = false,
     this.suggestions = const [],
     this.existing = const [],
@@ -1068,6 +1107,10 @@ class _AddItemBar extends StatefulWidget {
 
   /// Come si misura un nome scritto a mano (dal server): solo peso, peso e pezzi o confezioni.
   final Future<MeasureMode?> Function(String name)? measureOf;
+
+  /// Campo del nome e "+", illuminati dalla guida passo passo.
+  final Key? fieldKey;
+  final Key? addKey;
 
   /// Solo il nome (con la chat aperta sotto): quantità e peso si aggiungono con la matita.
   final bool compact;
@@ -1384,6 +1427,7 @@ class _AddItemBarState extends State<_AddItemBar> {
             children: [
               _PhotoButton(path: _photoPath, onPressed: _pickPhoto),
               Expanded(
+                key: widget.fieldKey,
                 child: TextField(
                   controller: _name,
                   focusNode: _focus,
@@ -1406,6 +1450,7 @@ class _AddItemBarState extends State<_AddItemBar> {
               const SizedBox(width: 4),
               // "+": prima il popup di quantità e peso/volume, poi "Fatto" aggiunge.
               IconButton.filled(
+                key: widget.addKey,
                 style: IconButton.styleFrom(backgroundColor: scheme.secondary, foregroundColor: scheme.onSecondary),
                 onPressed: _busy ? null : _askMeasureAndAdd,
                 icon: const Icon(Icons.add),

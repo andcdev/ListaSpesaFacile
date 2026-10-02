@@ -1042,6 +1042,51 @@ class AppLocalizationsEs extends AppLocalizations {
   String get myPriceSaved => 'Precio guardado en «Mis precios»';
 
   @override
+  String get guide => 'Guía';
+
+  @override
+  String guideStep(int step, int count) {
+    return 'Paso $step de $count';
+  }
+
+  @override
+  String get guideNext => 'Siguiente';
+
+  @override
+  String get guideGotIt => 'Entendido';
+
+  @override
+  String get skipGuide => 'Saltar guía';
+
+  @override
+  String get guideNewListTitle => 'Crea tu primera lista';
+
+  @override
+  String get guideNewListText =>
+      'Toca «Nueva lista»: elige el nombre, el día y la hora de la compra y, si quieres, una foto y con quién compartirla. Luego se abre la lista, lista para los productos.';
+
+  @override
+  String get guideAddTitle => 'Escribe un producto';
+
+  @override
+  String get guideAddText =>
+      'Escribe aquí o dicta con el micrófono. Mientras escribes aparecen sugerencias: lo que más compras y productos de marca con foto. Toca una para elegirla.';
+
+  @override
+  String get guidePlusTitle => 'Añadir a la lista';
+
+  @override
+  String get guidePlusText =>
+      'Toca + (o una sugerencia): elige cantidad, peso o volumen según el producto y pulsa «Hecho». El producto va a su sección y quien comparte la lista lo ve enseguida.';
+
+  @override
+  String get guideShareTitle => 'Haz la compra juntos';
+
+  @override
+  String get guideShareText =>
+      'Desde aquí invitas a quien hace la compra contigo: veréis la misma lista, en tiempo real. En el súper, toca el círculo junto a un producto para marcarlo como cogido.';
+
+  @override
   String get filterLists => 'Filtrar las listas';
 
   @override
