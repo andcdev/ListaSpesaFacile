@@ -1448,6 +1448,8 @@ class _AddItemBarState extends State<_AddItemBar> {
                   cursorColor: scheme.secondary,
                   decoration: InputDecoration(
                     isDense: true,
+                    // Il campo è già nella barra colorata: niente riquadro bianco.
+                    filled: false,
                     border: InputBorder.none,
                     enabledBorder: InputBorder.none,
                     focusedBorder: InputBorder.none,
