@@ -93,6 +93,10 @@ abstract final class AppTheme {
       labelLarge: base.textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w700),
     );
     const stadium = StadiumBorder();
+    OutlineInputBorder field(Color color, [double width = 1]) => OutlineInputBorder(
+      borderRadius: BorderRadius.circular(14),
+      borderSide: BorderSide(color: color, width: width),
+    );
     final card = RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(22),
       side: BorderSide(color: scheme.outlineVariant),
@@ -128,10 +132,16 @@ abstract final class AppTheme {
         margin: EdgeInsets.zero,
         shape: card,
       ),
-      // In tutti i campi di testo solo il bordo inferiore.
+      // Campi di testo in riquadri bianchi arrotondati: si staccano dai disegni dello sfondo; verdi quando attivi.
       inputDecorationTheme: InputDecorationTheme(
-        border: const UnderlineInputBorder(),
-        enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: scheme.outline)),
+        filled: true,
+        fillColor: scheme.surfaceContainerLowest,
+        border: field(scheme.outline),
+        enabledBorder: field(scheme.outline.withValues(alpha: 0.6)),
+        focusedBorder: field(scheme.primary, 2),
+        errorBorder: field(scheme.error),
+        focusedErrorBorder: field(scheme.error, 2),
+        disabledBorder: field(scheme.outlineVariant),
       ),
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
