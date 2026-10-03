@@ -45,6 +45,11 @@ class ListShareController extends Controller
             throw ValidationException::withMessages(['email' => [__('app.errors.already_owner')]]);
         }
 
+        $people = $list->peopleIds();
+        if (! in_array($user->id, $people, true) && count($people) >= ShoppingList::MAX_PEOPLE) {
+            throw ValidationException::withMessages(['email' => [__('app.errors.list_full', ['max' => ShoppingList::MAX_PEOPLE])]]);
+        }
+
         $canEdit = (bool) ($data['can_edit'] ?? true);
         $changes = $list->sharedWith()->syncWithoutDetaching([$user->id => ['can_edit' => $canEdit]]);
 

@@ -180,7 +180,7 @@ class ShoppingListController extends Controller
     private function resolveShares(Request $request, User $owner): array
     {
         $request->validate([
-            'shares' => ['sometimes', 'array', 'max:20'],
+            'shares' => ['sometimes', 'array', 'max:'.ShoppingList::MAX_PEOPLE],
             'shares.*.email' => ['required', 'email'],
             'shares.*.can_edit' => ['sometimes', 'boolean'],
         ]);
@@ -195,6 +195,12 @@ class ShoppingListController extends Controller
                 throw ValidationException::withMessages(["shares.$i.email" => [__('app.errors.share_self_list')]]);
             }
             $shares[$user->id] = ['can_edit' => (bool) ($share['can_edit'] ?? true)];
+        }
+
+        // Anche chi ha ricevuto tutte le liste del proprietario vedrà questa.
+        $people = collect(array_keys($shares))->merge($owner->globalShareRecipients()->pluck('users.id'))->unique();
+        if ($people->count() > ShoppingList::MAX_PEOPLE) {
+            throw ValidationException::withMessages(['shares' => [__('app.errors.list_full', ['max' => ShoppingList::MAX_PEOPLE])]]);
         }
 
         return $shares;

@@ -14,6 +14,8 @@ return [
         'share_self_all' => 'Non puoi condividere le liste con te stesso.',
         'share_self_list' => 'Non puoi condividere la lista con te stesso.',
         'already_owner' => 'Sei già il proprietario della lista.',
+        'list_full' => 'Questa lista è già condivisa con :max persone, il massimo.',
+        'lists_full' => 'Non puoi condividere le liste con altre persone: una lista arriverebbe a più di :max.',
         'mail_unavailable' => 'Impossibile inviare l\'email in questo momento. Riprova più tardi.',
         'reset_code_invalid' => 'Codice non valido o scaduto.',
         'owner_only_permission' => 'Solo il proprietario può cambiare questo permesso.',
