@@ -6,6 +6,7 @@ import '../models/branded_product.dart';
 import '../models/list_item.dart';
 import '../models/product_suggestion.dart';
 import '../models/shopping_list.dart';
+import '../models/user_price.dart';
 import '../models/product_info.dart';
 import '../services/api_client.dart';
 import '../services/realtime_client.dart';
@@ -40,6 +41,9 @@ class ListDetailController extends ChangeNotifier {
 
   /// Prodotti da suggerire mentre si scrive (già usati, poi i più comuni).
   List<ProductSuggestion> suggestions = [];
+
+  /// "I miei prezzi" dell'utente (dal più recente): compaiono sotto gli articoli, solo a lui.
+  List<UserPrice> myPrices = [];
   bool loading = true;
   String? error;
 
@@ -83,6 +87,37 @@ class ListDetailController extends ChangeNotifier {
       ..add(realtime.reconnected.listen((_) => load(silent: true)));
     load();
     _loadSuggestions();
+    _loadMyPrices();
+  }
+
+  Future<void> _loadMyPrices() async {
+    try {
+      myPrices = await api.myPrices();
+      _notify();
+    } catch (e) {
+      // Senza prezzi la lista funziona lo stesso.
+      debugPrint('Prezzi non disponibili: $e');
+    }
+  }
+
+  /// Il mio prezzo più recente per l'articolo: stesso codice a barre, altrimenti stesso nome.
+  UserPrice? myPriceFor(ListItem item) {
+    final name = item.name.trim().toLowerCase();
+    for (final p in myPrices) {
+      if (item.barcode != null && p.barcode != null) {
+        if (p.barcode == item.barcode) return p;
+      } else if (p.productName.trim().toLowerCase() == name) {
+        return p;
+      }
+    }
+    return null;
+  }
+
+  /// Salva il mio prezzo per l'articolo (nuovo o modifica di quello che c'era) e lo mette in cima.
+  Future<void> saveMyPrice(UserPrice price) async {
+    final saved = price.id == 0 ? await api.addMyPrice(price) : await api.updateMyPrice(price.id, price);
+    myPrices = [saved, ...myPrices.where((p) => p.id != saved.id)];
+    _notify();
   }
 
   Future<void> _loadSuggestions() async {

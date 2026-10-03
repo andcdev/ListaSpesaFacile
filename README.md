@@ -70,7 +70,8 @@ Sorgente modificabile: [`docs/architettura.svg`](docs/architettura.svg).
   catene note; è solo informativo (nella lista non compaiono prezzi né totali).
 - **I miei prezzi** (menu del profilo): i prezzi che ti annoti per i prodotti (a confezione, al kg o al litro, con
   supermercato e nota). Li vedi solo tu: si cercano, si aggiungono, si modificano toccandoli e si eliminano scorrendo
-  verso sinistra. Si aggiungono anche dal menu ⋮ di un prodotto della lista (*Il mio prezzo*).
+  verso sinistra. Si aggiungono anche dal menu ⋮ di un prodotto della lista (*Il mio prezzo*): da lì compaiono sotto
+  il prodotto in ogni lista (stesso codice a barre o stesso nome), sempre solo a chi li ha annotati.
 - **Info prodotto** (menu ⋮ → *Info*): codice a barre, foto, se è adatto a celiaci (senza glutine), vegetariani e
   vegani, olio di palma, calorie e valori nutrizionali per 100 g, allergeni e tracce, ingredienti, Nutri-Score e
   NOVA, da **Open Food Facts** (igiene, casa e animali da Open Beauty Facts, Open Products Facts e Open Pet Food

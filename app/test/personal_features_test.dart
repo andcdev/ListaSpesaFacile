@@ -10,6 +10,8 @@ import 'package:lista_spesa_facile/models/product_info.dart';
 import 'package:lista_spesa_facile/models/user_price.dart';
 import 'package:lista_spesa_facile/screens/my_prices_screen.dart';
 import 'package:lista_spesa_facile/services/api_client.dart';
+import 'package:lista_spesa_facile/services/realtime_client.dart';
+import 'package:lista_spesa_facile/state/list_detail_controller.dart';
 import 'package:lista_spesa_facile/widgets/product_info_sheet.dart';
 import 'package:lista_spesa_facile/widgets/ui.dart';
 import 'package:provider/provider.dart';
@@ -25,6 +27,23 @@ Widget _app(Widget home, {ApiClient? api}) {
 }
 
 void main() {
+  test('il mio prezzo compare sotto l\'articolo: stesso codice a barre, altrimenti stesso nome', () {
+    final api = ApiClient(baseUrl: 'http://127.0.0.1:9');
+    final detail = ListDetailController(api: api, realtime: RealtimeClient(api), listId: 1, userId: 1)
+      ..myPrices = [
+        const UserPrice(id: 3, productName: 'Kefir', price: 5, barcode: '8000000000001'),
+        const UserPrice(id: 2, productName: 'latte ', price: 1.39),
+        const UserPrice(id: 1, productName: 'Latte', price: 1.10),
+      ];
+    ListItem item(String name, [String? barcode]) =>
+        ListItem.fromJson({'id': 1, 'shopping_list_id': 1, 'name': name, 'barcode': barcode});
+
+    expect(detail.myPriceFor(item('Latte'))?.id, 2, reason: 'il più recente, senza badare a maiuscole e spazi');
+    expect(detail.myPriceFor(item('Kefir Nestlé', '8000000000001'))?.id, 3);
+    expect(detail.myPriceFor(item('Kefir', '8000000000002')), isNull, reason: 'codice a barre diverso');
+    expect(detail.myPriceFor(item('Pane')), isNull);
+  });
+
   test("controllo dell'email in registrazione", () {
     for (final ok in ['mario@example.com', 'mario.rossi+spesa@mail.example.it']) {
       expect(isValidEmail(ok), isTrue, reason: ok);
