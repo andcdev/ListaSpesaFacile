@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * Prezzo che un utente si annota per un prodotto (a confezione, al kg o al litro), di solito in un supermercato.
- * Lo vede solo lui: non compare nelle liste né agli altri utenti.
+ * Lo vede solo lui: sotto i prodotti delle sue liste e in "I miei prezzi", mai agli altri utenti.
  */
 #[Fillable(['product_name', 'barcode', 'brand', 'supermarket', 'price', 'per', 'note'])]
 class UserPrice extends Model

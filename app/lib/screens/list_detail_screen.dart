@@ -211,22 +211,27 @@ class _ListDetailScreenState extends State<ListDetailScreen> {
   void _openInfo(ListDetailController detail, ListItem item) =>
       showProductInfo(context, item: item, info: detail.productInfo(item));
 
-  /// Il mio prezzo per il prodotto: si salva nella sezione "I miei prezzi" e lo vede solo l'utente.
+  /// Il mio prezzo per il prodotto: si salva nella sezione "I miei prezzi", compare sotto l'articolo e lo vede solo
+  /// l'utente. Se ne ha già uno per questo prodotto, lo modifica.
   Future<void> _addMyPrice(ListDetailController detail, ListItem item) async {
+    final existing = detail.myPriceFor(item);
     final price = await showMyPriceDialog(
       context,
-      initial: UserPrice(
-        id: 0,
-        productName: item.name,
-        price: 0,
-        barcode: item.barcode,
-        brand: item.brand,
-        supermarket: detail.list?.supermarket,
-      ),
+      editing: existing != null,
+      initial:
+          existing ??
+          UserPrice(
+            id: 0,
+            productName: item.name,
+            price: 0,
+            barcode: item.barcode,
+            brand: item.brand,
+            supermarket: detail.list?.supermarket,
+          ),
     );
     if (price == null || !mounted) return;
     await _run(() async {
-      await context.read<ApiClient>().addMyPrice(price);
+      await detail.saveMyPrice(price);
       if (mounted) showMessage(context, context.l10n.myPriceSaved);
     });
   }
@@ -605,8 +610,13 @@ class _ListDetailScreenState extends State<ListDetailScreen> {
     final theme = Theme.of(context);
     final error = theme.colorScheme.error;
     final l = context.l10n;
+    final myPrice = detail.myPriceFor(item);
     final details = [
       ?item.measureLabel,
+      if (myPrice != null)
+        myPrice.per == 'pz'
+            ? formatPrice(context, myPrice.price)
+            : '${formatPrice(context, myPrice.price)} ${perLabel(myPrice.per, l)}',
       if (item.checked && item.checkedBy != null) l.takenBy(item.checkedBy!),
       if (item.missing) item.checkedBy == null ? l.notFoundLower : l.notFoundBy(item.checkedBy!),
     ].join(' · ');
