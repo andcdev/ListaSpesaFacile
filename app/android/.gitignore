@@ -12,3 +12,6 @@ GeneratedPluginRegistrant.java
 key.properties
 **/*.keystore
 **/*.jks
+
+# Firebase: configurazione del progetto, non va nel repository (si scarica dalla Console Firebase).
+app/google-services.json

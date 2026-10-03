@@ -273,7 +273,9 @@ conviene togliere l'app dall'ottimizzazione della batteria.
 2. **App**: *Aggiungi app → Android*, package `it.listaspesafacile.lista_spesa_facile`. Scarica
    `google-services.json` in `app/android/app/`. Gradle applica il plugin Google Services solo se il file c'è.
 3. **Server**: *Impostazioni progetto → Account di servizio → Genera nuova chiave privata*. Salva il file come
-   `secrets/firebase-service-account.json` (la cartella è montata in sola lettura in `app`, `worker` e `scheduler`),
+   `secrets/firebase-service-account.json` (la cartella è montata in sola lettura in `app`, `worker` e `scheduler`).
+   PHP-FPM gira come `www-data`, quindi il file deve essere leggibile dal suo gruppo:
+   `chgrp $(docker compose exec -T app id -g www-data) secrets/firebase-service-account.json && chmod 640 secrets/firebase-service-account.json`,
    poi `docker compose up -d`.
 4. Verifica: `curl http://localhost/api/config` deve restituire `"push": true`.
 
