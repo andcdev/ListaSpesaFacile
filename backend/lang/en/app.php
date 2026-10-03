@@ -14,6 +14,8 @@ return [
         'share_self_all' => 'You can\'t share your lists with yourself.',
         'share_self_list' => 'You can\'t share the list with yourself.',
         'already_owner' => 'You already own this list.',
+        'list_full' => 'This list is already shared with :max people, the maximum.',
+        'lists_full' => 'You can\'t share your lists with anyone else: a list would go over :max people.',
         'mail_unavailable' => 'We can\'t send the email right now. Please try again later.',
         'reset_code_invalid' => 'Invalid or expired code.',
         'owner_only_permission' => 'Only the owner can change this permission.',

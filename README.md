@@ -88,6 +88,8 @@ Sorgente modificabile: [`docs/architettura.svg`](docs/architettura.svg).
   - *globale*: tutte le tue liste, comprese quelle future, con uno o più utenti (icona in alto nell'elenco).
   Per ogni utente si sceglie **Solo lettura** oppure **Lettura e modifica**, e si può cambiare in ogni momento
   (anche alla **creazione** della lista, per ogni destinatario). Chi riceve una condivisione può abbandonarla.
+  Una lista la vedono al massimo **50 persone** oltre al proprietario, contando anche chi ha ricevuto tutte le sue
+  liste: oltre, la condivisione viene rifiutata con un messaggio.
 - **Promemoria**: alla creazione (o modifica) scegli un avviso *10 minuti prima*, *1 ora prima* o
   *personalizzato* (da 1 minuto a 30 giorni) e chi avvisare: solo il creatore, solo i destinatari o tutti.
 - **Chat** interna per ogni lista: si apre **sotto la lista**, nella stessa schermata (con una barra minima,

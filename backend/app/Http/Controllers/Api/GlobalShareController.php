@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Events\ListsChanged;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
+use App\Models\ShoppingList;
 use App\Models\User;
 use App\Notifications\GlobalShareReceived;
 use App\Support\Notifier;
@@ -46,6 +47,10 @@ class GlobalShareController extends Controller
         }
         if ($user->is($owner)) {
             throw ValidationException::withMessages(['email' => [__('app.errors.share_self_all')]]);
+        }
+
+        if (! $owner->globalShareRecipients()->whereKey($user->id)->exists() && $this->wouldOverflow($owner, $user)) {
+            throw ValidationException::withMessages(['email' => [__('app.errors.lists_full', ['max' => ShoppingList::MAX_PEOPLE])]]);
         }
 
         $canEdit = (bool) ($data['can_edit'] ?? true);
@@ -99,5 +104,21 @@ class GlobalShareController extends Controller
         Realtime::broadcast(new ListsChanged([$me->id, $user->id]));
 
         return response()->json(status: 204);
+    }
+
+    /**
+     * Con [user] in più, qualche lista del proprietario (o una nuova, che vedrebbero tutti quelli che hanno ricevuto
+     * le sue liste) supererebbe ShoppingList::MAX_PEOPLE persone.
+     */
+    private function wouldOverflow(User $owner, User $user): bool
+    {
+        $global = $owner->globalShareRecipients()->pluck('users.id')->push($user->id)->unique();
+        if ($global->count() > ShoppingList::MAX_PEOPLE) {
+            return true;
+        }
+
+        return $owner->ownedLists()->with('sharedWith:id')->get()->contains(
+            fn (ShoppingList $list) => $global->merge($list->sharedWith->pluck('id'))->unique()->count() > ShoppingList::MAX_PEOPLE
+        );
     }
 }

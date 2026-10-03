@@ -145,4 +145,38 @@ class SharingTest extends TestCase
         $this->postJson('/api/broadcasting/auth', ['socket_id' => '1.1', 'channel_name' => "presence-list.{$list->id}"])
             ->assertForbidden();
     }
+
+    public function test_a_list_is_shared_with_at_most_50_people(): void
+    {
+        $list = ShoppingList::factory()->create();
+        $list->sharedWith()->attach(User::factory()->count(ShoppingList::MAX_PEOPLE - 1)->create()->pluck('id'));
+        $one = User::factory()->create();
+        $tooMany = User::factory()->create();
+        Sanctum::actingAs($list->owner);
+
+        $this->postJson("/api/lists/{$list->id}/shares", ['email' => $one->email])->assertOk();
+        $this->postJson("/api/lists/{$list->id}/shares", ['email' => $tooMany->email])
+            ->assertJsonValidationErrors(['email' => 'già condivisa con 50 persone']);
+        // Cambiare il permesso di chi c'è già resta possibile.
+        $this->postJson("/api/lists/{$list->id}/shares", ['email' => $one->email, 'can_edit' => false])->assertOk();
+    }
+
+    public function test_people_receiving_all_lists_count_towards_the_limit(): void
+    {
+        $owner = User::factory()->create();
+        $owner->globalShareRecipients()->attach(User::factory()->count(ShoppingList::MAX_PEOPLE - 1)->create()->pluck('id'));
+        $list = ShoppingList::factory()->create(['owner_id' => $owner->id]);
+        $list->sharedWith()->attach(User::factory()->create()->id);
+        $other = User::factory()->create();
+        Sanctum::actingAs($owner);
+
+        $this->postJson("/api/lists/{$list->id}/shares", ['email' => $other->email])->assertJsonValidationErrors('email');
+        $this->postJson('/api/global-shares', ['email' => $other->email])->assertJsonValidationErrors('email');
+        $this->postJson('/api/lists', ['name' => 'Spesa', 'scheduled_at' => now()->addDay()->toIso8601String(), 'shares' => [['email' => $other->email]]])->assertCreated();
+        $this->postJson('/api/lists', [
+            'name' => 'Troppa gente',
+            'scheduled_at' => now()->addDay()->toIso8601String(),
+            'shares' => [['email' => $other->email], ['email' => User::factory()->create()->email]],
+        ])->assertJsonValidationErrors('shares');
+    }
 }

@@ -15,6 +15,9 @@ use Illuminate\Support\Facades\Storage;
 #[Fillable(['name', 'notes', 'supermarket', 'scheduled_at', 'reminder_minutes', 'reminder_target', 'members_can_rename'])]
 class ShoppingList extends Model
 {
+    /** Persone che possono vedere una lista, oltre al proprietario. */
+    public const MAX_PEOPLE = 50;
+
     use HasFactory;
 
     public const PERMISSION_OWNER = 'owner';
@@ -198,6 +201,17 @@ class ShoppingList extends Model
             self::PERMISSION_EDIT => $this->members_can_rename,
             default => false,
         };
+    }
+
+    /**
+     * Id delle persone (proprietario escluso) che vedono la lista: chi l'ha ricevuta singolarmente e chi ha ricevuto
+     * tutte le liste del proprietario. Non possono essere più di MAX_PEOPLE.
+     *
+     * @return array<int, int>
+     */
+    public function peopleIds(): array
+    {
+        return array_values(array_diff($this->audienceIds(), [$this->owner_id]));
     }
 
     /**
