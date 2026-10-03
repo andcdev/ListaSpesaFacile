@@ -277,7 +277,8 @@ conviene togliere l'app dall'ottimizzazione della batteria.
    PHP-FPM gira come `www-data`, quindi il file deve essere leggibile dal suo gruppo:
    `chgrp $(docker compose exec -T app id -g www-data) secrets/firebase-service-account.json && chmod 640 secrets/firebase-service-account.json`,
    poi `docker compose up -d`.
-4. Verifica: `curl http://localhost/api/config` deve restituire `"push": true`.
+4. Verifica: `curl -H "X-App-Key: $CLIENT_KEY" https://api.listaspesafacile.com/api/config` (in locale
+   `http://localhost/api/config`) deve restituire `"push": true`.
 
 L'app si registra con `POST /api/devices` dopo l'accesso e si scollega al logout. I token non più validi
 vengono eliminati automaticamente.
