@@ -1,0 +1,53 @@
+<!doctype html>
+<!-- Grafica in evidenza per il Play Store (1024×500): python3 marchio/sorgenti/grafica-play.py -->
+<html><head><meta charset="utf-8"><style>
+@font-face { font-family: Fraunces; src: url(../../app/assets/fonts/Fraunces-Bold.ttf); font-weight: 700; }
+@font-face { font-family: Figtree; src: url(../../app/assets/fonts/Figtree-Medium.ttf); font-weight: 500; }
+@font-face { font-family: Figtree; src: url(../../app/assets/fonts/Figtree-SemiBold.ttf); font-weight: 600; }
+@font-face { font-family: Figtree; src: url(../../app/assets/fonts/Figtree-Bold.ttf); font-weight: 700; }
+* { box-sizing: border-box; margin: 0; }
+body { width: 1024px; height: 500px; overflow: hidden; font-family: Figtree;
+  background: #efeae2 url(../../app/assets/backgrounds/carrelli_light.png) 0 0 / 340px; color: #20241f; }
+.velo { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(239,234,226,.97) 0 52%, rgba(239,234,226,.55)); }
+.testo { position: absolute; left: 72px; top: 0; bottom: 0; width: 470px; display: flex; flex-direction: column; justify-content: center; }
+.testo img { width: 96px; height: 96px; margin-bottom: 26px; filter: drop-shadow(0 6px 14px rgba(23,59,31,.25)); }
+h1 { font-family: Fraunces; font-size: 54px; line-height: 1.02; color: #173b1f; letter-spacing: -0.01em; }
+.motto { font-family: Fraunces; font-size: 32px; color: #e4572e; margin-top: 14px; }
+.sotto { font-size: 19px; color: #4c5a50; margin-top: 16px; line-height: 1.4; font-weight: 500; }
+.scheda { position: absolute; right: 70px; top: 58px; width: 360px; background: #fff; border-radius: 26px;
+  box-shadow: 0 18px 44px rgba(23,59,31,.20); padding: 24px 24px 18px; transform: rotate(2deg); }
+.scheda h2 { font-size: 22px; font-weight: 700; color: #173b1f; display: flex; justify-content: space-between; align-items: center; }
+.persone { display: flex; }
+.persone span { width: 30px; height: 30px; border-radius: 50%; border: 2px solid #fff; margin-left: -8px; color: #fff;
+  font-size: 13px; font-weight: 700; display: grid; place-items: center; }
+.reparto { font-size: 13px; font-weight: 700; color: #2f6b3a; text-transform: uppercase; letter-spacing: .06em; margin: 16px 0 6px; }
+.voce { display: flex; align-items: center; gap: 12px; padding: 8px 0; font-size: 18px; font-weight: 600; border-bottom: 1px solid #eef0ea; }
+.voce:last-child { border-bottom: 0; }
+.casella { width: 24px; height: 24px; border-radius: 7px; border: 2.5px solid #9aa596; flex: none; }
+.fatto .casella { background: #2f6b3a; border-color: #2f6b3a; position: relative; }
+.fatto .casella::after { content: ""; position: absolute; left: 6px; top: 2px; width: 6px; height: 11px; border: solid #fff; border-width: 0 3px 3px 0; transform: rotate(45deg); }
+.fatto .nome { text-decoration: line-through; color: #9aa596; }
+.qta { margin-left: auto; font-size: 15px; color: #5e6459; font-weight: 500; }
+.chat { position: absolute; right: 330px; bottom: 34px; background: #2f6b3a; color: #fff; font-size: 17px; font-weight: 600;
+  padding: 12px 18px; border-radius: 20px 20px 4px 20px; box-shadow: 0 10px 26px rgba(23,59,31,.25); transform: rotate(-2deg); }
+</style></head><body>
+<div class="velo"></div>
+<div class="testo">
+  <img src="../logo-512.png" alt="">
+  <h1>Lista Spesa Facile</h1>
+  <div class="motto">La spesa, insieme.</div>
+  <div class="sotto">La lista condivisa che si aggiorna<br>in tempo reale su tutti i telefoni.</div>
+</div>
+<div class="scheda">
+  <h2>Spesa di sabato <span class="persone"><span style="background:#e4572e">G</span><span style="background:#3a6ea5">M</span><span style="background:#2f6b3a">A</span></span></h2>
+  <div class="reparto">Frutta e verdura</div>
+  <div class="voce fatto"><span class="casella"></span><span class="nome">Mele</span><span class="qta">2 kg</span></div>
+  <div class="voce"><span class="casella"></span><span class="nome">Pomodori</span><span class="qta">1 kg</span></div>
+  <div class="reparto">Latticini</div>
+  <div class="voce fatto"><span class="casella"></span><span class="nome">Yogurt</span><span class="qta">3</span></div>
+  <div class="voce"><span class="casella"></span><span class="nome">Mozzarella</span><span class="qta">2</span></div>
+  <div class="reparto">Panetteria</div>
+  <div class="voce"><span class="casella"></span><span class="nome">Pane</span><span class="qta">500 g</span></div>
+</div>
+<div class="chat">Prendo anche il pane?</div>
+</body></html>
