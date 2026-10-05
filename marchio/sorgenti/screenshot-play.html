@@ -1,0 +1,30 @@
+<!doctype html>
+<!-- Screenshot per il Play Store (telefono 1080×1920, tablet 1440×2560): python3 marchio/sorgenti/screenshot-play.py -->
+<html><head><meta charset="utf-8"><style>
+@font-face { font-family: Fraunces; src: url(../../app/assets/fonts/Fraunces-Bold.ttf); font-weight: 700; }
+@font-face { font-family: Figtree; src: url(../../app/assets/fonts/Figtree-Medium.ttf); font-weight: 500; }
+* { box-sizing: border-box; margin: 0; }
+body { width: 1080px; height: 1920px; overflow: hidden; font-family: Figtree;
+  background: #2f6b3a; color: #fff; position: relative; }
+.motivo { position: absolute; inset: 0; background: url(../../app/assets/backgrounds/carrelli_light.png) 0 0 / 360px; opacity: .07; }
+.testo { position: absolute; top: 96px; left: 70px; right: 70px; text-align: center; }
+h1 { font-family: Fraunces; font-size: 76px; line-height: 1.05; letter-spacing: -0.01em; }
+h1 em { font-style: normal; color: #ffb59c; }
+p { font-size: 36px; margin-top: 20px; color: #d6e8d4; font-weight: 500; }
+.telefono { position: absolute; left: 50%; top: 330px; transform: translateX(-50%); width: 720px; padding: 16px;
+  background: #121613; border-radius: 72px; box-shadow: 0 30px 70px rgba(0,0,0,.35); }
+.telefono img { display: block; width: 688px; height: 1529px; border-radius: 58px; }
+.tablet .telefono { width: 886px; padding: 16px; border-radius: 44px; }
+.tablet .telefono img { width: 854px; height: 1518px; border-radius: 28px; }
+</style></head><body>
+<div class="motivo"></div>
+<div class="testo"><h1 id="titolo"></h1><p id="sotto"></p></div>
+<div class="telefono"><img id="cattura" alt=""></div>
+<script>
+const q = new URLSearchParams(location.search);
+document.getElementById('titolo').innerHTML = q.get('t');
+document.getElementById('sotto').textContent = q.get('s');
+document.getElementById('cattura').src = 'catture/' + q.get('img');
+if (q.get('tablet')) document.body.classList.add('tablet');
+</script>
+</body></html>
