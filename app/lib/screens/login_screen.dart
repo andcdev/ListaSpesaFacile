@@ -110,7 +110,6 @@ class _LoginScreenState extends State<LoginScreen> {
                       const SocialLoginSection(),
                       const SizedBox(height: 24),
                       const LanguageTile(),
-                      const ServerSettingsTile(),
                     ],
                   ),
                 ),
@@ -119,41 +118,6 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         ),
       ),
-    );
-  }
-}
-
-/// Permette di cambiare l'indirizzo del backend (utile tra sviluppo locale e VPS).
-class ServerSettingsTile extends StatelessWidget {
-  const ServerSettingsTile({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final auth = context.watch<AuthController>();
-    return ListTile(
-      leading: const Icon(Icons.dns_outlined),
-      title: Text(context.l10n.server),
-      subtitle: Text(auth.serverUrl),
-      trailing: const Icon(Icons.edit_outlined),
-      onTap: () async {
-        final controller = TextEditingController(text: auth.serverUrl);
-        final url = await showDialog<String>(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: Text(context.l10n.serverAddress),
-            content: TextField(
-              controller: controller,
-              keyboardType: TextInputType.url,
-              decoration: const InputDecoration(hintText: 'https://api.listaspesafacile.com'),
-            ),
-            actions: [
-              TextButton(onPressed: () => Navigator.pop(context), child: Text(context.l10n.cancel)),
-              FilledButton(onPressed: () => Navigator.pop(context, controller.text), child: Text(context.l10n.save)),
-            ],
-          ),
-        );
-        if (url != null && url.trim().isNotEmpty) await auth.setServerUrl(url);
-      },
     );
   }
 }

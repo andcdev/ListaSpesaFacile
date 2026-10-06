@@ -48,8 +48,6 @@
   "forgotPasswordQuestion": "Passwort vergessen?",
   "signIn": "Anmelden",
   "noAccount": "Noch kein Konto? Registrieren",
-  "server": "Server",
-  "serverAddress": "Serveradresse",
   "socialNotActiveTitle": "Anmeldung mit {provider} noch nicht aktiv",
   "socialNotActiveBody": "Der Server ist noch nicht mit {provider} verbunden. Der Serveradministrator muss die App bei {provider} registrieren und ID und Secret in die Datei .env eintragen (siehe README, \"Accesso con Google e Amazon\").\n\nBis dahin kannst du dich mit E-Mail und Passwort registrieren.",
   "or": "oder",

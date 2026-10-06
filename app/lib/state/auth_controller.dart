@@ -39,11 +39,8 @@ class AuthController extends ChangeNotifier {
   /// Configurazione del server letta all'accesso (reparti, unità di misura…).
   ServerConfig? serverConfig;
 
-  String get serverUrl => api.baseUrl;
-
   /// Ripristina la sessione salvata all'avvio dell'app.
   Future<void> init() async {
-    api.baseUrl = await storage.readServerUrl();
     api.token = await storage.readToken();
     if (api.token == null) {
       status = AuthStatus.signedOut;
@@ -73,15 +70,6 @@ class AuthController extends ChangeNotifier {
       socialProviders = [];
     }
     notifyListeners();
-  }
-
-  Future<void> setServerUrl(String url) async {
-    var normalized = url.trim().replaceAll(RegExp(r'/+$'), '');
-    if (!normalized.startsWith('http')) normalized = 'https://$normalized';
-    api.baseUrl = normalized;
-    await storage.writeServerUrl(normalized);
-    notifyListeners();
-    await loadSocialProviders();
   }
 
   Future<void> login(String email, String password) async {

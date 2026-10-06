@@ -48,8 +48,6 @@
   "forgotPasswordQuestion": "Mot de passe oublié ?",
   "signIn": "Se connecter",
   "noAccount": "Pas de compte ? Inscrivez-vous",
-  "server": "Serveur",
-  "serverAddress": "Adresse du serveur",
   "socialNotActiveTitle": "Connexion avec {provider} pas encore active",
   "socialNotActiveBody": "Le serveur n'est pas encore relié à {provider}. L'administrateur du serveur doit enregistrer l'application auprès de {provider} et saisir l'ID et le secret dans le fichier .env (voir le README, \"Accesso con Google e Amazon\").\n\nEn attendant, vous pouvez vous inscrire avec e-mail et mot de passe.",
   "or": "ou",

@@ -48,8 +48,6 @@
   "forgotPasswordQuestion": "Forgot password?",
   "signIn": "Sign in",
   "noAccount": "Don't have an account? Sign up",
-  "server": "Server",
-  "serverAddress": "Server address",
   "socialNotActiveTitle": "Sign-in with {provider} not active yet",
   "socialNotActiveBody": "The server is not connected to {provider} yet. The server administrator must register the app with {provider} and put its ID and secret in the .env file (see the README, \"Accesso con Google e Amazon\").\n\nIn the meantime you can sign up with email and password.",
   "or": "or",

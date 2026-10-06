@@ -165,12 +165,6 @@ class AppLocalizationsDe extends AppLocalizations {
   String get noAccount => 'Noch kein Konto? Registrieren';
 
   @override
-  String get server => 'Server';
-
-  @override
-  String get serverAddress => 'Serveradresse';
-
-  @override
   String socialNotActiveTitle(String provider) {
     return 'Anmeldung mit $provider noch nicht aktiv';
   }

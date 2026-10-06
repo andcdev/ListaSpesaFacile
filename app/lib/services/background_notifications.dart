@@ -133,7 +133,7 @@ class _NotificationsTask extends TaskHandler {
         await FlutterForegroundTask.stopService();
         return;
       }
-      final api = ApiClient(baseUrl: await storage.readServerUrl())
+      final api = ApiClient(baseUrl: defaultServerUrl)
         ..token = token
         ..language = currentLanguage;
       final user = await api.me();

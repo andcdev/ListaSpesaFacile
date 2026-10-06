@@ -76,8 +76,6 @@
   "forgotPasswordQuestion": "Password dimenticata?",
   "signIn": "Accedi",
   "noAccount": "Non hai un account? Registrati",
-  "server": "Server",
-  "serverAddress": "Indirizzo del server",
   "socialNotActiveTitle": "Accesso con {provider} non ancora attivo",
   "@socialNotActiveTitle": {
     "placeholders": {
