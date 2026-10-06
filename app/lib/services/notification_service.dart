@@ -30,7 +30,7 @@ Future<void> firebaseBackgroundHandler(RemoteMessage message) async {
     final storage = SessionStorage();
     final token = await storage.readToken();
     if (token == null) return;
-    final api = ApiClient(baseUrl: await storage.readServerUrl())
+    final api = ApiClient(baseUrl: defaultServerUrl)
       ..token = token
       ..language = language;
     await NotificationService.confirmDelivery(api, notification);

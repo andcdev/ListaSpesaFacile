@@ -392,18 +392,6 @@ abstract class AppLocalizations {
   /// **'Non hai un account? Registrati'**
   String get noAccount;
 
-  /// No description provided for @server.
-  ///
-  /// In it, this message translates to:
-  /// **'Server'**
-  String get server;
-
-  /// No description provided for @serverAddress.
-  ///
-  /// In it, this message translates to:
-  /// **'Indirizzo del server'**
-  String get serverAddress;
-
   /// No description provided for @socialNotActiveTitle.
   ///
   /// In it, this message translates to:

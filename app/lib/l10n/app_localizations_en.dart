@@ -162,12 +162,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noAccount => 'Don\'t have an account? Sign up';
 
   @override
-  String get server => 'Server';
-
-  @override
-  String get serverAddress => 'Server address';
-
-  @override
   String socialNotActiveTitle(String provider) {
     return 'Sign-in with $provider not active yet';
   }

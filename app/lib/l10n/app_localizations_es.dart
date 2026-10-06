@@ -165,12 +165,6 @@ class AppLocalizationsEs extends AppLocalizations {
   String get noAccount => '¿No tienes cuenta? Regístrate';
 
   @override
-  String get server => 'Servidor';
-
-  @override
-  String get serverAddress => 'Dirección del servidor';
-
-  @override
   String socialNotActiveTitle(String provider) {
     return 'Acceso con $provider aún no activo';
   }
