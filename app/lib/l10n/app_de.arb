@@ -154,8 +154,6 @@
   "channelName": "Einkaufslisten",
   "channelDescription": "Erinnerungen, Freigaben und Nachrichten",
   "you": "Du",
-  "serviceChannelName": "Verbindung im Hintergrund",
-  "serviceChannelDescription": "Hält die App verbunden, um Listen und Nachrichten auch geschlossen zu empfangen",
   "reminderTitle": "Erinnerung: {name}",
   "reminderBody": "Der Einkauf ist in {duration}.",
   "sendPhoto": "Foto senden",

@@ -154,8 +154,6 @@
   "channelName": "Listas de la compra",
   "channelDescription": "Recordatorios, comparticiones y mensajes de las listas",
   "you": "Tú",
-  "serviceChannelName": "Conexión en segundo plano",
-  "serviceChannelDescription": "Mantiene la app conectada para recibir listas y mensajes aunque esté cerrada",
   "reminderTitle": "Recordatorio: {name}",
   "reminderBody": "La compra es dentro de {duration}.",
   "sendPhoto": "Enviar una foto",

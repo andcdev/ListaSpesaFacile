@@ -154,8 +154,6 @@
   "channelName": "Shopping lists",
   "channelDescription": "Reminders, shares and list messages",
   "you": "You",
-  "serviceChannelName": "Background connection",
-  "serviceChannelDescription": "Keeps the app connected to receive lists and messages even when it is closed",
   "reminderTitle": "Reminder: {name}",
   "reminderBody": "Shopping is in {duration}.",
   "sendPhoto": "Send a photo",

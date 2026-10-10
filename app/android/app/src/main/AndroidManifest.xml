@@ -3,12 +3,6 @@
     <!-- Notifiche (Android 13+) e promemoria che sopravvivono al riavvio del telefono. -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-    <!-- Notifiche con l'app chiusa senza Firebase: servizio in primo piano che resta collegato al server
-         (flutter_foreground_task, tipo "remoteMessaging" come le app di messaggistica). -->
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_REMOTE_MESSAGING" />
-    <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
     <!-- Dettatura vocale di articoli e messaggi (speech_to_text). -->
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <!-- usesCleartextTraffic permette http:// verso il backend locale in sviluppo.
@@ -40,10 +34,6 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <!-- Icona della notifica fissa del servizio in background (carrello bianco). -->
-        <meta-data
-            android:name="it.listaspesafacile.NOTIFICATION_ICON"
-            android:resource="@drawable/ic_notification" />
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
         <meta-data
@@ -59,11 +49,6 @@
                 <action android:name="com.htc.intent.action.QUICKBOOT_POWERON"/>
             </intent-filter>
         </receiver>
-        <!-- Servizio delle notifiche ad app chiusa (il nome non va cambiato). -->
-        <service
-            android:name="com.pravera.flutter_foreground_task.service.ForegroundService"
-            android:foregroundServiceType="remoteMessaging"
-            android:exported="false" />
         <!-- Canale predefinito delle notifiche push (lo stesso creato dall'app). -->
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_channel_id"

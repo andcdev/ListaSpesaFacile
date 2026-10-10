@@ -318,8 +318,6 @@
   "channelName": "Liste della spesa",
   "channelDescription": "Promemoria, condivisioni e messaggi delle liste",
   "you": "Tu",
-  "serviceChannelName": "Collegamento in background",
-  "serviceChannelDescription": "Tiene l'app collegata per ricevere liste e messaggi anche quando è chiusa",
   "reminderTitle": "Promemoria: {name}",
   "@reminderTitle": {
     "placeholders": {
