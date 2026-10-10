@@ -73,4 +73,14 @@ return [
         'enabled' => (bool) env('OPENFOODFACTS_ENABLED', true),
     ],
 
+    // Controllo automatico delle foto caricate (servizio "moderazione" nel docker-compose): nudità, contenuti
+    // sessuali e violenza. Vuoto = nessun controllo (in locale e nei test). Soglie da 0 a 1: sopra, la foto è
+    // rifiutata e l'assistenza riceve un'email.
+    'moderation' => [
+        'url' => env('MODERATION_URL'),
+        'sexual_threshold' => (float) env('MODERATION_SEXUAL_THRESHOLD', 0.8),
+        'violence_threshold' => (float) env('MODERATION_VIOLENCE_THRESHOLD', 0.75),
+        'timeout' => (int) env('MODERATION_TIMEOUT', 20),
+    ],
+
 ];

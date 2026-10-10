@@ -165,6 +165,12 @@ class AppLocalizationsDe extends AppLocalizations {
   String get noAccount => 'Noch kein Konto? Registrieren';
 
   @override
+  String get server => 'Server';
+
+  @override
+  String get serverAddress => 'Serveradresse';
+
+  @override
   String socialNotActiveTitle(String provider) {
     return 'Anmeldung mit $provider noch nicht aktiv';
   }
@@ -1348,6 +1354,94 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get allergenMolluscs => 'Weichtiere';
+
+  @override
+  String get report => 'Melden';
+
+  @override
+  String get reportProblem => 'Problem melden';
+
+  @override
+  String get reportProblemHint => 'Was hast du gemacht und was ist passiert?';
+
+  @override
+  String get reportProblemRequired => 'Beschreibe das Problem';
+
+  @override
+  String reportUser(String name) {
+    return '$name melden';
+  }
+
+  @override
+  String get reportMessage => 'Nachricht melden';
+
+  @override
+  String get reportReasonHint => 'Grund (optional)';
+
+  @override
+  String get reportInfo =>
+      'Die Meldung geht an den Support von Lista Spesa Facile, der dir per E-Mail antworten kann.';
+
+  @override
+  String get reportSent => 'Meldung gesendet. Danke!';
+
+  @override
+  String get block => 'Blockieren';
+
+  @override
+  String blockUser(String name) {
+    return '$name blockieren';
+  }
+
+  @override
+  String blockUserQuestion(String name) {
+    return '$name blockieren?';
+  }
+
+  @override
+  String get blockUserInfo =>
+      'Ihr könnt keine Listen mehr miteinander teilen, und bestehende Freigaben werden entfernt. Ihre Chatnachrichten werden nicht mehr angezeigt und du wirst über ihre Änderungen nicht benachrichtigt. Die Person erfährt nichts davon.';
+
+  @override
+  String userBlocked(String name) {
+    return 'Du hast $name blockiert';
+  }
+
+  @override
+  String get blockedPeople => 'Blockierte Personen';
+
+  @override
+  String get noBlockedPeople => 'Du hast niemanden blockiert.';
+
+  @override
+  String get unblock => 'Freigeben';
+
+  @override
+  String unblockQuestion(String name) {
+    return '$name freigeben?';
+  }
+
+  @override
+  String get unblockInfo =>
+      'Ihr könnt wieder Listen teilen. Entfernte Freigaben kommen nicht von selbst zurück.';
+
+  @override
+  String reportOrBlock(String name) {
+    return '$name melden oder blockieren';
+  }
+
+  @override
+  String get duplicate => 'Duplizieren';
+
+  @override
+  String get duplicateList => 'Liste duplizieren';
+
+  @override
+  String get createCopy => 'Kopie erstellen';
+
+  @override
+  String get copyInfo =>
+      'Produkte und Fotos werden kopiert, alle noch zu kaufen. Ändere Datum, Uhrzeit und was du willst: Die ursprüngliche Liste bleibt unverändert.';
 
   @override
   String get permission => 'Berechtigung';

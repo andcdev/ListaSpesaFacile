@@ -87,10 +87,11 @@ Disallow: /
 
 			# Solo l'app: senza X-App-Key giusta un 404 vuoto, e Laravel non viene nemmeno svegliato.
 			# /auth/* resta aperto: il login social lo apre il browser di sistema, che l'header non lo manda.
+			# Anche /moderazione/*: i pulsanti nelle email all'assistenza (link firmati da Laravel, che scadono).
 			# Con CLIENT_KEY vuota (in locale) il controllo è spento.
 			@senzaChiave {
 				expression `"{$CLIENT_KEY}" != "" && {header.X-App-Key} != "{$CLIENT_KEY}"`
-				not path /auth/*
+				not path /auth/* /moderazione/*
 			}
 			respond @senzaChiave 404
 

@@ -7,6 +7,7 @@ use App\Events\ShoppingListDeleted;
 use App\Events\ShoppingListUpdated;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ShoppingListResource;
+use App\Models\ListItem;
 use App\Models\ShoppingList;
 use App\Models\User;
 use App\Notifications\ListActivity;
@@ -21,6 +22,8 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 
@@ -53,17 +56,26 @@ class ShoppingListController extends Controller
     }
 
     /**
-     * Crea la lista; con "shares" la condivide subito con gli utenti indicati.
+     * Crea la lista; con "shares" la condivide subito con gli utenti indicati. Con "copy_from" è la copia di una
+     * lista che l'utente vede: nome, data e il resto arrivano dal modulo, articoli e foto dalla lista copiata.
      */
     public function store(Request $request): JsonResponse
     {
         $owner = $request->user();
         $data = $this->validateList($request);
         $shares = $this->resolveShares($request, $owner);
+        $source = null;
+        if ($copyFrom = $request->validate(['copy_from' => ['sometimes', 'nullable', 'integer']])['copy_from'] ?? null) {
+            $source = ShoppingList::findOrFail($copyFrom);
+            $this->authorize('view', $source);
+        }
 
-        $list = DB::transaction(function () use ($owner, $data, $shares) {
+        $list = DB::transaction(function () use ($owner, $data, $shares, $source) {
             $list = $owner->ownedLists()->create($data);
             $list->sharedWith()->attach($shares);
+            if ($source) {
+                $this->copyContents($source, $list, $owner);
+            }
 
             return $list;
         });
@@ -135,6 +147,32 @@ class ShoppingListController extends Controller
         return response()->json(status: 204);
     }
 
+    /**
+     * Copia in [$copy] gli articoli di [$source], tutti da prendere e aggiunti da [$owner], con le loro foto e la
+     * foto della lista.
+     */
+    private function copyContents(ShoppingList $source, ShoppingList $copy, User $owner): void
+    {
+        if ($source->image_path && Storage::exists($source->image_path)) {
+            $copy->image_path = 'list-images/'.$copy->id.'-'.Str::random(12).'.'.pathinfo($source->image_path, PATHINFO_EXTENSION);
+            Storage::copy($source->image_path, $copy->image_path);
+            $copy->save();
+        }
+
+        foreach ($source->items as $original) {
+            $item = new ListItem($original->only([
+                'name', 'barcode', 'brand', 'category', 'custom_icon', 'image_url', 'image_auto', 'quantity', 'amount',
+                'unit', 'position',
+            ]));
+            $item->created_by = $owner->id;
+            if ($original->image_path && Storage::exists($original->image_path)) {
+                $item->image_path = ListItem::IMAGE_DIR.'/'.$copy->id.'/'.Str::random(24).'.'.pathinfo($original->image_path, PATHINFO_EXTENSION);
+                Storage::copy($original->image_path, $item->image_path);
+            }
+            $copy->items()->save($item);
+        }
+    }
+
     private function detail(ShoppingList $list): ShoppingListResource
     {
         $list->load(['owner', 'items.creator', 'items.checker', 'sharedWith']);
@@ -193,6 +231,9 @@ class ShoppingListController extends Controller
             }
             if ($user->is($owner)) {
                 throw ValidationException::withMessages(["shares.$i.email" => [__('app.errors.share_self_list')]]);
+            }
+            if ($reason = $owner->shareBlockedReason($user)) {
+                throw ValidationException::withMessages(["shares.$i.email" => [$reason]]);
             }
             $shares[$user->id] = ['can_edit' => (bool) ($share['can_edit'] ?? true)];
         }

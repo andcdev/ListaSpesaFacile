@@ -166,6 +166,12 @@ class AppLocalizationsFr extends AppLocalizations {
   String get noAccount => 'Pas de compte ? Inscrivez-vous';
 
   @override
+  String get server => 'Serveur';
+
+  @override
+  String get serverAddress => 'Adresse du serveur';
+
+  @override
   String socialNotActiveTitle(String provider) {
     return 'Connexion avec $provider pas encore active';
   }
@@ -1356,6 +1362,94 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get allergenMolluscs => 'Mollusques';
+
+  @override
+  String get report => 'Signaler';
+
+  @override
+  String get reportProblem => 'Signaler un problème';
+
+  @override
+  String get reportProblemHint => 'Que faisiez-vous et que s\'est-il passé ?';
+
+  @override
+  String get reportProblemRequired => 'Décrivez le problème';
+
+  @override
+  String reportUser(String name) {
+    return 'Signaler $name';
+  }
+
+  @override
+  String get reportMessage => 'Signaler le message';
+
+  @override
+  String get reportReasonHint => 'Motif (facultatif)';
+
+  @override
+  String get reportInfo =>
+      'Le signalement est envoyé à l\'assistance de Lista Spesa Facile, qui pourra vous répondre par e-mail.';
+
+  @override
+  String get reportSent => 'Signalement envoyé. Merci !';
+
+  @override
+  String get block => 'Bloquer';
+
+  @override
+  String blockUser(String name) {
+    return 'Bloquer $name';
+  }
+
+  @override
+  String blockUserQuestion(String name) {
+    return 'Bloquer $name ?';
+  }
+
+  @override
+  String get blockUserInfo =>
+      'Vous ne pourrez plus partager de listes entre vous et les partages actuels sont retirés. Ses messages n\'apparaîtront plus dans les chats et vous ne serez plus averti de ses modifications. Cette personne n\'en sera pas informée.';
+
+  @override
+  String userBlocked(String name) {
+    return 'Vous avez bloqué $name';
+  }
+
+  @override
+  String get blockedPeople => 'Personnes bloquées';
+
+  @override
+  String get noBlockedPeople => 'Vous n\'avez bloqué personne.';
+
+  @override
+  String get unblock => 'Débloquer';
+
+  @override
+  String unblockQuestion(String name) {
+    return 'Débloquer $name ?';
+  }
+
+  @override
+  String get unblockInfo =>
+      'Vous pourrez de nouveau partager des listes. Les partages retirés ne reviennent pas tout seuls.';
+
+  @override
+  String reportOrBlock(String name) {
+    return 'Signaler ou bloquer $name';
+  }
+
+  @override
+  String get duplicate => 'Dupliquer';
+
+  @override
+  String get duplicateList => 'Dupliquer la liste';
+
+  @override
+  String get createCopy => 'Créer la copie';
+
+  @override
+  String get copyInfo =>
+      'Les produits et les photos sont copiés, tous à acheter. Modifiez la date, l\'heure et le reste : la liste d\'origine ne change pas.';
 
   @override
   String get permission => 'Autorisation';

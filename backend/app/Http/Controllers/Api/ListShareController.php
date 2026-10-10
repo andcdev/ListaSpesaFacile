@@ -44,6 +44,9 @@ class ListShareController extends Controller
         if ($user->id === $list->owner_id) {
             throw ValidationException::withMessages(['email' => [__('app.errors.already_owner')]]);
         }
+        if ($reason = $request->user()->shareBlockedReason($user)) {
+            throw ValidationException::withMessages(['email' => [$reason]]);
+        }
 
         $people = $list->peopleIds();
         if (! in_array($user->id, $people, true) && count($people) >= ShoppingList::MAX_PEOPLE) {

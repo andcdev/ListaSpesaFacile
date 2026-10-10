@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\ShoppingListResource;
 use App\Models\ShoppingList;
 use App\Notifications\ListActivity;
+use App\Support\ImageModeration;
 use App\Support\Realtime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -34,8 +35,9 @@ class ListImageController extends Controller
 
         $request->validate(['image' => ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:8192']]);
 
-        $old = $list->image_path;
         $file = $request->file('image');
+        ImageModeration::guard($file, $request->user(), 'list', $list, $list->name);
+        $old = $list->image_path;
         $list->image_path = $file->storeAs('list-images', $list->id.'-'.Str::random(12).'.'.$file->extension());
         $list->save();
         if ($old) {

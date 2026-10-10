@@ -392,6 +392,18 @@ abstract class AppLocalizations {
   /// **'Non hai un account? Registrati'**
   String get noAccount;
 
+  /// No description provided for @server.
+  ///
+  /// In it, this message translates to:
+  /// **'Server'**
+  String get server;
+
+  /// No description provided for @serverAddress.
+  ///
+  /// In it, this message translates to:
+  /// **'Indirizzo del server'**
+  String get serverAddress;
+
   /// No description provided for @socialNotActiveTitle.
   ///
   /// In it, this message translates to:
@@ -2437,6 +2449,150 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Molluschi'**
   String get allergenMolluscs;
+
+  /// No description provided for @report.
+  ///
+  /// In it, this message translates to:
+  /// **'Segnala'**
+  String get report;
+
+  /// No description provided for @reportProblem.
+  ///
+  /// In it, this message translates to:
+  /// **'Segnala un problema'**
+  String get reportProblem;
+
+  /// No description provided for @reportProblemHint.
+  ///
+  /// In it, this message translates to:
+  /// **'Cosa stavi facendo e cosa è successo?'**
+  String get reportProblemHint;
+
+  /// No description provided for @reportProblemRequired.
+  ///
+  /// In it, this message translates to:
+  /// **'Descrivi il problema'**
+  String get reportProblemRequired;
+
+  /// No description provided for @reportUser.
+  ///
+  /// In it, this message translates to:
+  /// **'Segnala {name}'**
+  String reportUser(String name);
+
+  /// No description provided for @reportMessage.
+  ///
+  /// In it, this message translates to:
+  /// **'Segnala messaggio'**
+  String get reportMessage;
+
+  /// No description provided for @reportReasonHint.
+  ///
+  /// In it, this message translates to:
+  /// **'Motivo (facoltativo)'**
+  String get reportReasonHint;
+
+  /// No description provided for @reportInfo.
+  ///
+  /// In it, this message translates to:
+  /// **'La segnalazione arriva all\'assistenza di Lista Spesa Facile, che può risponderti alla tua email.'**
+  String get reportInfo;
+
+  /// No description provided for @reportSent.
+  ///
+  /// In it, this message translates to:
+  /// **'Segnalazione inviata. Grazie!'**
+  String get reportSent;
+
+  /// No description provided for @block.
+  ///
+  /// In it, this message translates to:
+  /// **'Blocca'**
+  String get block;
+
+  /// No description provided for @blockUser.
+  ///
+  /// In it, this message translates to:
+  /// **'Blocca {name}'**
+  String blockUser(String name);
+
+  /// No description provided for @blockUserQuestion.
+  ///
+  /// In it, this message translates to:
+  /// **'Bloccare {name}?'**
+  String blockUserQuestion(String name);
+
+  /// No description provided for @blockUserInfo.
+  ///
+  /// In it, this message translates to:
+  /// **'Non potrete più condividere liste tra voi e le condivisioni di adesso vengono tolte. I suoi messaggi nelle chat non ti compariranno e non riceverai notifiche delle sue modifiche. Non riceverà nessun avviso.'**
+  String get blockUserInfo;
+
+  /// No description provided for @userBlocked.
+  ///
+  /// In it, this message translates to:
+  /// **'Hai bloccato {name}'**
+  String userBlocked(String name);
+
+  /// No description provided for @blockedPeople.
+  ///
+  /// In it, this message translates to:
+  /// **'Persone bloccate'**
+  String get blockedPeople;
+
+  /// No description provided for @noBlockedPeople.
+  ///
+  /// In it, this message translates to:
+  /// **'Non hai bloccato nessuno.'**
+  String get noBlockedPeople;
+
+  /// No description provided for @unblock.
+  ///
+  /// In it, this message translates to:
+  /// **'Sblocca'**
+  String get unblock;
+
+  /// No description provided for @unblockQuestion.
+  ///
+  /// In it, this message translates to:
+  /// **'Sbloccare {name}?'**
+  String unblockQuestion(String name);
+
+  /// No description provided for @unblockInfo.
+  ///
+  /// In it, this message translates to:
+  /// **'Potrete di nuovo condividere liste. Le condivisioni tolte non tornano da sole.'**
+  String get unblockInfo;
+
+  /// No description provided for @reportOrBlock.
+  ///
+  /// In it, this message translates to:
+  /// **'Segnala o blocca {name}'**
+  String reportOrBlock(String name);
+
+  /// No description provided for @duplicate.
+  ///
+  /// In it, this message translates to:
+  /// **'Duplica'**
+  String get duplicate;
+
+  /// No description provided for @duplicateList.
+  ///
+  /// In it, this message translates to:
+  /// **'Duplica lista'**
+  String get duplicateList;
+
+  /// No description provided for @createCopy.
+  ///
+  /// In it, this message translates to:
+  /// **'Crea la copia'**
+  String get createCopy;
+
+  /// No description provided for @copyInfo.
+  ///
+  /// In it, this message translates to:
+  /// **'Prodotti e foto vengono copiati, tutti da prendere. Cambia data, ora e quello che vuoi: la lista originale resta com\'è.'**
+  String get copyInfo;
 
   /// No description provided for @permission.
   ///

@@ -16,10 +16,12 @@ import '../widgets/ui.dart';
 /// Creazione (list == null) o modifica di nome, data/ora, supermercato, note e promemoria di una lista.
 /// Alla creazione si possono indicare subito i destinatari con il loro permesso; il proprietario
 /// decide anche se chi può modificare la lista può cambiarne il nome.
+/// Con [copyOf] crea una copia di quella lista: il modulo parte dai suoi dati, il server copia articoli e foto.
 class ListFormScreen extends StatefulWidget {
-  const ListFormScreen({super.key, this.list});
+  const ListFormScreen({super.key, this.list, this.copyOf});
 
   final ShoppingList? list;
+  final ShoppingList? copyOf;
 
   @override
   State<ListFormScreen> createState() => _ListFormScreenState();
@@ -27,19 +29,27 @@ class ListFormScreen extends StatefulWidget {
 
 class _ListFormScreenState extends State<ListFormScreen> {
   final _form = GlobalKey<FormState>();
-  late final _name = TextEditingController(text: widget.list?.name);
-  late final _notes = TextEditingController(text: widget.list?.notes);
-  late String _supermarket = widget.list?.supermarket ?? '';
+
+  /// Lista da cui partono i campi: quella da modificare o quella da copiare.
+  late final ShoppingList? _source = widget.list ?? widget.copyOf;
+  late final _name = TextEditingController(text: _source?.name);
+  late final _notes = TextEditingController(text: _source?.notes);
+  late String _supermarket = _source?.supermarket ?? '';
 
   /// Catene note, suggerite mentre si scrive il supermercato.
   List<Supermarket> _chains = const [];
   final _recipientEmail = TextEditingController();
   late DateTime _date;
   late TimeOfDay _time;
-  late int? _reminderMinutes = widget.list?.reminderMinutes;
-  late ReminderTarget _reminderTarget = widget.list?.reminderTarget ?? ReminderTarget.all;
-  late bool _membersCanRename = widget.list?.membersCanRename ?? false;
-  final List<ShareRequest> _recipients = [];
+  late int? _reminderMinutes = _source?.reminderMinutes;
+  late ReminderTarget _reminderTarget = _source?.reminderTarget ?? ReminderTarget.all;
+  late bool _membersCanRename = _source?.membersCanRename ?? false;
+
+  /// Copiando una propria lista si propongono le stesse persone, con lo stesso permesso.
+  late final List<ShareRequest> _recipients = [
+    if (widget.copyOf?.isOwner ?? false)
+      for (final u in widget.copyOf!.sharedWith) ShareRequest(u.email, canEdit: u.canEdit != false),
+  ];
 
   /// Foto della lista scelta alla creazione: si carica appena la lista esiste.
   String? _photoPath;
@@ -50,13 +60,14 @@ class _ListFormScreenState extends State<ListFormScreen> {
   int _reminderFieldVersion = 0;
 
   bool get _editing => widget.list != null;
+  bool get _copying => widget.copyOf != null;
   bool get _isOwner => widget.list?.isOwner ?? true;
   bool get _canRename => widget.list?.canRename ?? true;
 
   @override
   void initState() {
     super.initState();
-    final initial = widget.list?.scheduledAt ?? _defaultSchedule();
+    final initial = widget.list?.scheduledAt ?? (_copying ? _nextAt(widget.copyOf!.scheduledAt) : _defaultSchedule());
     _date = DateTime(initial.year, initial.month, initial.day);
     _time = TimeOfDay.fromDateTime(initial);
     _loadChains();
@@ -75,6 +86,14 @@ class _ListFormScreenState extends State<ListFormScreen> {
   static DateTime _defaultSchedule() {
     final next = DateTime.now().add(const Duration(hours: 1));
     return DateTime(next.year, next.month, next.day, next.hour);
+  }
+
+  /// Copia: la prima volta, da adesso in poi, alla stessa ora della lista copiata.
+  static DateTime _nextAt(DateTime original) {
+    final now = DateTime.now();
+    var next = DateTime(now.year, now.month, now.day, original.hour, original.minute);
+    if (!next.isAfter(now)) next = DateTime(now.year, now.month, now.day + 1, original.hour, original.minute);
+    return next;
   }
 
   @override
@@ -185,6 +204,7 @@ class _ListFormScreenState extends State<ListFormScreen> {
           reminderTarget: _reminderTarget,
           membersCanRename: _membersCanRename,
           shares: _recipients,
+          copyFrom: widget.copyOf?.id,
         );
         if (_photoPath != null) {
           try {
@@ -208,7 +228,13 @@ class _ListFormScreenState extends State<ListFormScreen> {
   Widget build(BuildContext context) {
     final l = context.l10n;
     return Scaffold(
-      appBar: AppBar(title: _editing ? ScreenTitle(widget.list!.name, subtitle: l.editList) : Text(l.newList)),
+      appBar: AppBar(
+        title: _editing
+            ? ScreenTitle(widget.list!.name, subtitle: l.editList)
+            : _copying
+            ? ScreenTitle(widget.copyOf!.name, subtitle: l.duplicateList)
+            : Text(l.newList),
+      ),
       body: Wallpaper(
         child: Form(
           key: _form,
@@ -216,11 +242,15 @@ class _ListFormScreenState extends State<ListFormScreen> {
             // In fondo anche lo spazio della barra di navigazione di Android, che altrimenti copre "Crea lista".
             padding: EdgeInsets.fromLTRB(16, 16, 16, 24 + MediaQuery.viewPaddingOf(context).bottom),
             children: [
+              if (_copying) ...[
+                Text(l.copyInfo, style: Theme.of(context).textTheme.bodyMedium),
+                const SizedBox(height: 16),
+              ],
               // Alla creazione: foto della lista (fa da sfondo alla testata della lista).
               if (!_editing) ...[_ListPhotoPicker(path: _photoPath, onPressed: _pickPhoto), const SizedBox(height: 16)],
               TextFormField(
                 controller: _name,
-                autofocus: !_editing,
+                autofocus: !_editing && !_copying,
                 readOnly: !_canRename,
                 decoration: InputDecoration(
                   labelText: l.name,
@@ -392,7 +422,7 @@ class _ListFormScreenState extends State<ListFormScreen> {
               FilledButton.icon(
                 onPressed: _busy ? null : _save,
                 icon: const Icon(Icons.check),
-                label: Text(_editing ? l.saveChanges : l.createList),
+                label: Text(_editing ? l.saveChanges : (_copying ? l.createCopy : l.createList)),
               ),
             ],
           ),

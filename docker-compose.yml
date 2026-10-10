@@ -54,6 +54,10 @@ x-laravel-env: &laravel-env
   MAIL_FROM_NAME: "Lista Spesa Facile"
   # Notifiche push (Firebase): attive solo se il file esiste in ./secrets.
   FCM_CREDENTIALS: /var/www/html/secrets/firebase-service-account.json
+  # Controllo automatico delle foto caricate (servizio "moderazione"). Vuoto = nessun controllo.
+  MODERATION_URL: ${MODERATION_URL-http://moderazione:8000}
+  MODERATION_SEXUAL_THRESHOLD: ${MODERATION_SEXUAL_THRESHOLD:-0.8}
+  MODERATION_VIOLENCE_THRESHOLD: ${MODERATION_VIOLENCE_THRESHOLD:-0.75}
 
 services:
   mysql:
@@ -87,9 +91,23 @@ services:
     networks:
       - web
       - database
+      - moderazione
     depends_on:
       mysql:
         condition: service_healthy
+
+  # Controllo delle foto caricate (nudità, contenuti sessuali, violenza) con modelli open source: le foto non
+  # escono dal server. Circa 1 GB di memoria e mezzo secondo per foto. Vedi moderazione/Dockerfile.
+  moderazione:
+    build: ./moderazione
+    image: listaspesafacile-moderazione
+    restart: unless-stopped
+    environment:
+      THREADS: ${MODERATION_THREADS:-2}
+    mem_limit: 2g
+    # Solo la rete interna: raggiungibile unicamente da "app", senza Internet.
+    networks:
+      - moderazione
 
   # Esegue i lavori in coda: invio delle notifiche push a Firebase.
   worker:
@@ -189,6 +207,9 @@ networks:
     internal: true
   # Solo per esporre phpMyAdmin su 127.0.0.1.
   admin:
+  # Rete isolata del controllo delle foto: solo tra "app" e "moderazione".
+  moderazione:
+    internal: true
 
 volumes:
   mysql_data:

@@ -18,7 +18,9 @@ import '../state/notifications_controller.dart';
 import '../widgets/guide.dart';
 import '../widgets/language_picker.dart';
 import '../widgets/photo_picker.dart';
+import '../widgets/report.dart';
 import '../widgets/ui.dart';
+import 'blocked_users_screen.dart';
 import 'global_share_screen.dart';
 import 'list_detail_screen.dart';
 import 'list_form_screen.dart';
@@ -180,6 +182,21 @@ class _ListsScreenState extends State<ListsScreen> {
     if (created != null && mounted) await _openList(created.id);
   }
 
+  /// Copia della lista: si scelgono nuova data e il resto, articoli e foto arrivano dall'originale.
+  Future<void> _copyList(ShoppingList list) async {
+    final lists = context.read<ListsController>();
+    final created = await Navigator.push<ShoppingList>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ChangeNotifierProvider.value(
+          value: lists,
+          child: ListFormScreen(copyOf: list),
+        ),
+      ),
+    );
+    if (created != null && mounted) await _openList(created.id);
+  }
+
   Future<void> _deleteList(ShoppingList list) async {
     final lists = context.read<ListsController>();
     if (!await confirm(
@@ -314,6 +331,12 @@ class _ListsScreenState extends State<ListsScreen> {
               }
               if (value == 'appearance') await _chooseAppearance();
               if (value == 'guide' && me != null && context.mounted) await _startGuide(me.id);
+              if (value == 'blocked' && context.mounted) {
+                await Navigator.push(context, MaterialPageRoute(builder: (_) => const BlockedUsersScreen()));
+              }
+              if (value == 'report' && context.mounted) {
+                await showReportDialog(context, type: ReportType.problem, title: l.reportProblem);
+              }
               if (value == 'language' && context.mounted) await chooseLanguage(context);
               if (value == 'logout' &&
                   context.mounted &&
@@ -346,6 +369,8 @@ class _ListsScreenState extends State<ListsScreen> {
                 child: Text(l.languageValue(languageLabel(context, context.read<LocaleController>()))),
               ),
               PopupMenuItem(value: 'guide', child: Text(l.guide)),
+              PopupMenuItem(value: 'blocked', child: Text(l.blockedPeople)),
+              PopupMenuItem(value: 'report', child: Text(l.reportProblem)),
               PopupMenuItem(value: 'logout', child: Text(l.logout)),
               PopupMenuItem(
                 value: 'deleteAccount',
@@ -435,6 +460,7 @@ class _ListsScreenState extends State<ListsScreen> {
                         child: _ListCard(
                           list: list,
                           onTap: () => _openList(list.id),
+                          onCopy: () => _copyList(list),
                           onDelete: list.isOwner ? () => _deleteList(list) : null,
                         ),
                       ),
@@ -448,10 +474,11 @@ class _ListsScreenState extends State<ListsScreen> {
 
 /// Una lista: nome, giorno e ora, quanti articoli mancano e barra di avanzamento.
 class _ListCard extends StatelessWidget {
-  const _ListCard({required this.list, required this.onTap, this.onDelete});
+  const _ListCard({required this.list, required this.onTap, required this.onCopy, this.onDelete});
 
   final ShoppingList list;
   final VoidCallback onTap;
+  final VoidCallback onCopy;
   final VoidCallback? onDelete;
 
   @override
@@ -529,20 +556,20 @@ class _ListCard extends StatelessWidget {
                         : (complete ? l.listCompleteBadge : l.toBuyCount(toBuy)),
                     done: complete,
                   ),
-                  if (onDelete != null)
-                    SizedBox(
-                      width: 36,
-                      height: 32,
-                      child: PopupMenuButton<String>(
-                        padding: EdgeInsets.zero,
-                        iconSize: 20,
-                        icon: Icon(Icons.more_vert, color: scheme.onSurfaceVariant),
-                        onSelected: (_) => onDelete!(),
-                        itemBuilder: (_) => [PopupMenuItem(value: 'delete', child: Text(l.delete))],
-                      ),
-                    )
-                  else
-                    const SizedBox(width: 10),
+                  SizedBox(
+                    width: 36,
+                    height: 32,
+                    child: PopupMenuButton<String>(
+                      padding: EdgeInsets.zero,
+                      iconSize: 20,
+                      icon: Icon(Icons.more_vert, color: scheme.onSurfaceVariant),
+                      onSelected: (value) => value == 'copy' ? onCopy() : onDelete?.call(),
+                      itemBuilder: (_) => [
+                        PopupMenuItem(value: 'copy', child: Text(l.duplicate)),
+                        if (onDelete != null) PopupMenuItem(value: 'delete', child: Text(l.delete)),
+                      ],
+                    ),
+                  ),
                 ],
               ),
               if (list.itemsCount > 0) ...[

@@ -5,6 +5,7 @@ import '../l10n/l10n.dart';
 import '../models/app_user.dart';
 import '../services/api_client.dart';
 import '../widgets/permission_picker.dart';
+import '../widgets/report.dart';
 import '../widgets/share_form.dart';
 import '../widgets/ui.dart';
 
@@ -66,6 +67,12 @@ class _GlobalShareScreenState extends State<GlobalShareScreen> {
     await _guard(() => _api.leaveGlobalShare(owner.id));
   }
 
+  /// Segnala o blocca chi mi condivide le sue liste (bloccandolo non le ricevo più).
+  Future<void> _personActions(AppUser user) async {
+    await showPersonActions(context, userId: user.id, name: user.name);
+    await _load();
+  }
+
   Future<void> _guard(Future<void> Function() action) async {
     try {
       await action();
@@ -113,10 +120,20 @@ class _GlobalShareScreenState extends State<GlobalShareScreen> {
                     for (final u in shares.sharedBy)
                       _UserTile(
                         user: u,
-                        trailing: IconButton(
-                          icon: const Icon(Icons.logout),
-                          tooltip: l.stopReceiving,
-                          onPressed: () => _leave(u),
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            IconButton(
+                              icon: const Icon(Icons.logout),
+                              tooltip: l.stopReceiving,
+                              onPressed: () => _leave(u),
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.more_vert),
+                              tooltip: l.reportOrBlock(u.name),
+                              onPressed: () => _personActions(u),
+                            ),
+                          ],
                         ),
                       ),
                   ],

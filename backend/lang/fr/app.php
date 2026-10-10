@@ -24,10 +24,22 @@ return [
         'social_cancelled' => 'Connexion annulée.',
         'social_failed' => 'Impossible de terminer la connexion avec :provider.',
         'social_no_email' => 'Votre compte :provider ne partage pas votre adresse e-mail, nécessaire pour partager les listes. Autorisez l\'e-mail ou inscrivez-vous avec e-mail et mot de passe.',
+        'share_blocked' => 'Vous ne pouvez pas partager de listes avec cette personne.',
+        'share_you_blocked' => 'Vous avez bloqué :name : débloquez-la depuis le menu du profil → Personnes bloquées pour partager.',
+        'account_suspended' => 'Votre compte est suspendu. Pour plus d\'informations, écrivez à support@listaspesafacile.com.',
+        'image_rejected' => 'La photo n\'a pas été envoyée : elle semble contenir de la nudité, du contenu sexuel ou de la violence, que les conditions d\'utilisation n\'autorisent pas.',
     ],
     'reset_sent' => 'Si l\'e-mail est inscrit, vous recevrez bientôt un code pour réinitialiser votre mot de passe.',
     'deletion_sent' => 'Si l\'e-mail est inscrit, vous recevrez bientôt un code pour confirmer la suppression du compte.',
     'account_deleted' => 'Compte supprimé.',
+    'report_sent' => 'Signalement envoyé. Merci !',
+    // Email già scritte che l'assistenza manda all'utente (dai pulsanti nell'email di una segnalazione).
+    'moderation' => [
+        'warning_subject' => 'Avertissement de Lista Spesa Facile',
+        'warning_body' => "Bonjour :name,\n\nnous avons bloqué un contenu que vous avez essayé de publier sur Lista Spesa Facile car il ne respecte pas les conditions d'utilisation : la nudité, le contenu sexuel et la violence ne sont pas autorisés.\n\nSi cela se reproduit, votre compte sera suspendu. Si vous pensez qu'il s'agit d'une erreur, répondez à cet e-mail.\n\nL'assistance de Lista Spesa Facile",
+        'suspended_subject' => 'Votre compte Lista Spesa Facile est suspendu',
+        'suspended_body' => "Bonjour :name,\n\nvotre compte Lista Spesa Facile a été suspendu car vous avez publié des contenus contraires aux conditions d'utilisation (nudité, contenu sexuel ou violence).\n\nSi vous pensez qu'il s'agit d'une erreur, répondez à cet e-mail.\n\nL'assistance de Lista Spesa Facile",
+    ],
     'activity' => [
         'added' => ':actor a ajouté :item',
         'taken' => ':actor a pris :item',

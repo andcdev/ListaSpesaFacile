@@ -140,6 +140,9 @@ class AuthController extends Controller
 
     private function tokenResponse(User $user, string $deviceName, int $status = 200): JsonResponse
     {
+        // Account sospeso dall'assistenza: nessun accesso, con nessun metodo.
+        abort_if($user->isSuspended(), 403, __('app.errors.account_suspended'));
+
         return response()->json([
             'token' => $user->createToken($deviceName)->plainTextToken,
             'user' => new UserResource($user),

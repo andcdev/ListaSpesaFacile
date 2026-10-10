@@ -10,6 +10,7 @@ use App\Http\Resources\ListMessageResource;
 use App\Models\ListMessage;
 use App\Models\ShoppingList;
 use App\Notifications\ChatMessageReceived;
+use App\Support\ImageModeration;
 use App\Support\Notifier;
 use App\Support\Realtime;
 use Illuminate\Http\JsonResponse;
@@ -35,9 +36,12 @@ class ListMessageController extends Controller
         $this->authorize('view', $list);
 
         $before = $request->integer('before');
+        // I messaggi delle persone bloccate non compaiono.
+        $blocked = $request->user()->blockedIds();
         $messages = $list->messages()
             ->with('user')
             ->when($before > 0, fn ($q) => $q->where('id', '<', $before))
+            ->when($blocked, fn ($q) => $q->where(fn ($q) => $q->whereNull('user_id')->orWhereNotIn('user_id', $blocked)))
             ->orderByDesc('id')
             ->limit(self::PAGE_SIZE + 1)
             ->get();
@@ -60,6 +64,9 @@ class ListMessageController extends Controller
 
         $sender = $request->user();
         $body = trim($data['body'] ?? '');
+        if ($file = $request->file('image')) {
+            ImageModeration::guard($file, $sender, 'chat', $list, $body === '' ? null : $body);
+        }
         $message = new ListMessage(['body' => $body === '' ? null : $body]);
         $message->user()->associate($sender);
         if ($file = $request->file('image')) {
@@ -77,6 +84,7 @@ class ListMessageController extends Controller
         Notifier::send(
             array_diff($list->audienceIds(), [$sender->id]),
             new ChatMessageReceived($sender->name, $list->id, $list->name, $message->body, $message->id, $message->image_path !== null),
+            $sender,
         );
 
         return (new ListMessageResource($message->load('user')))->response()->setStatusCode(201);

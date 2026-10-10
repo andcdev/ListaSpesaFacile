@@ -80,6 +80,7 @@ class PasswordResetController extends Controller
         }
 
         $user = User::where('email', $email)->firstOrFail();
+        abort_if($user->isSuspended(), 403, __('app.errors.account_suspended'));
         $user->password = $data['password'];
         $user->save();
 

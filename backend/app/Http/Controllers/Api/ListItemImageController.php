@@ -7,6 +7,7 @@ use App\Http\Resources\ListItemResource;
 use App\Models\ListItem;
 use App\Models\ShoppingList;
 use App\Notifications\ListActivity;
+use App\Support\ImageModeration;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -33,8 +34,9 @@ class ListItemImageController extends Controller
 
         $request->validate(['image' => ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:8192']]);
 
-        $old = $item->image_path;
         $file = $request->file('image');
+        ImageModeration::guard($file, $request->user(), 'item', $list, $item->name);
+        $old = $item->image_path;
         $item->image_path = $file->storeAs(
             ListItem::IMAGE_DIR.'/'.$list->id,
             $item->id.'-'.Str::random(12).'.'.$file->extension(),
