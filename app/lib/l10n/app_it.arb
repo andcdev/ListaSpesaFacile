@@ -76,6 +76,8 @@
   "forgotPasswordQuestion": "Password dimenticata?",
   "signIn": "Accedi",
   "noAccount": "Non hai un account? Registrati",
+  "server": "Server",
+  "serverAddress": "Indirizzo del server",
   "socialNotActiveTitle": "Accesso con {provider} non ancora attivo",
   "@socialNotActiveTitle": {
     "placeholders": {
@@ -766,6 +768,72 @@
   "allergenSulphites": "Solfiti",
   "allergenLupin": "Lupini",
   "allergenMolluscs": "Molluschi",
+  "report": "Segnala",
+  "reportProblem": "Segnala un problema",
+  "reportProblemHint": "Cosa stavi facendo e cosa è successo?",
+  "reportProblemRequired": "Descrivi il problema",
+  "reportUser": "Segnala {name}",
+  "@reportUser": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "reportMessage": "Segnala messaggio",
+  "reportReasonHint": "Motivo (facoltativo)",
+  "reportInfo": "La segnalazione arriva all'assistenza di Lista Spesa Facile, che può risponderti alla tua email.",
+  "reportSent": "Segnalazione inviata. Grazie!",
+  "block": "Blocca",
+  "blockUser": "Blocca {name}",
+  "@blockUser": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "blockUserQuestion": "Bloccare {name}?",
+  "@blockUserQuestion": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "blockUserInfo": "Non potrete più condividere liste tra voi e le condivisioni di adesso vengono tolte. I suoi messaggi nelle chat non ti compariranno e non riceverai notifiche delle sue modifiche. Non riceverà nessun avviso.",
+  "userBlocked": "Hai bloccato {name}",
+  "@userBlocked": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "blockedPeople": "Persone bloccate",
+  "noBlockedPeople": "Non hai bloccato nessuno.",
+  "unblock": "Sblocca",
+  "unblockQuestion": "Sbloccare {name}?",
+  "@unblockQuestion": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "unblockInfo": "Potrete di nuovo condividere liste. Le condivisioni tolte non tornano da sole.",
+  "reportOrBlock": "Segnala o blocca {name}",
+  "@reportOrBlock": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "duplicate": "Duplica",
+  "duplicateList": "Duplica lista",
+  "createCopy": "Crea la copia",
+  "copyInfo": "Prodotti e foto vengono copiati, tutti da prendere. Cambia data, ora e quello che vuoi: la lista originale resta com'è.",
   "permission": "Permesso",
   "permissionRead": "Solo lettura",
   "permissionReadWrite": "Lettura e modifica"

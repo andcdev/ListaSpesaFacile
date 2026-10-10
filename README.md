@@ -36,6 +36,10 @@ Sorgente modificabile: [`docs/architettura.svg`](docs/architettura.svg).
   dopo) se chi ha il permesso di modifica può **cambiare anche il nome** della lista; altrimenti gli altri
   modificano articoli, note e data ma il nome resta bloccato. L'elenco è raggruppato per giorno
   (Oggi, Domani, …) e ordinato per data e ora; le liste passate sono in una sezione a parte.
+- **Duplica lista**: dal menu ⋮ di una lista (nell'elenco o nella lista aperta) se ne crea una copia, anche di una
+  lista ricevuta. Si apre il modulo con i dati della lista (data proposta: la prossima volta alla stessa ora) e si
+  cambiano data, ora, nome, supermercato, note, promemoria e persone; articoli e foto vengono copiati, tutti da
+  prendere. Copiando una propria lista si propongono le stesse persone con lo stesso permesso.
 - **Articoli**: aggiungi (quantità e peso o volume in g, hg, kg, ml, cl, l si scelgono con il pulsante ⚖ accanto
   al nome, che poi mostra il valore, es. "2 · 500 g"), modifica ed
   elimina; "Rimuovi articoli presi". **Eliminare** è distinto da **preso**: tenendo premuto un articolo (o con ⋮)
@@ -90,6 +94,26 @@ Sorgente modificabile: [`docs/architettura.svg`](docs/architettura.svg).
   (anche alla **creazione** della lista, per ogni destinatario). Chi riceve una condivisione può abbandonarla.
   Una lista la vedono al massimo **50 persone** oltre al proprietario, contando anche chi ha ricevuto tutte le sue
   liste: oltre, la condivisione viene rifiutata con un messaggio.
+- **Segnalazioni**: menu del profilo → *Segnala un problema*; tenendo premuto il messaggio di un altro nella chat →
+  *Segnala messaggio*; per una persona (proprietario di una lista ricevuta, chi ti condivide tutte le liste) →
+  *Segnala*. La segnalazione arriva per email a `support@listaspesafacile.com` con copia a `andcecere@gmail.com`
+  (`SUPPORT_MAIL_ADDRESS` e `SUPPORT_MAIL_CC` per cambiarli), con *Rispondi a* l'email di chi segnala, e resta nella
+  tabella `reports`.
+- **Controllo delle foto**: ogni foto caricata (chat, prodotto, lista, profilo) passa dal servizio `moderazione`
+  (`moderazione/`, modelli open source sul server: Falconsai/nsfw_image_detection per i contenuti sessuali, CLIP per
+  la violenza; le foto non escono dal server, circa 1 GB di memoria e mezzo secondo per foto). Sopra le soglie
+  (`MODERATION_SEXUAL_THRESHOLD` 0.8, `MODERATION_VIOLENCE_THRESHOLD` 0.75) la foto è rifiutata, l'utente vede un
+  messaggio e l'assistenza riceve un'email (al massimo 3 all'ora per utente; tutte restano nella tabella `reports`).
+  Se il servizio non risponde la foto passa senza controllo. Le foto rifiutate restano in quarantena 30 giorni.
+- **Email all'assistenza** (segnalazioni e foto rifiutate), a `support@` con copia ad `andcecere@gmail.com`: dati
+  dell'utente, testo del messaggio in chat, pulsante *Guarda la foto*, *Sospendi account* (apre una pagina di
+  conferma: i filtri antispam che aprono i link non sospendono nessuno) e *Scrivi un avviso all'utente* (email già
+  scritta nella sua lingua, da rileggere). I link sono firmati e valgono 30 giorni. Un account sospeso perde tutte le
+  sessioni e non può più accedere (email, Google, Amazon, recupero password); dalla stessa pagina si riattiva.
+- **Persone bloccate**: dagli stessi punti si può *bloccare* una persona. Le condivisioni fra i due vengono tolte (in
+  entrambe le direzioni) e non se ne possono fare di nuove; i suoi messaggi nelle chat in comune non compaiono e le
+  sue modifiche non arrivano come notifiche. Chi è bloccato non viene avvisato. Si sblocca dal menu del profilo →
+  *Persone bloccate*.
 - **Promemoria**: alla creazione (o modifica) scegli un avviso *10 minuti prima*, *1 ora prima* o
   *personalizzato* (da 1 minuto a 30 giorni) e chi avvisare: solo il creatore, solo i destinatari o tutti.
 - **Chat** interna per ogni lista: si apre **sotto la lista**, nella stessa schermata (con una barra minima,

@@ -24,6 +24,8 @@ class UserResource extends JsonResource
             'avatar_version' => $this->avatarVersion(),
             // Solo per sé stessi: consenso alla newsletter.
             'newsletter' => $this->when($request->user()?->is($this->resource), fn () => (bool) $this->newsletter),
+            // Solo per sé stessi: persone bloccate (l'app nasconde i loro messaggi che arrivano in tempo reale).
+            'blocked_ids' => $this->when($request->user()?->is($this->resource), fn () => $this->blockedIds()),
             'can_edit' => $this->whenPivotLoaded('shopping_list_user', fn () => (bool) $this->pivot->can_edit,
                 $this->whenPivotLoaded('global_shares', fn () => (bool) $this->pivot->can_edit)),
         ];

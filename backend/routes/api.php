@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\AccountDeletionController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\AvatarController;
+use App\Http\Controllers\Api\BlockController;
 use App\Http\Controllers\Api\ConfigController;
 use App\Http\Controllers\Api\DeviceController;
 use App\Http\Controllers\Api\GlobalShareController;
@@ -17,6 +18,7 @@ use App\Http\Controllers\Api\ProductInfoController;
 use App\Http\Controllers\Api\ProductMeasureController;
 use App\Http\Controllers\Api\ProductSearchController;
 use App\Http\Controllers\Api\ProductSuggestionController;
+use App\Http\Controllers\Api\ReportController;
 use App\Http\Controllers\Api\ShoppingListController;
 use App\Http\Controllers\Api\SupermarketController;
 use App\Http\Controllers\Api\UserPriceController;
@@ -90,6 +92,12 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('/devices', [DeviceController::class, 'store']);
     Route::delete('/devices', [DeviceController::class, 'destroy']);
+
+    // Segnalazioni all'assistenza (email a support@) e persone bloccate.
+    Route::post('/reports', [ReportController::class, 'store'])->middleware('throttle:5,1');
+    Route::get('/blocks', [BlockController::class, 'index']);
+    Route::post('/blocks', [BlockController::class, 'store']);
+    Route::delete('/blocks/{user}', [BlockController::class, 'destroy']);
 
     Route::get('/global-shares', [GlobalShareController::class, 'index']);
     Route::post('/global-shares', [GlobalShareController::class, 'store']);

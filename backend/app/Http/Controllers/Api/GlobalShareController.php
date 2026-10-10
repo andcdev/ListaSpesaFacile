@@ -48,6 +48,9 @@ class GlobalShareController extends Controller
         if ($user->is($owner)) {
             throw ValidationException::withMessages(['email' => [__('app.errors.share_self_all')]]);
         }
+        if ($reason = $owner->shareBlockedReason($user)) {
+            throw ValidationException::withMessages(['email' => [$reason]]);
+        }
 
         if (! $owner->globalShareRecipients()->whereKey($user->id)->exists() && $this->wouldOverflow($owner, $user)) {
             throw ValidationException::withMessages(['email' => [__('app.errors.lists_full', ['max' => ShoppingList::MAX_PEOPLE])]]);

@@ -24,10 +24,22 @@ return [
         'social_cancelled' => 'Acceso cancelado.',
         'social_failed' => 'No se pudo completar el acceso con :provider.',
         'social_no_email' => 'Tu cuenta de :provider no comparte tu dirección de correo, necesaria para compartir listas. Permite el correo o regístrate con correo y contraseña.',
+        'share_blocked' => 'No puedes compartir listas con esta persona.',
+        'share_you_blocked' => 'Has bloqueado a :name: desbloquéala desde el menú del perfil → Personas bloqueadas para compartir.',
+        'account_suspended' => 'Tu cuenta está suspendida. Para más información escribe a support@listaspesafacile.com.',
+        'image_rejected' => 'La foto no se ha subido: parece contener desnudos, contenido sexual o violencia, que las condiciones de uso no permiten.',
     ],
     'reset_sent' => 'Si el correo está registrado, recibirás en breve un código para restablecer la contraseña.',
     'deletion_sent' => 'Si el correo está registrado, recibirás en breve un código para confirmar la eliminación de la cuenta.',
     'account_deleted' => 'Cuenta eliminada.',
+    'report_sent' => 'Reporte enviado. ¡Gracias!',
+    // Email già scritte che l'assistenza manda all'utente (dai pulsanti nell'email di una segnalazione).
+    'moderation' => [
+        'warning_subject' => 'Aviso de Lista Spesa Facile',
+        'warning_body' => "Hola :name:\n\nhemos bloqueado un contenido que intentaste publicar en Lista Spesa Facile porque no respeta las condiciones de uso: no se permiten desnudos, contenido sexual ni violencia.\n\nSi vuelve a ocurrir, tu cuenta será suspendida. Si crees que es un error, responde a este correo.\n\nEl soporte de Lista Spesa Facile",
+        'suspended_subject' => 'Tu cuenta de Lista Spesa Facile está suspendida',
+        'suspended_body' => "Hola :name:\n\ntu cuenta de Lista Spesa Facile ha sido suspendida porque publicaste contenido que infringe las condiciones de uso (desnudos, contenido sexual o violencia).\n\nSi crees que es un error, responde a este correo.\n\nEl soporte de Lista Spesa Facile",
+    ],
     'activity' => [
         'added' => ':actor ha añadido :item',
         'taken' => ':actor ha cogido :item',

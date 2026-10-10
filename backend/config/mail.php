@@ -115,4 +115,13 @@ return [
         'name' => env('MAIL_FROM_NAME', env('APP_NAME', 'Laravel')),
     ],
 
+    /*
+    | Segnalazioni dall'app (pulsante "Segnala"): arrivano a support@, con una copia in cc.
+    */
+
+    'support' => [
+        'address' => env('SUPPORT_MAIL_ADDRESS', 'support@listaspesafacile.com'),
+        'cc' => env('SUPPORT_MAIL_CC', 'andcecere@gmail.com'),
+    ],
+
 ];

@@ -73,6 +73,7 @@ class ListsController extends ChangeNotifier {
     ReminderTarget reminderTarget = ReminderTarget.all,
     bool membersCanRename = false,
     List<ShareRequest> shares = const [],
+    int? copyFrom,
   }) async {
     final list = await api.createList(
       name: name,
@@ -83,6 +84,7 @@ class ListsController extends ChangeNotifier {
       reminderTarget: reminderTarget,
       membersCanRename: membersCanRename,
       shares: shares,
+      copyFrom: copyFrom,
     );
     await load();
     return list;

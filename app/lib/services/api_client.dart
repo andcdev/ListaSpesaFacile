@@ -256,6 +256,7 @@ class ApiClient {
   Future<ShoppingList> list(int id) async => _data(await _send('GET', '/lists/$id'), ShoppingList.fromJson);
 
   /// Crea una lista; [shares] la condivide subito (tutte le email devono essere di utenti registrati).
+  /// [copyFrom]: copia di quella lista (articoli e foto), con i dati scelti nel modulo.
   Future<ShoppingList> createList({
     required String name,
     required DateTime scheduledAt,
@@ -265,8 +266,10 @@ class ApiClient {
     ReminderTarget reminderTarget = ReminderTarget.all,
     bool membersCanRename = false,
     List<ShareRequest> shares = const [],
+    int? copyFrom,
   }) async => _data(
     await _send('POST', '/lists', {
+      'copy_from': ?copyFrom,
       'name': name,
       'scheduled_at': scheduledAt.toUtc().toIso8601String(),
       'notes': notes,
@@ -432,6 +435,22 @@ class ApiClient {
 
   Future<void> leaveGlobalShare(int ownerId) => _send('DELETE', '/global-shares/received/$ownerId');
 
+  // ── Segnalazioni e persone bloccate ─────────────────────────────
+
+  /// Segnalazione all'assistenza (arriva per email): [type] è problem, user o message.
+  Future<void> report(String type, {String? body, int? userId, int? listId, int? messageId}) => _send(
+    'POST',
+    '/reports',
+    {'type': type, 'body': body, 'user_id': ?userId, 'list_id': ?listId, 'message_id': ?messageId},
+  );
+
+  Future<List<AppUser>> blockedUsers() async => _list(await _send('GET', '/blocks'), AppUser.fromJson);
+
+  /// Blocca [userId]: le condivisioni fra i due vengono tolte.
+  Future<void> blockUser(int userId) => _send('POST', '/blocks', {'user_id': userId});
+
+  Future<void> unblockUser(int userId) => _send('DELETE', '/blocks/$userId');
+
   // ── Chat ────────────────────────────────────────────────────────
 
   Future<MessagePage> messages(int listId, {int? before}) async {
@@ -572,6 +591,8 @@ class ApiClient {
 
   static String _messageFor(int status, String? serverMessage) => switch (status) {
     401 => appL10n.errSessionExpired,
+    // Il server spiega il motivo (account sospeso, solo il proprietario…); quello generico di Laravel no.
+    403 when serverMessage != null && serverMessage != 'This action is unauthorized.' => serverMessage,
     403 => appL10n.errForbidden,
     404 => appL10n.errNotFound,
     429 => appL10n.errTooMany,

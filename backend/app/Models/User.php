@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Laravel\Sanctum\HasApiTokens;
@@ -65,7 +66,22 @@ class User extends Authenticatable implements HasLocalePreference
             'terms_accepted_at' => 'datetime',
             'newsletter' => 'boolean',
             'newsletter_consented_at' => 'datetime',
+            'suspended_at' => 'datetime',
         ];
+    }
+
+    public function isSuspended(): bool
+    {
+        return $this->suspended_at !== null;
+    }
+
+    /**
+     * Sospende l'account: chiude tutte le sessioni e da adesso non può più accedere.
+     */
+    public function suspend(): void
+    {
+        $this->forceFill(['suspended_at' => now()])->save();
+        $this->tokens()->delete();
     }
 
     /**
@@ -130,6 +146,53 @@ class User extends Authenticatable implements HasLocalePreference
         return $this->belongsToMany(User::class, 'global_shares', 'user_id', 'owner_id')
             ->withPivot('can_edit')
             ->withTimestamps();
+    }
+
+    /**
+     * Persone bloccate dall'utente: non possono condividere liste con lui (né lui con loro), i loro messaggi nella
+     * chat non gli compaiono e le loro modifiche non gli arrivano come notifiche.
+     *
+     * @return BelongsToMany<User, $this>
+     */
+    public function blockedUsers(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'user_blocks', 'user_id', 'blocked_id')->withTimestamps();
+    }
+
+    /**
+     * Id delle persone bloccate dall'utente.
+     *
+     * @return array<int, int>
+     */
+    public function blockedIds(): array
+    {
+        return DB::table('user_blocks')->where('user_id', $this->id)->pluck('blocked_id')->map(fn ($id) => (int) $id)->all();
+    }
+
+    /**
+     * Uno dei due ha bloccato l'altro.
+     */
+    public function isBlockedWith(User $other): bool
+    {
+        return DB::table('user_blocks')
+            ->where(fn ($q) => $q->where('user_id', $this->id)->where('blocked_id', $other->id))
+            ->orWhere(fn ($q) => $q->where('user_id', $other->id)->where('blocked_id', $this->id))
+            ->exists();
+    }
+
+    /**
+     * Perché l'utente non può condividere liste con [$other] (uno dei due ha bloccato l'altro), oppure null.
+     * A chi è stato bloccato non si dice che è stato bloccato.
+     */
+    public function shareBlockedReason(User $other): ?string
+    {
+        if (! $this->isBlockedWith($other)) {
+            return null;
+        }
+
+        return in_array($other->id, $this->blockedIds(), true)
+            ? __('app.errors.share_you_blocked', ['name' => $other->name])
+            : __('app.errors.share_blocked');
     }
 
     /**

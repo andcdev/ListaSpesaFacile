@@ -24,10 +24,22 @@ return [
         'social_cancelled' => 'Anmeldung abgebrochen.',
         'social_failed' => 'Anmeldung mit :provider konnte nicht abgeschlossen werden.',
         'social_no_email' => 'Dein :provider-Konto gibt deine E-Mail-Adresse nicht frei, die zum Teilen von Listen nötig ist. Erlaube die E-Mail oder registriere dich mit E-Mail und Passwort.',
+        'share_blocked' => 'Du kannst keine Listen mit dieser Person teilen.',
+        'share_you_blocked' => 'Du hast :name blockiert: Heb die Blockierung im Profilmenü → Blockierte Personen auf, um zu teilen.',
+        'account_suspended' => 'Dein Konto ist gesperrt. Für Informationen schreib an support@listaspesafacile.com.',
+        'image_rejected' => 'Das Foto wurde nicht hochgeladen: Es scheint Nacktheit, sexuelle Inhalte oder Gewalt zu enthalten, die die Nutzungsbedingungen nicht erlauben.',
     ],
     'reset_sent' => 'Wenn die E-Mail registriert ist, erhältst du in Kürze einen Code zum Zurücksetzen des Passworts.',
     'deletion_sent' => 'Wenn die E-Mail registriert ist, erhältst du in Kürze einen Code, um die Löschung des Kontos zu bestätigen.',
     'account_deleted' => 'Konto gelöscht.',
+    'report_sent' => 'Meldung gesendet. Danke!',
+    // Email già scritte che l'assistenza manda all'utente (dai pulsanti nell'email di una segnalazione).
+    'moderation' => [
+        'warning_subject' => 'Hinweis von Lista Spesa Facile',
+        'warning_body' => "Hallo :name,\n\nwir haben einen Inhalt blockiert, den du auf Lista Spesa Facile veröffentlichen wolltest, weil er gegen die Nutzungsbedingungen verstößt: Nacktheit, sexuelle Inhalte und Gewalt sind nicht erlaubt.\n\nWenn das noch einmal passiert, wird dein Konto gesperrt. Wenn du denkst, dass es ein Fehler ist, antworte auf diese E-Mail.\n\nDer Support von Lista Spesa Facile",
+        'suspended_subject' => 'Dein Lista Spesa Facile-Konto ist gesperrt',
+        'suspended_body' => "Hallo :name,\n\ndein Lista Spesa Facile-Konto wurde gesperrt, weil du Inhalte veröffentlicht hast, die gegen die Nutzungsbedingungen verstoßen (Nacktheit, sexuelle Inhalte oder Gewalt).\n\nWenn du denkst, dass es ein Fehler ist, antworte auf diese E-Mail.\n\nDer Support von Lista Spesa Facile",
+    ],
     'activity' => [
         'added' => ':actor hat :item hinzugefügt',
         'taken' => ':actor hat :item eingepackt',

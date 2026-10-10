@@ -10,6 +10,7 @@ import '../models/branded_product.dart';
 import '../models/list_item.dart';
 import '../models/user_price.dart';
 import '../models/measure_mode.dart';
+import '../models/shopping_list.dart';
 import '../models/product_suggestion.dart';
 import '../services/api_client.dart';
 import '../services/list_export.dart';
@@ -25,6 +26,7 @@ import '../widgets/photo_gallery.dart';
 import '../widgets/photo_picker.dart';
 import '../widgets/prices.dart';
 import '../widgets/product_info_sheet.dart';
+import '../widgets/report.dart';
 import '../theme/app_theme.dart';
 import '../widgets/guide.dart';
 import '../widgets/ui.dart';
@@ -126,10 +128,49 @@ class _ListDetailScreenState extends State<ListDetailScreen> {
     await detail.load(silent: true);
   }
 
+  /// Copia della lista con nuova data (e il resto a scelta): al termine si apre la copia al posto di questa.
+  Future<void> _copy(ListDetailController detail) async {
+    final lists = context.read<ListsController>();
+    final navigator = Navigator.of(context);
+    final created = await navigator.push<ShoppingList>(
+      MaterialPageRoute(
+        builder: (_) => ChangeNotifierProvider.value(
+          value: lists,
+          child: ListFormScreen(copyOf: detail.list),
+        ),
+      ),
+    );
+    if (created == null || !mounted) return;
+    final auth = context.read<AuthController>();
+    await navigator.pushReplacement(
+      MaterialPageRoute(
+        builder: (_) => MultiProvider(
+          providers: [
+            ChangeNotifierProvider.value(value: lists),
+            ChangeNotifierProvider(
+              create: (context) => ListDetailController(
+                api: context.read<ApiClient>(),
+                realtime: context.read<RealtimeClient>(),
+                listId: created.id,
+                userId: auth.user!.id,
+              )..start(),
+            ),
+          ],
+          child: const ListDetailScreen(),
+        ),
+      ),
+    );
+  }
+
   Future<void> _onMenu(String value, ListDetailController detail) async {
     final lists = context.read<ListsController>();
     final l = context.l10n;
     switch (value) {
+      case 'copy':
+        await _copy(detail);
+      case 'person':
+        final owner = detail.list!.owner!;
+        await showPersonActions(context, userId: owner.id, name: owner.name, listId: detail.listId);
       case 'photo':
         await _photoMenu(detail);
       case 'clear':
@@ -443,8 +484,11 @@ class _ListDetailScreenState extends State<ListDetailScreen> {
                   PopupMenuItem(value: 'photo', child: Text(list.imageVersion == null ? l.addPhoto : l.changePhoto)),
                 if (detail.canEdit)
                   PopupMenuItem(value: 'clear', enabled: detail.checkedCount > 0, child: Text(l.clearTaken)),
+                PopupMenuItem(value: 'copy', child: Text(l.duplicateList)),
                 if (list.isOwner) PopupMenuItem(value: 'delete', child: Text(l.deleteList)),
                 if (detail.canLeave) PopupMenuItem(value: 'leave', child: Text(l.leaveList)),
+                if (!list.isOwner && list.owner != null)
+                  PopupMenuItem(value: 'person', child: Text(l.reportOrBlock(list.owner!.name))),
               ],
             ),
           const SizedBox(width: 8),

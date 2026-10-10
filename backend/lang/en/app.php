@@ -24,10 +24,22 @@ return [
         'social_cancelled' => 'Sign-in cancelled.',
         'social_failed' => 'Couldn\'t complete sign-in with :provider.',
         'social_no_email' => 'Your :provider account doesn\'t share your email address, which is needed to share lists. Allow the email or sign up with email and password.',
+        'share_blocked' => "You can't share lists with this person.",
+        'share_you_blocked' => 'You blocked :name: unblock them from the profile menu → Blocked people to share.',
+        'account_suspended' => 'Your account is suspended. For information write to support@listaspesafacile.com.',
+        'image_rejected' => 'The photo was not uploaded: it seems to contain nudity, sexual content or violence, which the terms of use do not allow.',
     ],
     'reset_sent' => 'If the email is registered, you\'ll shortly receive a code to reset your password.',
     'deletion_sent' => 'If the email is registered, you\'ll shortly receive a code to confirm the account deletion.',
     'account_deleted' => 'Account deleted.',
+    'report_sent' => 'Report sent. Thank you!',
+    // Email già scritte che l'assistenza manda all'utente (dai pulsanti nell'email di una segnalazione).
+    'moderation' => [
+        'warning_subject' => 'Notice from Lista Spesa Facile',
+        'warning_body' => "Hi :name,\n\nwe blocked some content you tried to post on Lista Spesa Facile because it breaks the terms of use: nudity, sexual content and violence are not allowed.\n\nIf it happens again your account will be suspended. If you think this is a mistake, reply to this email.\n\nLista Spesa Facile support",
+        'suspended_subject' => 'Your Lista Spesa Facile account is suspended',
+        'suspended_body' => "Hi :name,\n\nyour Lista Spesa Facile account has been suspended because you posted content that breaks the terms of use (nudity, sexual content or violence).\n\nIf you think this is a mistake, reply to this email.\n\nLista Spesa Facile support",
+    ],
     'activity' => [
         'added' => ':actor added :item',
         'taken' => ':actor picked up :item',

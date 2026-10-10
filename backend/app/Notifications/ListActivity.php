@@ -32,6 +32,7 @@ class ListActivity extends AppNotification
         Notifier::send(
             array_diff($list->audienceIds(), [$actor->id]),
             new self($actor->name, $list->id, $list->name, $action, $params),
+            $actor,
         );
     }
 

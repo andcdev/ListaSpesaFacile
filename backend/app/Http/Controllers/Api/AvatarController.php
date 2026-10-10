@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
 use App\Models\ShoppingList;
 use App\Models\User;
+use App\Support\ImageModeration;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -34,8 +35,9 @@ class AvatarController extends Controller
         $request->validate(['image' => ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:4096']]);
 
         $user = $request->user();
-        $old = $user->avatar_path;
         $file = $request->file('image');
+        ImageModeration::guard($file, $user, 'avatar');
+        $old = $user->avatar_path;
         $user->avatar_path = $file->storeAs(User::AVATAR_DIR, $user->id.'-'.Str::random(12).'.'.$file->extension());
         $user->save();
         if ($old) {

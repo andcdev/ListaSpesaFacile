@@ -5,15 +5,18 @@ import '../l10n/l10n.dart';
 import '../models/chat_message.dart';
 import '../services/api_client.dart';
 import '../services/notification_service.dart';
+import '../state/auth_controller.dart';
 import '../state/chat_controller.dart';
 import 'photo_picker.dart';
+import 'report.dart';
 import 'ui.dart';
 import 'voice_input.dart';
 
 /// Chat interna di una lista, mostrata sotto la lista nella stessa schermata: si può chattare
 /// e intanto spuntare o aggiungere articoli. Si possono inviare foto (galleria o fotocamera) e dettare
 /// i messaggi a voce. Il proprietario della lista può eliminare qualsiasi messaggio, gli altri solo
-/// i propri (tenendo premuto sul messaggio).
+/// i propri (tenendo premuto sul messaggio); tenendo premuto il messaggio di un altro lo si segnala o si blocca
+/// chi l'ha scritto.
 class ChatPanel extends StatefulWidget {
   const ChatPanel({super.key, required this.isOwner});
 
@@ -92,10 +95,60 @@ class _ChatPanelState extends State<ChatPanel> {
     }
   }
 
+  /// Messaggio di un altro: segnalarlo, bloccare chi l'ha scritto e, per il proprietario della lista, eliminarlo.
+  Future<void> _othersMessageMenu(ChatMessage message) async {
+    final l = context.l10n;
+    final name = message.userName ?? '';
+    final choice = await showModalBottomSheet<String>(
+      context: context,
+      showDragHandle: true,
+      builder: (context) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.flag_outlined),
+              title: Text(l.reportMessage),
+              onTap: () => Navigator.pop(context, 'report'),
+            ),
+            ListTile(
+              leading: const Icon(Icons.block),
+              title: Text(l.blockUser(name)),
+              onTap: () => Navigator.pop(context, 'block'),
+            ),
+            if (widget.isOwner)
+              ListTile(
+                leading: Icon(Icons.delete_outline, color: Theme.of(context).colorScheme.error),
+                title: Text(l.delete, style: TextStyle(color: Theme.of(context).colorScheme.error)),
+                onTap: () => Navigator.pop(context, 'delete'),
+              ),
+          ],
+        ),
+      ),
+    );
+    if (!mounted) return;
+    switch (choice) {
+      case 'report':
+        await showReportDialog(
+          context,
+          type: ReportType.message,
+          title: l.reportMessage,
+          listId: message.listId,
+          messageId: message.id,
+        );
+      case 'block':
+        await blockPerson(context, userId: message.userId!, name: name);
+      case 'delete':
+        await _delete(message);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final chat = context.watch<ChatController>();
-    final messages = chat.messages.reversed.toList();
+    // I messaggi delle persone bloccate non compaiono (anche quelli arrivati in tempo reale).
+    final blocked = context.select<AuthController, Set<int>>((auth) => auth.user?.blockedIds ?? const {});
+    final messages = chat.messages.reversed.where((m) => !blocked.contains(m.userId)).toList();
 
     return Column(
       children: [
@@ -138,7 +191,11 @@ class _ChatPanelState extends State<ChatPanel> {
                                 ),
                           // Il nome solo sul primo di una serie di messaggi dello stesso autore.
                           showName: !mine && (older == null || older.userId != message.userId),
-                          onLongPress: mine || widget.isOwner ? () => _delete(message) : null,
+                          onLongPress: mine
+                              ? () => _delete(message)
+                              : message.userId != null
+                              ? () => _othersMessageMenu(message)
+                              : (widget.isOwner ? () => _delete(message) : null),
                         ),
                       ],
                     );

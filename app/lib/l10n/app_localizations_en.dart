@@ -162,6 +162,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noAccount => 'Don\'t have an account? Sign up';
 
   @override
+  String get server => 'Server';
+
+  @override
+  String get serverAddress => 'Server address';
+
+  @override
   String socialNotActiveTitle(String provider) {
     return 'Sign-in with $provider not active yet';
   }
@@ -1334,6 +1340,94 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get allergenMolluscs => 'Molluscs';
+
+  @override
+  String get report => 'Report';
+
+  @override
+  String get reportProblem => 'Report a problem';
+
+  @override
+  String get reportProblemHint => 'What were you doing and what happened?';
+
+  @override
+  String get reportProblemRequired => 'Describe the problem';
+
+  @override
+  String reportUser(String name) {
+    return 'Report $name';
+  }
+
+  @override
+  String get reportMessage => 'Report message';
+
+  @override
+  String get reportReasonHint => 'Reason (optional)';
+
+  @override
+  String get reportInfo =>
+      'The report goes to Lista Spesa Facile support, who may reply to your email.';
+
+  @override
+  String get reportSent => 'Report sent. Thank you!';
+
+  @override
+  String get block => 'Block';
+
+  @override
+  String blockUser(String name) {
+    return 'Block $name';
+  }
+
+  @override
+  String blockUserQuestion(String name) {
+    return 'Block $name?';
+  }
+
+  @override
+  String get blockUserInfo =>
+      'You won\'t be able to share lists with each other and current shares are removed. Their chat messages won\'t appear and you won\'t be notified of their changes. They won\'t be told.';
+
+  @override
+  String userBlocked(String name) {
+    return 'You blocked $name';
+  }
+
+  @override
+  String get blockedPeople => 'Blocked people';
+
+  @override
+  String get noBlockedPeople => 'You haven\'t blocked anyone.';
+
+  @override
+  String get unblock => 'Unblock';
+
+  @override
+  String unblockQuestion(String name) {
+    return 'Unblock $name?';
+  }
+
+  @override
+  String get unblockInfo =>
+      'You will be able to share lists again. Removed shares do not come back by themselves.';
+
+  @override
+  String reportOrBlock(String name) {
+    return 'Report or block $name';
+  }
+
+  @override
+  String get duplicate => 'Duplicate';
+
+  @override
+  String get duplicateList => 'Duplicate list';
+
+  @override
+  String get createCopy => 'Create copy';
+
+  @override
+  String get copyInfo =>
+      'Products and photos are copied, all still to buy. Change the date, time and anything else: the original list stays as it is.';
 
   @override
   String get permission => 'Permission';

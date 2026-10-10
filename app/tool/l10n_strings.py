@@ -897,6 +897,78 @@ S = {
     'allergenLupin': ('Lupini', 'Lupin', 'Lupin', 'Lupinen', 'Altramuces'),
     'allergenMolluscs': ('Molluschi', 'Molluscs', 'Mollusques', 'Weichtiere', 'Moluscos'),
 
+    # ── Segnalazioni e persone bloccate ─────────────────────────────
+    'report': ('Segnala', 'Report', 'Signaler', 'Melden', 'Reportar'),
+    'reportProblem': ('Segnala un problema', 'Report a problem', 'Signaler un problème', 'Problem melden',
+                      'Reportar un problema'),
+    'reportProblemHint': ('Cosa stavi facendo e cosa è successo?', 'What were you doing and what happened?',
+                          "Que faisiez-vous et que s'est-il passé ?", 'Was hast du gemacht und was ist passiert?',
+                          '¿Qué estabas haciendo y qué pasó?'),
+    'reportProblemRequired': ('Descrivi il problema', 'Describe the problem', 'Décrivez le problème',
+                              'Beschreibe das Problem', 'Describe el problema'),
+    'reportUser': ('Segnala {name}', 'Report {name}', 'Signaler {name}', '{name} melden', 'Reportar a {name}',
+                   {'name': 'String'}),
+    'reportMessage': ('Segnala messaggio', 'Report message', 'Signaler le message', 'Nachricht melden',
+                      'Reportar mensaje'),
+    'reportReasonHint': ('Motivo (facoltativo)', 'Reason (optional)', 'Motif (facultatif)', 'Grund (optional)',
+                         'Motivo (opcional)'),
+    'reportInfo': ("La segnalazione arriva all'assistenza di Lista Spesa Facile, che può risponderti alla tua email.",
+                   'The report goes to Lista Spesa Facile support, who may reply to your email.',
+                   "Le signalement est envoyé à l'assistance de Lista Spesa Facile, qui pourra vous répondre par e-mail.",
+                   'Die Meldung geht an den Support von Lista Spesa Facile, der dir per E-Mail antworten kann.',
+                   'El reporte llega al soporte de Lista Spesa Facile, que puede responderte por correo.'),
+    'reportSent': ('Segnalazione inviata. Grazie!', 'Report sent. Thank you!', 'Signalement envoyé. Merci !',
+                   'Meldung gesendet. Danke!', 'Reporte enviado. ¡Gracias!'),
+    'block': ('Blocca', 'Block', 'Bloquer', 'Blockieren', 'Bloquear'),
+    'blockUser': ('Blocca {name}', 'Block {name}', 'Bloquer {name}', '{name} blockieren', 'Bloquear a {name}',
+                  {'name': 'String'}),
+    'blockUserQuestion': ('Bloccare {name}?', 'Block {name}?', 'Bloquer {name} ?', '{name} blockieren?',
+                          '¿Bloquear a {name}?', {'name': 'String'}),
+    'blockUserInfo': ('Non potrete più condividere liste tra voi e le condivisioni di adesso vengono tolte. I suoi '
+                      'messaggi nelle chat non ti compariranno e non riceverai notifiche delle sue modifiche. '
+                      'Non riceverà nessun avviso.',
+                      "You won't be able to share lists with each other and current shares are removed. Their chat "
+                      "messages won't appear and you won't be notified of their changes. They won't be told.",
+                      'Vous ne pourrez plus partager de listes entre vous et les partages actuels sont retirés. Ses '
+                      "messages n'apparaîtront plus dans les chats et vous ne serez plus averti de ses modifications. "
+                      "Cette personne n'en sera pas informée.",
+                      'Ihr könnt keine Listen mehr miteinander teilen, und bestehende Freigaben werden entfernt. '
+                      'Ihre Chatnachrichten werden nicht mehr angezeigt und du wirst über ihre Änderungen nicht '
+                      'benachrichtigt. Die Person erfährt nichts davon.',
+                      'No podréis compartir listas entre vosotros y se quitan las comparticiones actuales. Sus '
+                      'mensajes en los chats no aparecerán y no recibirás avisos de sus cambios. No recibirá ningún aviso.'),
+    'userBlocked': ('Hai bloccato {name}', 'You blocked {name}', 'Vous avez bloqué {name}',
+                    'Du hast {name} blockiert', 'Has bloqueado a {name}', {'name': 'String'}),
+    'blockedPeople': ('Persone bloccate', 'Blocked people', 'Personnes bloquées', 'Blockierte Personen',
+                      'Personas bloqueadas'),
+    'noBlockedPeople': ('Non hai bloccato nessuno.', "You haven't blocked anyone.", "Vous n'avez bloqué personne.",
+                        'Du hast niemanden blockiert.', 'No has bloqueado a nadie.'),
+    'unblock': ('Sblocca', 'Unblock', 'Débloquer', 'Freigeben', 'Desbloquear'),
+    'unblockQuestion': ('Sbloccare {name}?', 'Unblock {name}?', 'Débloquer {name} ?', '{name} freigeben?',
+                        '¿Desbloquear a {name}?', {'name': 'String'}),
+    'unblockInfo': ('Potrete di nuovo condividere liste. Le condivisioni tolte non tornano da sole.',
+                    'You will be able to share lists again. Removed shares do not come back by themselves.',
+                    'Vous pourrez de nouveau partager des listes. Les partages retirés ne reviennent pas tout seuls.',
+                    'Ihr könnt wieder Listen teilen. Entfernte Freigaben kommen nicht von selbst zurück.',
+                    'Podréis volver a compartir listas. Las comparticiones quitadas no vuelven solas.'),
+    'reportOrBlock': ('Segnala o blocca {name}', 'Report or block {name}', 'Signaler ou bloquer {name}',
+                      '{name} melden oder blockieren', 'Reportar o bloquear a {name}', {'name': 'String'}),
+
+    # ── Copia di una lista ──────────────────────────────────────────
+    'duplicate': ('Duplica', 'Duplicate', 'Dupliquer', 'Duplizieren', 'Duplicar'),
+    'duplicateList': ('Duplica lista', 'Duplicate list', 'Dupliquer la liste', 'Liste duplizieren', 'Duplicar lista'),
+    'createCopy': ('Crea la copia', 'Create copy', 'Créer la copie', 'Kopie erstellen', 'Crear copia'),
+    'copyInfo': ("Prodotti e foto vengono copiati, tutti da prendere. Cambia data, ora e quello che vuoi: la lista "
+                 "originale resta com'è.",
+                 'Products and photos are copied, all still to buy. Change the date, time and anything else: the '
+                 'original list stays as it is.',
+                 "Les produits et les photos sont copiés, tous à acheter. Modifiez la date, l'heure et le reste : "
+                 "la liste d'origine ne change pas.",
+                 'Produkte und Fotos werden kopiert, alle noch zu kaufen. Ändere Datum, Uhrzeit und was du willst: '
+                 'Die ursprüngliche Liste bleibt unverändert.',
+                 'Se copian los productos y las fotos, todos por comprar. Cambia la fecha, la hora y lo que quieras: '
+                 'la lista original no cambia.'),
+
     # ── Permessi di condivisione ────────────────────────────────────
     'permission': ('Permesso', 'Permission', 'Autorisation', 'Berechtigung', 'Permiso'),
     'permissionRead': ('Solo lettura', 'Read only', 'Lecture seule', 'Nur lesen', 'Solo lectura'),

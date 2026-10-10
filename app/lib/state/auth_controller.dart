@@ -107,6 +107,22 @@ class AuthController extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Blocca una persona: le condivisioni fra voi vengono tolte e i suoi messaggi spariscono dalle chat.
+  Future<void> blockUser(int userId) async {
+    await api.blockUser(userId);
+    await _reloadUser();
+  }
+
+  Future<void> unblockUser(int userId) async {
+    await api.unblockUser(userId);
+    await _reloadUser();
+  }
+
+  Future<void> _reloadUser() async {
+    user = await api.me();
+    notifyListeners();
+  }
+
   /// Recupero della password: il server invia un codice all'email.
   Future<String> forgotPassword(String email) => api.forgotPassword(email.trim());
 
