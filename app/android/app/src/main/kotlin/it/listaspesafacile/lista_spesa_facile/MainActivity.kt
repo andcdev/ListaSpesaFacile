@@ -8,7 +8,7 @@ import io.flutter.plugin.common.MethodChannel
 
 class MainActivity : FlutterActivity() {
     /// Notifica toccata e non ancora aperta dall'app ("chat:12", "list:12").
-    /// Vale anche per le notifiche mostrate dal servizio in background, ad app chiusa o dietro altre app.
+    /// Vale anche per le notifiche mostrate ad app chiusa o dietro altre app (push di Firebase).
     private var pendingPayload: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {

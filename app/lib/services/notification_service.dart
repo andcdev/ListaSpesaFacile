@@ -150,7 +150,7 @@ class NotificationService {
 
   final _plugin = FlutterLocalNotificationsPlugin();
 
-  /// Notifica toccata, letta da MainActivity: funziona anche per quelle mostrate dal servizio in background.
+  /// Notifica toccata, letta da MainActivity: funziona anche per quelle mostrate ad app chiusa.
   static const _tapChannel = MethodChannel('listaspesafacile/notification_tap');
   final _conversations = _ConversationStore();
   bool _initialized = false;
@@ -179,12 +179,8 @@ class NotificationService {
   /// Le notifiche push sono attive per la sessione corrente.
   bool pushActive = false;
 
-  /// Il servizio in background (senza Firebase) è attivo: con l'app non sullo schermo le notifiche le mostra lui.
-  bool backgroundServiceActive = false;
-
-  /// L'app non è sullo schermo e c'è chi mostra le notifiche al suo posto (push o servizio in background).
-  bool get handledElsewhere =>
-      pushActive || (backgroundServiceActive && WidgetsBinding.instance.lifecycleState != AppLifecycleState.resumed);
+  /// Le notifiche le mostrano i push di Firebase, non l'app.
+  bool get handledElsewhere => pushActive;
 
   /// [background]: nel gestore dei push ad app chiusa serve solo poter mostrare le notifiche.
   Future<void> init({bool background = false}) async {

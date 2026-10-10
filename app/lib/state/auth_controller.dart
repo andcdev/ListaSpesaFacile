@@ -4,7 +4,6 @@ import 'package:flutter/foundation.dart';
 
 import '../models/app_user.dart';
 import '../services/api_client.dart';
-import '../services/background_notifications.dart';
 import '../services/notification_service.dart';
 import '../services/realtime_client.dart';
 import '../services/session_storage.dart';
@@ -197,12 +196,6 @@ class AuthController extends ChangeNotifier {
       notifyListeners();
       await realtime.connect(config.realtime);
       await notifications.startSession(api, serverPush: config.push);
-      // Senza Firebase le notifiche ad app chiusa le mostra il servizio in background.
-      if (notifications.pushActive) {
-        await BackgroundNotifications.stop();
-      } else {
-        notifications.backgroundServiceActive = await BackgroundNotifications.start();
-      }
     } catch (e) {
       debugPrint('Tempo reale non disponibile: $e');
       if (status == AuthStatus.signedIn) _retry = Timer(const Duration(seconds: 20), _connectServices);
@@ -221,8 +214,6 @@ class AuthController extends ChangeNotifier {
 
   Future<void> _signOutLocally() async {
     _retry?.cancel();
-    notifications.backgroundServiceActive = false;
-    await BackgroundNotifications.stop();
     await notifications.endSession();
     realtime.disconnect();
     api.token = null;

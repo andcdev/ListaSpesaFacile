@@ -7,7 +7,6 @@ import 'l10n/l10n.dart';
 import 'screens/lists_screen.dart';
 import 'screens/login_screen.dart';
 import 'services/api_client.dart';
-import 'services/background_notifications.dart';
 import 'services/notification_service.dart';
 import 'services/realtime_client.dart';
 import 'services/session_storage.dart';
@@ -25,10 +24,6 @@ Future<void> main() async {
   final locale = LocaleController();
   await locale.load();
 
-  // Servizio che mostra le notifiche con l'app chiusa (se Firebase non è configurato).
-  BackgroundNotifications.init();
-  await BackgroundNotifications.setAppInForeground(true);
-
   final api = ApiClient(baseUrl: defaultServerUrl)..language = locale.language;
   final realtime = RealtimeClient(api);
   final notifications = NotificationService();
@@ -38,14 +33,11 @@ Future<void> main() async {
   final appearance = AppearanceController();
   await appearance.load();
   // Tornando nell'app: connessione in tempo reale ripristinata e liste ricaricate, senza aggiornare a mano.
-  // Mentre l'app è sullo schermo le notifiche le mostra lei, altrimenti il servizio in background.
   AppLifecycleListener(
     onResume: () {
-      BackgroundNotifications.setAppInForeground(true);
       notifications.openTapped();
       auth.resume();
     },
-    onHide: () => BackgroundNotifications.setAppInForeground(false),
   );
   // Nuova lingua: il server la usa per errori, reparti e notifiche (anche push, salvata sul profilo).
   locale.addListener(() {
