@@ -941,6 +941,8 @@ S = {
                     'Du hast {name} blockiert', 'Has bloqueado a {name}', {'name': 'String'}),
     'blockedPeople': ('Persone bloccate', 'Blocked people', 'Personnes bloquées', 'Blockierte Personen',
                       'Personas bloqueadas'),
+    'adPrivacy': ('Privacy della pubblicità', 'Ad privacy', 'Confidentialité des annonces', 'Werbung und Datenschutz',
+                  'Privacidad de los anuncios'),
     'noBlockedPeople': ('Non hai bloccato nessuno.', "You haven't blocked anyone.", "Vous n'avez bloqué personne.",
                         'Du hast niemanden blockiert.', 'No has bloqueado a nadie.'),
     'unblock': ('Sblocca', 'Unblock', 'Débloquer', 'Freigeben', 'Desbloquear'),

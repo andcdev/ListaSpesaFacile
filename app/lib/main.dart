@@ -6,6 +6,7 @@ import 'l10n/l10n.dart';
 
 import 'screens/lists_screen.dart';
 import 'screens/login_screen.dart';
+import 'services/ads_service.dart';
 import 'services/api_client.dart';
 import 'services/notification_service.dart';
 import 'services/realtime_client.dart';
@@ -30,6 +31,7 @@ Future<void> main() async {
   await notifications.init();
   final auth = AuthController(api: api, realtime: realtime, storage: SessionStorage(), notifications: notifications)
     ..init();
+  final ads = AdsService();
   final appearance = AppearanceController();
   await appearance.load();
   // Tornando nell'app: connessione in tempo reale ripristinata e liste ricaricate, senza aggiornare a mano.
@@ -52,6 +54,7 @@ Future<void> main() async {
         Provider.value(value: api),
         Provider.value(value: realtime),
         Provider.value(value: notifications),
+        ChangeNotifierProvider.value(value: ads),
         ChangeNotifierProvider.value(value: auth),
         ChangeNotifierProvider.value(value: appearance),
         ChangeNotifierProvider.value(value: locale),
@@ -59,6 +62,8 @@ Future<void> main() async {
       child: const ListaSpesaApp(),
     ),
   );
+  // Consenso alla pubblicità (modulo di Google, solo dove serve) sopra la prima schermata, poi i banner.
+  ads.start();
 }
 
 class ListaSpesaApp extends StatelessWidget {

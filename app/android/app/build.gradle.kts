@@ -1,3 +1,4 @@
+import java.util.Base64
 import java.util.Properties
 
 plugins {
@@ -20,6 +21,15 @@ val keystorePropertiesFile = rootProject.file("key.properties")
 if (keystorePropertiesFile.exists()) {
     keystorePropertiesFile.inputStream().use { keystoreProperties.load(it) }
 }
+
+// Valori di --dart-define / --dart-define-from-file (Flutter li passa a Gradle in base64): da qui l'ID dell'app
+// AdMob per il manifest, così sta in config/produzione.json insieme a ADMOB_BANNER_ID.
+val dartDefines: Map<String, String> = (project.findProperty("dart-defines") as String?)
+    ?.split(",")
+    ?.map { String(Base64.getDecoder().decode(it)).split("=", limit = 2) }
+    ?.filter { it.size == 2 }
+    ?.associate { it[0] to it[1] }
+    ?: emptyMap()
 
 android {
     namespace = "it.listaspesafacile.lista_spesa_facile"
@@ -46,6 +56,9 @@ android {
         // flag during build.
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+        // Senza ADMOB_APP_ID: app AdMob di prova di Google (l'SDK pubblicitario si blocca all'avvio se manca).
+        manifestPlaceholders["admobAppId"] =
+            dartDefines["ADMOB_APP_ID"]?.takeIf { it.isNotBlank() } ?: "ca-app-pub-3940256099942544~3347511713"
     }
 
     signingConfigs {

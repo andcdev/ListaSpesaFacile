@@ -1,4 +1,6 @@
 {
   "API_URL": "https://api.listaspesafacile.com",
-  "CLIENT_KEY": "uguale a CLIENT_KEY nel .env del server (openssl rand -hex 24)"
+  "CLIENT_KEY": "uguale a CLIENT_KEY nel .env del server (openssl rand -hex 24)",
+  "ADMOB_APP_ID": "AdMob → App → Impostazioni app: ca-app-pub-…~…",
+  "ADMOB_BANNER_ID": "AdMob → App → Unità pubblicitarie → banner: ca-app-pub-…/…"
 }

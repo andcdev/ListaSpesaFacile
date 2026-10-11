@@ -70,7 +70,8 @@ class AppLocalizationsIt extends AppLocalizations {
   String get invalidEmail => 'Inserisci un\'email valida';
 
   @override
-  String get enterRegisteredEmail => 'Inserisci l\'email di un utente registrato';
+  String get enterRegisteredEmail =>
+      'Inserisci l\'email di un utente registrato';
 
   @override
   String get atLeast8 => 'Almeno 8 caratteri';
@@ -124,7 +125,8 @@ class AppLocalizationsIt extends AppLocalizations {
   String get errTimeout => 'Il server non risponde. Riprova più tardi.';
 
   @override
-  String get errNetwork => 'Impossibile contattare il server. Controlla la connessione.';
+  String get errNetwork =>
+      'Impossibile contattare il server. Controlla la connessione.';
 
   @override
   String get errSessionExpired => 'Sessione scaduta. Accedi di nuovo.';
@@ -243,7 +245,8 @@ class AppLocalizationsIt extends AppLocalizations {
   }
 
   @override
-  String get deleteListSharedInfo => 'La lista sparirà anche per gli utenti con cui è condivisa.';
+  String get deleteListSharedInfo =>
+      'La lista sparirà anche per gli utenti con cui è condivisa.';
 
   @override
   String get profilePhotoTitle => 'Foto profilo (visibile nella chat)';
@@ -321,7 +324,8 @@ class AppLocalizationsIt extends AppLocalizations {
   }
 
   @override
-  String get noLists => 'Nessuna lista.\nCreane una con il pulsante \"Nuova lista\".';
+  String get noLists =>
+      'Nessuna lista.\nCreane una con il pulsante \"Nuova lista\".';
 
   @override
   String get realtimeOn => 'Aggiornamenti in tempo reale attivi';
@@ -395,13 +399,16 @@ class AppLocalizationsIt extends AppLocalizations {
   String get permissions => 'Permessi';
 
   @override
-  String get membersCanRenameTitle => 'Chi può modificare può cambiare anche il nome';
+  String get membersCanRenameTitle =>
+      'Chi può modificare può cambiare anche il nome';
 
   @override
-  String get membersCanRenameOn => 'Gli utenti con permesso di modifica possono rinominare la lista';
+  String get membersCanRenameOn =>
+      'Gli utenti con permesso di modifica possono rinominare la lista';
 
   @override
-  String get membersCanRenameOff => 'Solo tu puoi cambiare il nome; gli altri modificano gli articoli';
+  String get membersCanRenameOff =>
+      'Solo tu puoi cambiare il nome; gli altri modificano gli articoli';
 
   @override
   String get saveChanges => 'Salva modifiche';
@@ -429,19 +436,34 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String durationDays(int count) {
-    String _temp0 = intl.Intl.pluralLogic(count, locale: localeName, other: '$count giorni', one: '1 giorno');
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count giorni',
+      one: '1 giorno',
+    );
     return '$_temp0';
   }
 
   @override
   String durationHours(int count) {
-    String _temp0 = intl.Intl.pluralLogic(count, locale: localeName, other: '$count ore', one: '1 ora');
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count ore',
+      one: '1 ora',
+    );
     return '$_temp0';
   }
 
   @override
   String durationMinutes(int count) {
-    String _temp0 = intl.Intl.pluralLogic(count, locale: localeName, other: '$count minuti', one: '1 minuto');
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count minuti',
+      one: '1 minuto',
+    );
     return '$_temp0';
   }
 
@@ -520,10 +542,18 @@ class AppLocalizationsIt extends AppLocalizations {
   String get channelName => 'Liste della spesa';
 
   @override
-  String get channelDescription => 'Promemoria, condivisioni e messaggi delle liste';
+  String get channelDescription =>
+      'Promemoria, condivisioni e messaggi delle liste';
 
   @override
   String get you => 'Tu';
+
+  @override
+  String get serviceChannelName => 'Collegamento in background';
+
+  @override
+  String get serviceChannelDescription =>
+      'Tiene l\'app collegata per ricevere liste e messaggi anche quando è chiusa';
 
   @override
   String reminderTitle(String name) {
@@ -584,10 +614,12 @@ class AppLocalizationsIt extends AppLocalizations {
       'Per dettare consenti all\'app l\'uso del microfono nelle impostazioni del telefono.';
 
   @override
-  String get voiceNoMatch => 'Non ho sentito nulla: tocca il microfono e parla subito.';
+  String get voiceNoMatch =>
+      'Non ho sentito nulla: tocca il microfono e parla subito.';
 
   @override
-  String get voiceNetwork => 'Riconoscimento vocale non raggiungibile: controlla la connessione.';
+  String get voiceNetwork =>
+      'Riconoscimento vocale non raggiungibile: controlla la connessione.';
 
   @override
   String get voiceBusy => 'Il microfono è occupato, riprova tra un attimo.';
@@ -640,7 +672,8 @@ class AppLocalizationsIt extends AppLocalizations {
   String get leaveListQuestion => 'Abbandonare la lista?';
 
   @override
-  String get leaveListInfo => 'Non la vedrai più finché non ti verrà ricondivisa.';
+  String get leaveListInfo =>
+      'Non la vedrai più finché non ti verrà ricondivisa.';
 
   @override
   String get leave => 'Abbandona';
@@ -659,7 +692,8 @@ class AppLocalizationsIt extends AppLocalizations {
   }
 
   @override
-  String get deleteItemInfo => 'Sparirà dalla lista per tutti. Se l\'hai solo messo nel carrello, spuntalo come preso.';
+  String get deleteItemInfo =>
+      'Sparirà dalla lista per tutti. Se l\'hai solo messo nel carrello, spuntalo come preso.';
 
   @override
   String get putBackToBuy => 'Rimetti da prendere';
@@ -680,7 +714,8 @@ class AppLocalizationsIt extends AppLocalizations {
   String get deleteFromList => 'Elimina dalla lista';
 
   @override
-  String get deleteFromListInfo => 'Diverso da \"preso\": l\'articolo sparisce per tutti';
+  String get deleteFromListInfo =>
+      'Diverso da \"preso\": l\'articolo sparisce per tutti';
 
   @override
   String get sendOrExportList => 'Invia o esporta la lista';
@@ -689,7 +724,8 @@ class AppLocalizationsIt extends AppLocalizations {
   String get exportTextInfo => 'Testo con le spunte, scegli tu la chat';
 
   @override
-  String get exportPdfInfo => 'Da stampare o inviare (anche su WhatsApp o Telegram)';
+  String get exportPdfInfo =>
+      'Da stampare o inviare (anche su WhatsApp o Telegram)';
 
   @override
   String get otherApps => 'Altre app';
@@ -732,7 +768,8 @@ class AppLocalizationsIt extends AppLocalizations {
   String get readOnlyAccess => 'Hai accesso in sola lettura';
 
   @override
-  String get emptyList => 'La lista è vuota.\nAggiungi il primo articolo qui sotto.';
+  String get emptyList =>
+      'La lista è vuota.\nAggiungi il primo articolo qui sotto.';
 
   @override
   String inCart(int checked, int total) {
@@ -741,7 +778,12 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String notFoundCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(count, locale: localeName, other: '$count non trovati', one: '1 non trovato');
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count non trovati',
+      one: '1 non trovato',
+    );
     return '$_temp0';
   }
 
@@ -790,7 +832,8 @@ class AppLocalizationsIt extends AppLocalizations {
   String get listPhoto => 'Foto della lista';
 
   @override
-  String get listPhotoUploadFailed => 'Lista creata, ma la foto non è stata caricata: aggiungila dal menu della lista.';
+  String get listPhotoUploadFailed =>
+      'Lista creata, ma la foto non è stata caricata: aggiungila dal menu della lista.';
 
   @override
   String get productPhoto => 'Foto del prodotto';
@@ -884,7 +927,8 @@ class AppLocalizationsIt extends AppLocalizations {
   String get department => 'Reparto';
 
   @override
-  String get departmentHelper => 'Riconosciuto dal nome: cambialo se non è giusto';
+  String get departmentHelper =>
+      'Riconosciuto dal nome: cambialo se non è giusto';
 
   @override
   String get emojiOptional => 'Emoji (facoltativa)';
@@ -931,7 +975,8 @@ class AppLocalizationsIt extends AppLocalizations {
   String get invalidPrice => 'Scrivi un prezzo, es. 1,29';
 
   @override
-  String get privacyRequired => 'Per registrarti devi accettare l\'informativa privacy';
+  String get privacyRequired =>
+      'Per registrarti devi accettare l\'informativa privacy';
 
   @override
   String get acceptPrivacyPrefix => 'Ho letto e accetto l\'';
@@ -943,7 +988,8 @@ class AppLocalizationsIt extends AppLocalizations {
   String get privacyPolicy => 'informativa privacy';
 
   @override
-  String get termsRequired => 'Per registrarti devi accettare le condizioni d\'uso';
+  String get termsRequired =>
+      'Per registrarti devi accettare le condizioni d\'uso';
 
   @override
   String get acceptTermsPrefix => 'Accetto le ';
@@ -952,16 +998,19 @@ class AppLocalizationsIt extends AppLocalizations {
   String get termsOfUse => 'condizioni d\'uso';
 
   @override
-  String get acceptTermsSuffix => ': i contenuti che aggiungo sono sotto la mia responsabilità';
+  String get acceptTermsSuffix =>
+      ': i contenuti che aggiungo sono sotto la mia responsabilità';
 
   @override
-  String get newsletterConsent => 'Voglio ricevere la newsletter di Lista Spesa Facile';
+  String get newsletterConsent =>
+      'Voglio ricevere la newsletter di Lista Spesa Facile';
 
   @override
   String get newsletterOptional => 'Facoltativo';
 
   @override
-  String get socialPrivacyNotice => 'Continuando con Google o Amazon accetti l\'';
+  String get socialPrivacyNotice =>
+      'Continuando con Google o Amazon accetti l\'';
 
   @override
   String get socialTermsJoin => ' e le ';
@@ -1103,7 +1152,8 @@ class AppLocalizationsIt extends AppLocalizations {
   String get searchMyPrices => 'Cerca prodotto o supermercato';
 
   @override
-  String get noMyPrices => 'Nessun prezzo. Aggiungilo da qui o dal menu ⋮ di un prodotto della lista.';
+  String get noMyPrices =>
+      'Nessun prezzo. Aggiungilo da qui o dal menu ⋮ di un prodotto della lista.';
 
   @override
   String get noMyPricesFound => 'Nessun prezzo trovato.';
@@ -1117,7 +1167,8 @@ class AppLocalizationsIt extends AppLocalizations {
   String get info => 'Info';
 
   @override
-  String get noProductInfo => 'Nessuna informazione trovata per questo prodotto.';
+  String get noProductInfo =>
+      'Nessuna informazione trovata per questo prodotto.';
 
   @override
   String get sources => 'Fonti';
@@ -1138,14 +1189,16 @@ class AppLocalizationsIt extends AppLocalizations {
   }
 
   @override
-  String get dataMayBeIncomplete => 'I dati possono essere incompleti: controlla sempre l\'etichetta.';
+  String get dataMayBeIncomplete =>
+      'I dati possono essere incompleti: controlla sempre l\'etichetta.';
 
   @override
   String get genericValuesNotice =>
       'Valori medi per 100 g di questo alimento, dalla tabella nutrizionale ufficiale CIQUAL.';
 
   @override
-  String get similarProductNotice => 'Prodotto simile trovato dal nome: potrebbe non essere esattamente il tuo.';
+  String get similarProductNotice =>
+      'Prodotto simile trovato dal nome: potrebbe non essere esattamente il tuo.';
 
   @override
   String get barcode => 'Codice a barre';
@@ -1361,6 +1414,9 @@ class AppLocalizationsIt extends AppLocalizations {
   String get blockedPeople => 'Persone bloccate';
 
   @override
+  String get adPrivacy => 'Privacy della pubblicità';
+
+  @override
   String get noBlockedPeople => 'Non hai bloccato nessuno.';
 
   @override
@@ -1372,7 +1428,8 @@ class AppLocalizationsIt extends AppLocalizations {
   }
 
   @override
-  String get unblockInfo => 'Potrete di nuovo condividere liste. Le condivisioni tolte non tornano da sole.';
+  String get unblockInfo =>
+      'Potrete di nuovo condividere liste. Le condivisioni tolte non tornano da sole.';
 
   @override
   String reportOrBlock(String name) {

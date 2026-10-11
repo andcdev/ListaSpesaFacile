@@ -53,6 +53,10 @@
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_channel_id"
             android:value="lista_spesa" />
+        <!-- App AdMob (pubblicità): ADMOB_APP_ID in config/produzione.json, vedi build.gradle.kts. -->
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="${admobAppId}" />
         <!-- Ritorno nell'app al termine del login con Google / Amazon (listaspesafacile://auth). -->
         <activity
             android:name="com.linusu.flutter_web_auth_2.CallbackActivity"

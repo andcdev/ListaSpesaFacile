@@ -6,6 +6,7 @@ import '../l10n/l10n.dart';
 import '../models/app_user.dart';
 import '../models/list_filter.dart';
 import '../models/shopping_list.dart';
+import '../services/ads_service.dart';
 import '../services/api_client.dart';
 import '../services/notification_service.dart';
 import '../services/realtime_client.dart';
@@ -15,6 +16,7 @@ import '../state/list_detail_controller.dart';
 import '../state/lists_controller.dart';
 import '../state/locale_controller.dart';
 import '../state/notifications_controller.dart';
+import '../widgets/ad_banner.dart';
 import '../widgets/guide.dart';
 import '../widgets/language_picker.dart';
 import '../widgets/photo_picker.dart';
@@ -334,6 +336,7 @@ class _ListsScreenState extends State<ListsScreen> {
               if (value == 'blocked' && context.mounted) {
                 await Navigator.push(context, MaterialPageRoute(builder: (_) => const BlockedUsersScreen()));
               }
+              if (value == 'adPrivacy' && context.mounted) context.read<AdsService>().showPrivacyOptions();
               if (value == 'report' && context.mounted) {
                 await showReportDialog(context, type: ReportType.problem, title: l.reportProblem);
               }
@@ -370,6 +373,8 @@ class _ListsScreenState extends State<ListsScreen> {
               ),
               PopupMenuItem(value: 'guide', child: Text(l.guide)),
               PopupMenuItem(value: 'blocked', child: Text(l.blockedPeople)),
+              if (context.read<AdsService>().privacyOptionsRequired)
+                PopupMenuItem(value: 'adPrivacy', child: Text(l.adPrivacy)),
               PopupMenuItem(value: 'report', child: Text(l.reportProblem)),
               PopupMenuItem(value: 'logout', child: Text(l.logout)),
               PopupMenuItem(
@@ -393,6 +398,8 @@ class _ListsScreenState extends State<ListsScreen> {
           label: Text(l.newList),
         ),
       ),
+      // Banner pubblicitario fisso in fondo, sotto il pulsante "Nuova lista" (solo quando c'è un annuncio).
+      bottomNavigationBar: const AdBanner(),
       body: Wallpaper(
         child: RefreshIndicator(
           onRefresh: () => _refresh(controller),
