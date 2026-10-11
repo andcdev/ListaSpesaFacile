@@ -9,7 +9,9 @@
   --arancio-chiaro: #fbe6dd;
   --testo: #1d2520;
   --testo-2: #4c5a50;
-  --sfondo: #fbfaf6;
+  /* Fondo e disegni uguali allo sfondo dell'app (app/assets/backgrounds/sorgenti/carrelli*.svg). */
+  --sfondo: #efeae2;
+  --sfondo-disegni: url("/img/sfondo-chiaro.svg");
   --carta: #ffffff;
   --bordo: #e2e5dd;
   color-scheme: light dark;
@@ -24,7 +26,8 @@
     --arancio-chiaro: #3a2219;
     --testo: #e8ece6;
     --testo-2: #aab5ab;
-    --sfondo: #121613;
+    --sfondo: #1e1f1f;
+    --sfondo-disegni: url("/img/sfondo-scuro.svg");
     --carta: #1a1f1b;
     --bordo: #2c342e;
   }
@@ -39,7 +42,8 @@ html { -webkit-text-size-adjust: 100%; }
 
 body {
   margin: 0;
-  background: var(--sfondo);
+  background: var(--sfondo) var(--sfondo-disegni) repeat;
+  background-size: 170px 170px;
   color: var(--testo);
   font: 17px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
