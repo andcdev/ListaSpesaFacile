@@ -526,6 +526,12 @@ class AppLocalizationsIt extends AppLocalizations {
   String get you => 'Tu';
 
   @override
+  String get serviceChannelName => 'Collegamento in background';
+
+  @override
+  String get serviceChannelDescription => 'Tiene l\'app collegata per ricevere liste e messaggi anche quando è chiusa';
+
+  @override
   String reminderTitle(String name) {
     return 'Promemoria: $name';
   }
@@ -752,6 +758,15 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get notFoundLower => 'non trovato';
+
+  @override
+  String get filterAll => 'Totale';
+
+  @override
+  String get filterToBuy => 'Da prendere';
+
+  @override
+  String get filterTaken => 'Presi';
 
   @override
   String notFoundBy(String name) {

@@ -524,6 +524,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get you => 'You';
 
   @override
+  String get serviceChannelName => 'Background connection';
+
+  @override
+  String get serviceChannelDescription =>
+      'Keeps the app connected to receive lists and messages even when it is closed';
+
+  @override
   String reminderTitle(String name) {
     return 'Reminder: $name';
   }
@@ -749,6 +756,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get notFoundLower => 'not found';
+
+  @override
+  String get filterAll => 'All';
+
+  @override
+  String get filterToBuy => 'To buy';
+
+  @override
+  String get filterTaken => 'Taken';
 
   @override
   String notFoundBy(String name) {

@@ -1025,6 +1025,18 @@ abstract class AppLocalizations {
   /// **'Tu'**
   String get you;
 
+  /// No description provided for @serviceChannelName.
+  ///
+  /// In it, this message translates to:
+  /// **'Collegamento in background'**
+  String get serviceChannelName;
+
+  /// No description provided for @serviceChannelDescription.
+  ///
+  /// In it, this message translates to:
+  /// **'Tiene l\'app collegata per ricevere liste e messaggi anche quando è chiusa'**
+  String get serviceChannelDescription;
+
   /// No description provided for @reminderTitle.
   ///
   /// In it, this message translates to:
@@ -1420,6 +1432,24 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'non trovato'**
   String get notFoundLower;
+
+  /// No description provided for @filterAll.
+  ///
+  /// In it, this message translates to:
+  /// **'Totale'**
+  String get filterAll;
+
+  /// No description provided for @filterToBuy.
+  ///
+  /// In it, this message translates to:
+  /// **'Da prendere'**
+  String get filterToBuy;
+
+  /// No description provided for @filterTaken.
+  ///
+  /// In it, this message translates to:
+  /// **'Presi'**
+  String get filterTaken;
 
   /// No description provided for @notFoundBy.
   ///

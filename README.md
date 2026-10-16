@@ -62,6 +62,8 @@ Sorgente modificabile: [`docs/architettura.svg`](docs/architettura.svg).
   **preso** ✓ (casella a sinistra) e **non preso** ✗ (non trovato o esaurito, pulsante a destra); si vede chi
   l'ha segnato. Per ogni articolo si può scegliere un'**emoji** diversa da quella riconosciuta e un **link a
   un'immagine esterna**, mostrata come miniatura (toccala per ingrandirla).
+- **Filtro dei prodotti** sotto la barra di avanzamento: *Totale* (predefinito), *Da prendere* e *Presi*, ognuno
+  col suo numero; "Da prendere" e "Presi" compaiono solo se ci sono prodotti in quello stato. Cambia solo cosa vedi tu.
 - **Foto della lista**: dalla galleria o dalla fotocamera (menu ⋮ → *Aggiungi una foto*), visibile in cima
   alla lista e nell'elenco delle liste. Solo chi può modificare la lista la cambia.
 - **Invia o esporta** (icona di condivisione): testo con spunte e reparti su **WhatsApp** o **Telegram**

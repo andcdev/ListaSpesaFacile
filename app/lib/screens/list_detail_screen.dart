@@ -50,6 +50,9 @@ class _ListDetailScreenState extends State<ListDetailScreen> {
   /// Chat aperta sotto la lista, nella stessa schermata.
   late bool _chatOpen = widget.openChat;
 
+  /// Prodotti mostrati: tutti (null), solo da prendere o solo presi.
+  ItemStatus? _filter;
+
   late final NotificationService _notifications;
   late final int _listId;
 
@@ -554,6 +557,20 @@ class _ListDetailScreenState extends State<ListDetailScreen> {
     }
 
     final items = detail.items;
+    final todo = items.where((i) => i.status == ItemStatus.todo).length;
+    final taken = detail.checkedCount;
+    // Se il filtro scelto resta senza prodotti (es. preso l'ultimo da prendere) si torna al totale.
+    final filter = switch (_filter) {
+      ItemStatus.todo when todo > 0 => ItemStatus.todo,
+      ItemStatus.taken when taken > 0 => ItemStatus.taken,
+      _ => null,
+    };
+    final shown = filter == null
+        ? items
+        : [
+            for (final item in items)
+              if (item.status == filter) item,
+          ];
     final api = context.read<ApiClient>();
     final muted = Theme.of(context).colorScheme.onSurfaceVariant;
     return RefreshIndicator(
@@ -609,12 +626,13 @@ class _ListDetailScreenState extends State<ListDetailScreen> {
               leading: Icon(Icons.visibility_outlined, color: muted),
               title: Text(l.readOnlyAccess),
             ),
+          if (todo > 0 || taken > 0) _filterBar(total: items.length, todo: todo, taken: taken, selected: filter),
           if (items.isEmpty)
             Padding(
               padding: const EdgeInsets.all(32),
               child: Text(l.emptyList, textAlign: TextAlign.center),
             ),
-          for (final group in groupByCategory(items, _categories.map((c) => c.slug).toList())) ...[
+          for (final group in groupByCategory(shown, _categories.map((c) => c.slug).toList())) ...[
             _CategoryHeader(
               category: _categories.firstWhere(
                 (c) => c.slug == group.category,
@@ -636,6 +654,25 @@ class _ListDetailScreenState extends State<ListDetailScreen> {
               ),
             ),
         ],
+      ),
+    );
+  }
+
+  /// Pulsanti sopra i prodotti, ognuno col suo conteggio: totale (predefinito), poi "Da prendere" e "Presi" solo
+  /// se ci sono prodotti in quello stato.
+  Widget _filterBar({required int total, required int todo, required int taken, required ItemStatus? selected}) {
+    final l = context.l10n;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 4),
+      child: SegmentedButton<ItemStatus?>(
+        showSelectedIcon: false,
+        segments: [
+          ButtonSegment(value: null, label: Text('${l.filterAll} · $total')),
+          if (todo > 0) ButtonSegment(value: ItemStatus.todo, label: Text('${l.filterToBuy} · $todo')),
+          if (taken > 0) ButtonSegment(value: ItemStatus.taken, label: Text('${l.filterTaken} · $taken')),
+        ],
+        selected: {selected},
+        onSelectionChanged: (s) => setState(() => _filter = s.first),
       ),
     );
   }
