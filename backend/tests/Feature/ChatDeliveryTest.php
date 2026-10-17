@@ -28,9 +28,9 @@ class ChatDeliveryTest extends TestCase
         $first = $this->postJson("/api/lists/{$list->id}/messages", ['body' => 'Uno'])->json('data.id');
         $second = $this->postJson("/api/lists/{$list->id}/messages", ['body' => 'Due'])->json('data.id');
 
-        // Chi scrive ha ricevuto i propri messaggi; Anna ancora nulla → una spunta.
+        // Scrivere non vale come lettura (si scrive anche dalla barra a chat chiusa); Anna non ha letto → una spunta.
         $this->getJson("/api/lists/{$list->id}/messages")
-            ->assertJsonPath("delivered.{$owner->id}", $second)
+            ->assertJsonPath("delivered.{$owner->id}", 0)
             ->assertJsonPath("delivered.{$anna->id}", 0);
 
         Sanctum::actingAs($anna);

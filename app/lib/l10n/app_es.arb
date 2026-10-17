@@ -164,7 +164,7 @@
   "writeMessage": "Escribe un mensaje",
   "send": "Enviar",
   "deletedUser": "Usuario",
-  "messageReceived": "Recibido",
+  "messageReceived": "Leído",
   "messageSent": "Enviado",
   "emptyChat": "No hay mensajes.\nEscribe, dicta con el micrófono o envía una foto a quienes comparten la lista: «Estoy en la zona de frescos, ¿falta algo?»",
   "pickFromGallery": "Elegir de la galería",

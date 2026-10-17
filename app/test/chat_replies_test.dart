@@ -39,4 +39,25 @@ void main() {
     expect(chatProductNames('pane, latte\nuova;  '), ['pane', 'latte', 'uova']);
     expect(chatProductNames('   '), isEmpty);
   });
+
+  test('reazioni: una per persona, lette dal messaggio e sostituite in tempo reale', () {
+    final message = ChatMessage.fromJson({
+      'id': 7,
+      'shopping_list_id': 1,
+      'body': 'Arrivo',
+      'created_at': '2026-10-18T08:00:00+00:00',
+      'reactions': [
+        {'emoji': '👍', 'user_id': 2, 'user_name': 'Anna'},
+      ],
+    });
+    expect(message.reactions.single.emoji, '👍');
+    final updated = message.withReactions(
+      Reaction.listFromJson([
+        {'emoji': '❤️', 'user_id': 2, 'user_name': 'Anna'},
+        {'emoji': '❤️', 'user_id': 3, 'user_name': 'Marco'},
+      ]),
+    );
+    expect(updated.reactions.map((r) => r.emoji), ['❤️', '❤️']);
+    expect(updated.body, 'Arrivo');
+  });
 }

@@ -75,15 +75,13 @@ class NotificationsController extends ChangeNotifier {
 
   void _onCreated(RealtimeEvent e) {
     final notification = AppNotification.fromJson(e.data['notification'] as Map<String, dynamic>);
-    // Con il push attivo, o con l'app in background e il servizio attivo, la notifica sul telefono (e la conferma
-    // di ricezione) la gestisce qualcun altro: qui si aggiorna solo l'elenco.
+    // Con il push attivo, o con l'app in background e il servizio attivo, la notifica sul telefono la gestisce
+    // qualcun altro: qui si aggiorna solo l'elenco.
     final elsewhere = service.handledElsewhere;
     // Chat e modifiche alla lista: solo sul telefono, nella conversazione della lista.
     if (!notification.stored) {
       if (elsewhere) return;
       service.showInApp(notification);
-      // Il messaggio è arrivato su questo telefono: spunte blu per chi l'ha scritto.
-      NotificationService.confirmDelivery(api, notification).catchError((Object e) => debugPrint('Conferma: $e'));
       return;
     }
     items = [notification, ...items.where((n) => n.id != notification.id)];

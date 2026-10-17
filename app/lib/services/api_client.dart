@@ -479,6 +479,17 @@ class ApiClient {
   }
 
   /// Il telefono ha ricevuto i messaggi della lista fino a [upTo]: chi li ha scritti vede le spunte blu.
+  /// Reazione dell'utente al messaggio (null = la toglie): restituisce tutte le reazioni del messaggio.
+  Future<List<Reaction>> reactToMessage(int listId, int messageId, String? emoji) async {
+    final json = await _send(
+      emoji == null ? 'DELETE' : 'PUT',
+      '/lists/$listId/messages/$messageId/reaction',
+      emoji == null ? null : {'emoji': emoji},
+    );
+    return Reaction.listFromJson(((json as Map<String, dynamic>)['data'] as Map<String, dynamic>)['reactions']);
+  }
+
+  /// I messaggi fino a [upTo] sono stati letti (chat aperta): chi li ha scritti vede le due spunte blu.
   Future<void> markMessagesDelivered(int listId, int upTo) =>
       _send('POST', '/lists/$listId/messages/delivered', {'up_to': upTo});
 

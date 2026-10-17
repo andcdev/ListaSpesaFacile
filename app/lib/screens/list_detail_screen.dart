@@ -52,7 +52,9 @@ class _ListDetailScreenState extends State<ListDetailScreen> {
   /// Chat della lista: esiste solo con almeno due persone (vedi _syncChat). Si apre in un foglio sopra la lista.
   ChatController? _chat;
   StreamSubscription<ChatMessage>? _incomingSub;
-  bool _chatSheetOpen = false;
+
+  /// Chat aperta sotto la lista, nella stessa schermata.
+  bool _chatOpen = false;
 
   /// Da aprire appena la chat esiste (notifica di un messaggio toccata).
   late bool _openChatPending = widget.openChat;
@@ -156,7 +158,7 @@ class _ListDetailScreenState extends State<ListDetailScreen> {
   }
 
   void _onIncoming(ChatMessage message) {
-    if (_chatSheetOpen || !mounted) return;
+    if (_chatOpen || !mounted) return;
     _incomingTimer?.cancel();
     setState(() => _incoming = message);
     _incomingTimer = Timer(const Duration(seconds: 8), () {
@@ -188,53 +190,21 @@ class _ListDetailScreenState extends State<ListDetailScreen> {
       );
   }
 
-  /// Foglio della chat a metà schermo (la lista resta visibile sopra), da tirare su fino a tutto schermo.
-  Future<void> _openChat(ListDetailController detail) async {
+  /// Chat aperta sotto la lista, come prima: da quel momento i messaggi degli altri risultano letti.
+  void _openChat(ListDetailController detail) {
     final chat = _chat;
-    final list = detail.list;
-    if (chat == null || list == null || _chatSheetOpen) return;
+    if (chat == null || detail.list == null || _chatOpen) return;
     _incomingTimer?.cancel();
     setState(() {
-      _chatSheetOpen = true;
+      _chatOpen = true;
       _incoming = null;
     });
-    chat.markRead();
-    await showModalBottomSheet<void>(
-      context: context,
-      isScrollControlled: true,
-      useSafeArea: true,
-      backgroundColor: Theme.of(context).colorScheme.surfaceContainerLow,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
-      // API, utente e notifiche arrivano dall'alto (sopra MaterialApp): qui serve solo la chat della lista.
-      builder: (sheetContext) => ChangeNotifierProvider.value(
-        value: chat,
-        child: Padding(
-          padding: EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(sheetContext).bottom),
-          child: DraggableScrollableSheet(
-            expand: false,
-            initialChildSize: 0.6,
-            minChildSize: 0.35,
-            maxChildSize: 1,
-            snap: true,
-            snapSizes: const [0.6],
-            builder: (context, scroll) => Column(
-              children: [
-                _ChatSheetHeader(people: list.people.length, onClose: () => Navigator.pop(sheetContext)),
-                Expanded(
-                  child: ChatPanel(
-                    isOwner: list.isOwner,
-                    scrollController: scroll,
-                    onAddToList: detail.canEdit ? (names) => _addNames(detail, names) : null,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-    chat.markRead();
-    if (mounted) setState(() => _chatSheetOpen = false);
+    chat.visible = true;
+  }
+
+  void _closeChat() {
+    _chat?.visible = false;
+    setState(() => _chatOpen = false);
   }
 
   /// Prodotti presi da un messaggio della chat, aggiunti uno dopo l'altro.
@@ -797,7 +767,9 @@ class _ListDetailScreenState extends State<ListDetailScreen> {
                   label: Text('${chat.unreadCount}'),
                   child: const Icon(Icons.chat_bubble_outline),
                 ),
-                onPressed: () => _openChat(detail),
+                isSelected: _chatOpen,
+                selectedIcon: const Icon(Icons.chat_bubble),
+                onPressed: () => _chatOpen ? _closeChat() : _openChat(detail),
               ),
             ),
           if (list != null)
@@ -840,9 +812,34 @@ class _ListDetailScreenState extends State<ListDetailScreen> {
           const SizedBox(width: 8),
         ],
       ),
-      body: Wallpaper(child: _body(detail)),
+      // Con la chat aperta: lista in alto (si spunta e si aggiunge), chat in basso.
+      body: Wallpaper(
+        child: _chatOpen && chat != null && list != null
+            ? Column(
+                children: [
+                  Expanded(flex: 5, child: _body(detail)),
+                  if (detail.canEdit) _addBar(detail, compact: true),
+                  Expanded(
+                    flex: 4,
+                    child: _ChatSheet(
+                      onClose: _closeChat,
+                      child: ChangeNotifierProvider.value(
+                        value: chat,
+                        child: ChatPanel(
+                          isOwner: list.isOwner,
+                          onAddToList: detail.canEdit ? (names) => _addNames(detail, names) : null,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              )
+            : _body(detail),
+      ),
       // In basso: l'ultimo messaggio arrivato e la barra per aggiungere prodotti (o scrivere in chat).
-      bottomNavigationBar: (detail.canEdit || (_incoming != null && chat != null))
+      bottomNavigationBar: _chatOpen && chat != null
+          ? null
+          : (detail.canEdit || (_incoming != null && chat != null))
           ? Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -855,10 +852,11 @@ class _ListDetailScreenState extends State<ListDetailScreen> {
     );
   }
 
-  Widget _addBar(ListDetailController detail) => _AddItemBar(
-    fieldKey: _addFieldKey,
-    addKey: _addButtonKey,
+  Widget _addBar(ListDetailController detail, {bool compact = false}) => _AddItemBar(
+    fieldKey: compact ? null : _addFieldKey,
+    addKey: compact ? null : _addButtonKey,
     units: _units,
+    compact: compact,
     suggestions: detail.suggestions,
     existing: [for (final item in detail.items) item.name],
     search: detail.searchProducts,
@@ -916,20 +914,25 @@ class _ListDetailScreenState extends State<ListDetailScreen> {
                 image: NetworkImage(api.listImageUrl(list.id, list.imageVersion!), headers: api.authHeaders),
                 title: list.name,
                 subtitle: _ListMeta(detail: detail, onPhoto: true),
+                compact: _chatOpen,
                 onTap: detail.canEdit ? () => _photoMenu(detail) : null,
               ),
             )
           else
             Padding(
               padding: const EdgeInsets.fromLTRB(20, 4, 20, 12),
-              child: PageHeading(list.name, subtitle: _ListMeta(detail: detail)),
+              child: PageHeading(
+                list.name,
+                compact: _chatOpen,
+                subtitle: _ListMeta(detail: detail),
+              ),
             ),
-          if (items.isNotEmpty)
+          if (items.isNotEmpty && !_chatOpen)
             Padding(
               padding: const EdgeInsets.fromLTRB(20, 0, 20, 8),
               child: ShoppingProgress(done: detail.checkedCount, total: items.length),
             ),
-          ..._shoppingRun(detail),
+          if (!_chatOpen) ..._shoppingRun(detail),
           if (list.notes != null && list.notes!.isNotEmpty)
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
@@ -937,7 +940,7 @@ class _ListDetailScreenState extends State<ListDetailScreen> {
                 child: ListTile(leading: const Icon(Icons.notes), title: Text(list.notes!)),
               ),
             ),
-          if (list.reminderMinutes != null)
+          if (list.reminderMinutes != null && !_chatOpen)
             ListTile(
               dense: true,
               contentPadding: const EdgeInsets.symmetric(horizontal: 20),
@@ -1143,41 +1146,87 @@ class _ListDetailScreenState extends State<ListDetailScreen> {
   }
 }
 
-/// In cima al foglio della chat: maniglia, titolo con quante persone ci sono e freccia per chiuderlo.
-class _ChatSheetHeader extends StatelessWidget {
-  const _ChatSheetHeader({required this.people, required this.onClose});
+/// Chat aperta sotto la lista: un foglio con gli angoli arrotondati e l'ombra verso l'alto, appoggiato sulla lista.
+class _ChatSheet extends StatelessWidget {
+  const _ChatSheet({required this.onClose, required this.child});
 
-  final int people;
+  final VoidCallback onClose;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final dark = Theme.of(context).brightness == Brightness.dark;
+    const radius = BorderRadius.vertical(top: Radius.circular(24));
+    return Container(
+      margin: const EdgeInsets.only(top: 6),
+      decoration: BoxDecoration(
+        color: scheme.surfaceContainerLow,
+        borderRadius: radius,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: dark ? 0.6 : 0.24),
+            blurRadius: 24,
+            offset: const Offset(0, -6),
+          ),
+          BoxShadow(
+            color: Colors.black.withValues(alpha: dark ? 0.3 : 0.06),
+            blurRadius: 3,
+            offset: const Offset(0, -1),
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: radius,
+        child: Column(
+          children: [
+            _ChatHeader(onClose: onClose),
+            Expanded(child: child),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Barra minima in cima alla chat: maniglia, icona e freccia per chiuderla (tocca ovunque).
+class _ChatHeader extends StatelessWidget {
+  const _ChatHeader({required this.onClose});
+
   final VoidCallback onClose;
 
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 8, 4, 0),
-      child: Column(
-        children: [
-          Container(
-            width: 36,
-            height: 4,
-            decoration: BoxDecoration(
-              color: scheme.onSurfaceVariant.withValues(alpha: 0.35),
-              borderRadius: BorderRadius.circular(2),
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onClose,
+        child: Tooltip(
+          message: context.l10n.closeChat,
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 6, 16, 2),
+            child: Column(
+              children: [
+                Container(
+                  width: 36,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: scheme.onSurfaceVariant.withValues(alpha: 0.35),
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+                Row(
+                  children: [
+                    Icon(Icons.chat_bubble_outline, size: 18, color: scheme.primary),
+                    const Spacer(),
+                    Icon(Icons.keyboard_arrow_down, size: 22, color: scheme.onSurfaceVariant),
+                  ],
+                ),
+              ],
             ),
           ),
-          Row(
-            children: [
-              Icon(Icons.chat_bubble_outline, size: 18, color: scheme.primary),
-              const SizedBox(width: 8),
-              Expanded(child: Text(context.l10n.chatPeople(people), style: Theme.of(context).textTheme.titleSmall)),
-              IconButton(
-                icon: const Icon(Icons.keyboard_arrow_down),
-                tooltip: context.l10n.closeChat,
-                onPressed: onClose,
-              ),
-            ],
-          ),
-        ],
+        ),
       ),
     );
   }
@@ -1272,11 +1321,20 @@ class _ListMeta extends StatelessWidget {
 /// Testata della lista con la sua foto come sfondo: nome e data in basso, in bianco su una sfumatura scura che li
 /// rende leggibili su qualsiasi foto. Il nome è di misura media (non il titolo grande della pagina senza foto).
 class _PhotoHeading extends StatelessWidget {
-  const _PhotoHeading({required this.image, required this.title, required this.subtitle, this.onTap});
+  const _PhotoHeading({
+    required this.image,
+    required this.title,
+    required this.subtitle,
+    this.compact = false,
+    this.onTap,
+  });
 
   final ImageProvider image;
   final String title;
   final Widget subtitle;
+
+  /// Più bassa con la chat aperta.
+  final bool compact;
   final VoidCallback? onTap;
 
   @override
@@ -1286,7 +1344,7 @@ class _PhotoHeading extends StatelessWidget {
     return ClipRRect(
       borderRadius: BorderRadius.circular(22),
       child: SizedBox(
-        height: 210,
+        height: compact ? 120 : 210,
         child: Stack(
           fit: StackFit.expand,
           children: [
@@ -1317,7 +1375,10 @@ class _PhotoHeading extends StatelessWidget {
                     title,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: text.headlineSmall?.copyWith(color: Colors.white, shadows: shadow),
+                    style: (compact ? text.titleLarge : text.headlineSmall)?.copyWith(
+                      color: Colors.white,
+                      shadows: shadow,
+                    ),
                   ),
                   const SizedBox(height: 4),
                   DefaultTextStyle.merge(
@@ -1443,12 +1504,16 @@ class _AddItemBar extends StatefulWidget {
     this.measureOf,
     this.fieldKey,
     this.addKey,
+    this.compact = false,
     this.suggestions = const [],
     this.existing = const [],
     this.onSendMessage,
     this.showSendHint = false,
     this.onHint,
   });
+
+  /// Più sottile, con la chat aperta sotto.
+  final bool compact;
 
   /// Manda il testo scritto in chat (pulsante 💬, solo se nella lista ci sono almeno due persone).
   final Future<void> Function(String text)? onSendMessage;
@@ -1807,7 +1872,7 @@ class _AddItemBarState extends State<_AddItemBar> {
     final bar = Material(
       color: scheme.inverseSurface,
       shape: const StadiumBorder(),
-      elevation: 6,
+      elevation: widget.compact ? 0 : 6,
       shadowColor: Colors.black38,
       child: IconButtonTheme(
         data: IconButtonThemeData(style: IconButton.styleFrom(foregroundColor: onBar)),
@@ -1864,8 +1929,15 @@ class _AddItemBarState extends State<_AddItemBar> {
     );
     return SafeArea(
       top: false,
+      bottom: !widget.compact,
       child: Padding(
-        padding: EdgeInsets.fromLTRB(12, 6, 12, 12 + MediaQuery.viewInsetsOf(context).bottom),
+        // Nel corpo della pagina (compact) la tastiera la gestisce già lo Scaffold.
+        padding: EdgeInsets.fromLTRB(
+          12,
+          widget.compact ? 4 : 6,
+          12,
+          (widget.compact ? 6 : 12) + (widget.compact ? 0 : MediaQuery.viewInsetsOf(context).bottom),
+        ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [

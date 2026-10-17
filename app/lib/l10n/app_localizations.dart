@@ -1088,7 +1088,7 @@ abstract class AppLocalizations {
   /// No description provided for @messageReceived.
   ///
   /// In it, this message translates to:
-  /// **'Ricevuto'**
+  /// **'Letto'**
   String get messageReceived;
 
   /// No description provided for @messageSent.

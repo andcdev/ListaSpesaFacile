@@ -4,10 +4,12 @@ namespace App\Http\Controllers\Api;
 
 use App\Events\ListMessageCreated;
 use App\Events\ListMessageDeleted;
+use App\Events\ListMessageReacted;
 use App\Events\ListMessagesDelivered;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ListMessageResource;
 use App\Models\ListMessage;
+use App\Models\MessageReaction;
 use App\Models\ShoppingList;
 use App\Notifications\ChatMessageReceived;
 use App\Support\ImageModeration;
@@ -18,6 +20,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
@@ -40,7 +43,7 @@ class ListMessageController extends Controller
         // I messaggi delle persone bloccate non compaiono.
         $blocked = $request->user()->blockedIds();
         $messages = $list->messages()
-            ->with(['user', 'replyTo.user'])
+            ->with(['user', 'replyTo.user', 'reactions.user'])
             ->when($before > 0, fn ($q) => $q->where('id', '<', $before))
             ->when($blocked, fn ($q) => $q->where(fn ($q) => $q->whereNull('user_id')->orWhereNotIn('user_id', $blocked)))
             ->orderByDesc('id')
@@ -84,8 +87,8 @@ class ListMessageController extends Controller
             );
         }
         $list->messages()->save($message);
-        // Chi scrive ha di sicuro tutti i messaggi fino al proprio.
-        $list->markChatDelivered($sender, $message->id);
+        // Scrivere non vuol dire aver letto (si scrive anche dalla barra dei prodotti, a chat chiusa): le spunte blu
+        // le decide solo /delivered, che l'app manda con la chat aperta.
 
         Realtime::broadcast(new ListMessageCreated($message));
 
@@ -95,12 +98,42 @@ class ListMessageController extends Controller
             $sender,
         );
 
-        return (new ListMessageResource($message->load(['user', 'replyTo.user'])))->response()->setStatusCode(201);
+        return (new ListMessageResource($message->load(['user', 'replyTo.user', 'reactions.user'])))->response()->setStatusCode(201);
     }
 
     /**
-     * Il telefono dell'utente ha ricevuto i messaggi fino a up_to (chat aperta, notifica arrivata…):
-     * chi li ha scritti vede le due spunte blu.
+     * Reazione dell'utente al messaggio (una sola: un'altra la sostituisce).
+     */
+    public function react(Request $request, ShoppingList $list, ListMessage $message): JsonResponse
+    {
+        $this->authorize('view', $list);
+        abort_if($message->event !== null, 422);
+        $data = $request->validate(['emoji' => ['required', 'string', Rule::in(MessageReaction::EMOJIS)]]);
+
+        $message->reactions()->updateOrCreate(['user_id' => $request->user()->id], ['emoji' => $data['emoji']]);
+
+        return $this->reacted($list, $message);
+    }
+
+    public function unreact(Request $request, ShoppingList $list, ListMessage $message): JsonResponse
+    {
+        $this->authorize('view', $list);
+        $message->reactions()->where('user_id', $request->user()->id)->delete();
+
+        return $this->reacted($list, $message);
+    }
+
+    private function reacted(ShoppingList $list, ListMessage $message): JsonResponse
+    {
+        $reactions = $message->load('reactions.user')->reactionList();
+        Realtime::broadcast(new ListMessageReacted($list->id, $message->id, $reactions));
+
+        return response()->json(['data' => ['id' => $message->id, 'reactions' => $reactions]]);
+    }
+
+    /**
+     * L'utente ha letto i messaggi fino a up_to (la chat era aperta sul suo telefono): chi li ha scritti vede le
+     * due spunte blu. Le versioni vecchie dell'app lo mandavano anche solo all'arrivo della notifica.
      */
     public function delivered(Request $request, ShoppingList $list): JsonResponse
     {

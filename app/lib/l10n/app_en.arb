@@ -164,7 +164,7 @@
   "writeMessage": "Write a message",
   "send": "Send",
   "deletedUser": "User",
-  "messageReceived": "Received",
+  "messageReceived": "Read",
   "messageSent": "Sent",
   "emptyChat": "No messages.\nWrite, dictate with the microphone or send a photo to the people sharing the list: \"I'm at the dairy aisle, anything missing?\"",
   "pickFromGallery": "Choose from gallery",

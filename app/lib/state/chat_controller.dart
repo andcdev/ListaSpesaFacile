@@ -7,7 +7,7 @@ import '../models/chat_message.dart';
 import '../services/api_client.dart';
 import '../services/realtime_client.dart';
 
-/// Spunte dei propri messaggi: una verde = inviato al server, due blu = ricevuto da tutti gli altri della lista.
+/// Spunte dei propri messaggi: una verde = inviato al server, due blu = letto da tutti gli altri della lista.
 enum MessageTicks { sent, received }
 
 /// Chat di una lista: messaggi in tempo reale sul canale presence della lista.
@@ -23,7 +23,7 @@ class ChatController extends ChangeNotifier {
   final _subs = <StreamSubscription<dynamic>>[];
   final Map<int, ChatMessage> _messages = {};
 
-  /// Per ogni utente della lista, fino a quale messaggio il suo telefono ha ricevuto.
+  /// Per ogni utente della lista, fino a quale messaggio ha letto (chat aperta sul suo telefono).
   final Map<int, int> _delivered = {};
 
   /// Ultimo messaggio letto (chat aperta), salvato sul telefono: quelli degli altri dopo questo sono da leggere.
@@ -50,13 +50,34 @@ class ChatController extends ChangeNotifier {
     }
   }
 
+  /// La chat è aperta sullo schermo: solo allora i messaggi degli altri risultano letti.
+  bool _visible = false;
+
+  set visible(bool value) {
+    _visible = value;
+    if (value) {
+      _acknowledge();
+      markRead();
+    }
+  }
+
+  /// La propria reazione al messaggio: toccando la stessa la si toglie, un'altra la sostituisce.
+  Future<void> react(ChatMessage message, String emoji) async {
+    final mine = message.reactions.where((r) => r.userId == userId).firstOrNull;
+    final next = mine?.emoji == emoji ? null : emoji;
+    final reactions = await api.reactToMessage(listId, message.id, next);
+    final current = _messages[message.id];
+    if (current != null) _messages[message.id] = current.withReactions(reactions);
+    _notify();
+  }
+
   bool loading = true;
   bool loadingOlder = false;
   bool hasMore = false;
   String? error;
   bool _disposed = false;
 
-  /// Fino a quale messaggio hanno ricevuto tutti gli altri utenti (null se la lista non è condivisa).
+  /// Fino a quale messaggio hanno letto tutti gli altri utenti (null se la lista non è condivisa).
   int? get othersDeliveredUpTo {
     final others = _delivered.entries.where((e) => e.key != userId).map((e) => e.value);
     return others.isEmpty ? null : others.reduce((a, b) => a < b ? a : b);
@@ -156,9 +177,14 @@ class ChatController extends ChangeNotifier {
         final isNew = !_messages.containsKey(message.id);
         _messages[message.id] = message;
         _acknowledge();
+        if (_visible) markRead();
         if (isNew && message.userId != userId && !message.isEvent) _incoming.add(message);
       case 'message.deleted':
         _messages.remove(e.data['id']);
+      case 'message.reacted':
+        final current = _messages[e.data['id']];
+        if (current == null) return;
+        _messages[current.id] = current.withReactions(Reaction.listFromJson(e.data['reactions']));
       case 'messages.delivered':
         final user = e.data['user_id'] as int;
         final upTo = e.data['up_to'] as int;
@@ -170,8 +196,9 @@ class ChatController extends ChangeNotifier {
     _notify();
   }
 
-  /// Conferma al server di aver ricevuto i messaggi degli altri (le loro spunte diventano blu).
+  /// Conferma al server di aver letto i messaggi degli altri (le loro spunte diventano blu): solo a chat aperta.
   void _acknowledge() {
+    if (!_visible) return;
     final latest = _messages.values.where((m) => m.userId != userId).fold(0, (max, m) => m.id > max ? m.id : max);
     if (latest <= (_delivered[userId] ?? 0)) return;
     _delivered[userId] = latest;

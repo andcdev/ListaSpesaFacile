@@ -88,6 +88,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/lists/{list}/messages/delivered', [ListMessageController::class, 'delivered']);
     Route::get('/lists/{list}/messages/{message}/image', [ListMessageController::class, 'image'])->scopeBindings();
     Route::delete('/lists/{list}/messages/{message}', [ListMessageController::class, 'destroy'])->scopeBindings();
+    Route::put('/lists/{list}/messages/{message}/reaction', [ListMessageController::class, 'react'])->scopeBindings();
+    Route::delete('/lists/{list}/messages/{message}/reaction', [ListMessageController::class, 'unreact'])->scopeBindings();
 
     Route::get('/notifications', [NotificationController::class, 'index']);
     Route::post('/notifications/read', [NotificationController::class, 'markRead']);

@@ -342,7 +342,7 @@
   "writeMessage": "Scrivi un messaggio",
   "send": "Invia",
   "deletedUser": "Utente",
-  "messageReceived": "Ricevuto",
+  "messageReceived": "Letto",
   "messageSent": "Inviato",
   "emptyChat": "Nessun messaggio.\nScrivi, detta con il microfono o invia una foto a chi condivide la lista: \"Sono al banco frigo, manca qualcosa?\"",
   "pickFromGallery": "Scegli dalla galleria",

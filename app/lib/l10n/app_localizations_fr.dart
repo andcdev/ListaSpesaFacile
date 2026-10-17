@@ -560,7 +560,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get deletedUser => 'Utilisateur';
 
   @override
-  String get messageReceived => 'Reçu';
+  String get messageReceived => 'Lu';
 
   @override
   String get messageSent => 'Envoyé';

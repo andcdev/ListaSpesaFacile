@@ -1,3 +1,22 @@
+/// Reazione di una persona a un messaggio (una sola per persona).
+class Reaction {
+  const Reaction({required this.emoji, required this.userId, this.userName});
+
+  /// Le reazioni che si possono dare (le stesse del server).
+  static const emojis = ['👍', '❤️', '😂', '😮', '😢', '🙏'];
+
+  final String emoji;
+  final int userId;
+  final String? userName;
+
+  factory Reaction.fromJson(Map<String, dynamic> json) =>
+      Reaction(emoji: json['emoji'] as String, userId: json['user_id'] as int, userName: json['user_name'] as String?);
+
+  static List<Reaction> listFromJson(dynamic json) => [
+    for (final r in (json as List<dynamic>? ?? const [])) Reaction.fromJson(r as Map<String, dynamic>),
+  ];
+}
+
 /// Messaggio citato in una risposta (solo l'inizio del testo).
 class QuotedMessage {
   const QuotedMessage({required this.id, required this.body, this.hasImage = false, this.userName});
@@ -30,6 +49,7 @@ class ChatMessage {
     this.replyTo,
     this.event,
     this.eventParams = const {},
+    this.reactions = const [],
   });
 
   final int id;
@@ -58,6 +78,24 @@ class ChatMessage {
 
   bool get isEvent => event != null;
 
+  /// Reazioni delle persone, una per persona.
+  final List<Reaction> reactions;
+
+  ChatMessage withReactions(List<Reaction> reactions) => ChatMessage(
+    id: id,
+    listId: listId,
+    body: body,
+    createdAt: createdAt,
+    hasImage: hasImage,
+    userId: userId,
+    userName: userName,
+    userAvatarVersion: userAvatarVersion,
+    replyTo: replyTo,
+    event: event,
+    eventParams: eventParams,
+    reactions: reactions,
+  );
+
   factory ChatMessage.fromJson(Map<String, dynamic> json) {
     final user = json['user'] as Map<String, dynamic>?;
     return ChatMessage(
@@ -76,6 +114,7 @@ class ChatMessage {
       eventParams: json['event_params'] is Map<String, dynamic>
           ? json['event_params'] as Map<String, dynamic>
           : const {},
+      reactions: Reaction.listFromJson(json['reactions']),
     );
   }
 }
