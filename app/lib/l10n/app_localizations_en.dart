@@ -1526,4 +1526,86 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get allTaken => 'Got everything!';
+
+  @override
+  String get addOrWriteHint => 'Add product or write…';
+
+  @override
+  String get sendToChat => 'Send to chat';
+
+  @override
+  String get chatSendHint => '💬 sends it as a message to the people on the list, + adds it to the products';
+
+  @override
+  String get messageSentToChat => 'Message sent to the chat';
+
+  @override
+  String get openChat => 'Open chat';
+
+  @override
+  String chatPeople(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Chat · $count people',
+      one: 'Chat · 1 person',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get chatInvite => 'Share the list to chat with the people shopping with you';
+
+  @override
+  String get reply => 'Reply';
+
+  @override
+  String replyingTo(String name) {
+    return 'Replying to $name';
+  }
+
+  @override
+  String get chatPhoto => 'Photo';
+
+  @override
+  String get addToList => 'Add to the list';
+
+  @override
+  String addedToList(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count products added to the list',
+      one: '1 product added to the list',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get emoji => 'Emoji';
+
+  @override
+  String get keyboard => 'Keyboard';
+
+  @override
+  String eventFinished(String name, int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$name finished shopping: $count products missing',
+      one: '$name finished shopping: 1 product missing',
+      zero: '$name finished shopping: got everything',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String eventTookOver(String name) {
+    return '$name is carrying on with the shopping';
+  }
+
+  @override
+  String eventShopperChanged(String name, String shopper) {
+    return '$name chose $shopper to do the shopping';
+  }
 }

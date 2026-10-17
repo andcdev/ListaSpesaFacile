@@ -15,6 +15,7 @@ return [
         'share_self_list' => 'Vous ne pouvez pas partager la liste avec vous-même.',
         'already_owner' => 'Vous êtes déjà le propriétaire de la liste.',
         'list_full' => 'Cette liste est déjà partagée avec :max personnes, le maximum.',
+        'message_not_found' => 'Le message auquel tu réponds n\'existe plus.',
         'not_shopper' => 'Les courses sont faites par :name : seule la personne qui fait les courses peut marquer les produits pris ou introuvables.',
         'shopper_not_member' => 'La personne qui fait les courses doit faire partie de la liste.',
         'nothing_to_finish' => 'La liste est vide.',

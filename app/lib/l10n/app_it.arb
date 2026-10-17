@@ -921,5 +921,70 @@
   "takeOver": "Continuo io",
   "dismissFinished": "Va bene così",
   "tookOver": "Ora la spesa la fai tu: gli altri sono stati avvisati",
-  "allTaken": "Tutto preso!"
+  "allTaken": "Tutto preso!",
+  "addOrWriteHint": "Agg. prodotto o scrivi…",
+  "sendToChat": "Invia in chat",
+  "chatSendHint": "💬 lo manda come messaggio a chi condivide la lista, + lo aggiunge ai prodotti",
+  "messageSentToChat": "Messaggio inviato in chat",
+  "openChat": "Apri chat",
+  "chatPeople": "{count, plural, =1{Chat · 1 persona} other{Chat · {count} persone}}",
+  "@chatPeople": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "chatInvite": "Condividi la lista per scriverti con chi fa la spesa con te",
+  "reply": "Rispondi",
+  "replyingTo": "Rispondi a {name}",
+  "@replyingTo": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "chatPhoto": "Foto",
+  "addToList": "Aggiungi alla lista",
+  "addedToList": "{count, plural, =1{1 prodotto aggiunto alla lista} other{{count} prodotti aggiunti alla lista}}",
+  "@addedToList": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "emoji": "Emoji",
+  "keyboard": "Tastiera",
+  "eventFinished": "{count, plural, =0{{name} ha finito la spesa: preso tutto} =1{{name} ha finito la spesa: manca 1 prodotto} other{{name} ha finito la spesa: mancano {count} prodotti}}",
+  "@eventFinished": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "eventTookOver": "{name} continua la spesa",
+  "@eventTookOver": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "eventShopperChanged": "{name} ha deciso che la spesa la fa {shopper}",
+  "@eventShopperChanged": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "shopper": {
+        "type": "String"
+      }
+    }
+  }
 }

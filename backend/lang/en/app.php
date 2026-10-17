@@ -15,6 +15,7 @@ return [
         'share_self_list' => 'You can\'t share the list with yourself.',
         'already_owner' => 'You already own this list.',
         'list_full' => 'This list is already shared with :max people, the maximum.',
+        'message_not_found' => 'The message you are replying to no longer exists.',
         'not_shopper' => ':name is doing the shopping: only the shopper can mark products as taken or not found.',
         'shopper_not_member' => 'The shopper must be one of the people on the list.',
         'nothing_to_finish' => 'The list is empty.',

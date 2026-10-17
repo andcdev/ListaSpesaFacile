@@ -1534,4 +1534,86 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get allTaken => '¡Todo cogido!';
+
+  @override
+  String get addOrWriteHint => 'Añadir o escribir…';
+
+  @override
+  String get sendToChat => 'Enviar al chat';
+
+  @override
+  String get chatSendHint => '💬 lo envía como mensaje a las personas de la lista, + lo añade a los productos';
+
+  @override
+  String get messageSentToChat => 'Mensaje enviado al chat';
+
+  @override
+  String get openChat => 'Abrir chat';
+
+  @override
+  String chatPeople(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Chat · $count personas',
+      one: 'Chat · 1 persona',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get chatInvite => 'Comparte la lista para escribir a quien hace la compra contigo';
+
+  @override
+  String get reply => 'Responder';
+
+  @override
+  String replyingTo(String name) {
+    return 'Respondiendo a $name';
+  }
+
+  @override
+  String get chatPhoto => 'Foto';
+
+  @override
+  String get addToList => 'Añadir a la lista';
+
+  @override
+  String addedToList(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count productos añadidos a la lista',
+      one: '1 producto añadido a la lista',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get emoji => 'Emojis';
+
+  @override
+  String get keyboard => 'Teclado';
+
+  @override
+  String eventFinished(String name, int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$name ha terminado la compra: faltan $count productos',
+      one: '$name ha terminado la compra: falta 1 producto',
+      zero: '$name ha terminado la compra: todo cogido',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String eventTookOver(String name) {
+    return '$name continúa la compra';
+  }
+
+  @override
+  String eventShopperChanged(String name, String shopper) {
+    return '$name ha decidido que la compra la hace $shopper';
+  }
 }

@@ -1530,4 +1530,86 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get allTaken => 'Tutto preso!';
+
+  @override
+  String get addOrWriteHint => 'Agg. prodotto o scrivi…';
+
+  @override
+  String get sendToChat => 'Invia in chat';
+
+  @override
+  String get chatSendHint => '💬 lo manda come messaggio a chi condivide la lista, + lo aggiunge ai prodotti';
+
+  @override
+  String get messageSentToChat => 'Messaggio inviato in chat';
+
+  @override
+  String get openChat => 'Apri chat';
+
+  @override
+  String chatPeople(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Chat · $count persone',
+      one: 'Chat · 1 persona',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get chatInvite => 'Condividi la lista per scriverti con chi fa la spesa con te';
+
+  @override
+  String get reply => 'Rispondi';
+
+  @override
+  String replyingTo(String name) {
+    return 'Rispondi a $name';
+  }
+
+  @override
+  String get chatPhoto => 'Foto';
+
+  @override
+  String get addToList => 'Aggiungi alla lista';
+
+  @override
+  String addedToList(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count prodotti aggiunti alla lista',
+      one: '1 prodotto aggiunto alla lista',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get emoji => 'Emoji';
+
+  @override
+  String get keyboard => 'Tastiera';
+
+  @override
+  String eventFinished(String name, int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$name ha finito la spesa: mancano $count prodotti',
+      one: '$name ha finito la spesa: manca 1 prodotto',
+      zero: '$name ha finito la spesa: preso tutto',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String eventTookOver(String name) {
+    return '$name continua la spesa';
+  }
+
+  @override
+  String eventShopperChanged(String name, String shopper) {
+    return '$name ha deciso che la spesa la fa $shopper';
+  }
 }

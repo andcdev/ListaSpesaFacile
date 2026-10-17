@@ -2788,6 +2788,108 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Tutto preso!'**
   String get allTaken;
+
+  /// No description provided for @addOrWriteHint.
+  ///
+  /// In it, this message translates to:
+  /// **'Agg. prodotto o scrivi…'**
+  String get addOrWriteHint;
+
+  /// No description provided for @sendToChat.
+  ///
+  /// In it, this message translates to:
+  /// **'Invia in chat'**
+  String get sendToChat;
+
+  /// No description provided for @chatSendHint.
+  ///
+  /// In it, this message translates to:
+  /// **'💬 lo manda come messaggio a chi condivide la lista, + lo aggiunge ai prodotti'**
+  String get chatSendHint;
+
+  /// No description provided for @messageSentToChat.
+  ///
+  /// In it, this message translates to:
+  /// **'Messaggio inviato in chat'**
+  String get messageSentToChat;
+
+  /// No description provided for @openChat.
+  ///
+  /// In it, this message translates to:
+  /// **'Apri chat'**
+  String get openChat;
+
+  /// No description provided for @chatPeople.
+  ///
+  /// In it, this message translates to:
+  /// **'{count, plural, =1{Chat · 1 persona} other{Chat · {count} persone}}'**
+  String chatPeople(int count);
+
+  /// No description provided for @chatInvite.
+  ///
+  /// In it, this message translates to:
+  /// **'Condividi la lista per scriverti con chi fa la spesa con te'**
+  String get chatInvite;
+
+  /// No description provided for @reply.
+  ///
+  /// In it, this message translates to:
+  /// **'Rispondi'**
+  String get reply;
+
+  /// No description provided for @replyingTo.
+  ///
+  /// In it, this message translates to:
+  /// **'Rispondi a {name}'**
+  String replyingTo(String name);
+
+  /// No description provided for @chatPhoto.
+  ///
+  /// In it, this message translates to:
+  /// **'Foto'**
+  String get chatPhoto;
+
+  /// No description provided for @addToList.
+  ///
+  /// In it, this message translates to:
+  /// **'Aggiungi alla lista'**
+  String get addToList;
+
+  /// No description provided for @addedToList.
+  ///
+  /// In it, this message translates to:
+  /// **'{count, plural, =1{1 prodotto aggiunto alla lista} other{{count} prodotti aggiunti alla lista}}'**
+  String addedToList(int count);
+
+  /// No description provided for @emoji.
+  ///
+  /// In it, this message translates to:
+  /// **'Emoji'**
+  String get emoji;
+
+  /// No description provided for @keyboard.
+  ///
+  /// In it, this message translates to:
+  /// **'Tastiera'**
+  String get keyboard;
+
+  /// No description provided for @eventFinished.
+  ///
+  /// In it, this message translates to:
+  /// **'{count, plural, =0{{name} ha finito la spesa: preso tutto} =1{{name} ha finito la spesa: manca 1 prodotto} other{{name} ha finito la spesa: mancano {count} prodotti}}'**
+  String eventFinished(String name, int count);
+
+  /// No description provided for @eventTookOver.
+  ///
+  /// In it, this message translates to:
+  /// **'{name} continua la spesa'**
+  String eventTookOver(String name);
+
+  /// No description provided for @eventShopperChanged.
+  ///
+  /// In it, this message translates to:
+  /// **'{name} ha deciso che la spesa la fa {shopper}'**
+  String eventShopperChanged(String name, String shopper);
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

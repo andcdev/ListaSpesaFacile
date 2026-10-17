@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import '../l10n/l10n.dart';
 import '../models/chat_message.dart';
 import '../services/api_client.dart';
-import '../services/notification_service.dart';
 import '../state/auth_controller.dart';
 import '../state/chat_controller.dart';
 import 'photo_picker.dart';
@@ -12,15 +12,25 @@ import 'report.dart';
 import 'ui.dart';
 import 'voice_input.dart';
 
-/// Chat interna di una lista, mostrata sotto la lista nella stessa schermata: si può chattare
-/// e intanto spuntare o aggiungere articoli. Si possono inviare foto (galleria o fotocamera) e dettare
-/// i messaggi a voce. Il proprietario della lista può eliminare qualsiasi messaggio, gli altri solo
-/// i propri (tenendo premuto sul messaggio); tenendo premuto il messaggio di un altro lo si segnala o si blocca
-/// chi l'ha scritto.
+/// Prodotti scritti in un messaggio della chat: uno per riga o separati da virgole (al massimo 20).
+List<String> chatProductNames(String body) =>
+    body.split(RegExp(r'[\n,;]')).map((s) => s.trim()).where((s) => s.isNotEmpty && s.length <= 255).take(20).toList();
+
+/// Chat interna di una lista, in un foglio sopra la lista. Si possono inviare foto (galleria o fotocamera),
+/// emoji e dettare i messaggi a voce; si risponde a un singolo messaggio scorrendolo verso destra o tenendolo
+/// premuto. Tenendo premuto un messaggio: rispondere, copiarlo, aggiungerlo alla lista come prodotti, eliminarlo
+/// (i propri; il proprietario della lista anche quelli degli altri), segnalarlo o bloccare chi l'ha scritto.
+/// Gli eventi della lista (spesa finita, "Continuo io"…) compaiono in grigio tra i messaggi.
 class ChatPanel extends StatefulWidget {
-  const ChatPanel({super.key, required this.isOwner});
+  const ChatPanel({super.key, required this.isOwner, this.scrollController, this.onAddToList});
 
   final bool isOwner;
+
+  /// Quello del foglio trascinabile: tirando i messaggi il foglio si allarga.
+  final ScrollController? scrollController;
+
+  /// Aggiunge i prodotti scritti in un messaggio (null se l'utente non può modificare la lista).
+  final Future<void> Function(List<String> names)? onAddToList;
 
   @override
   State<ChatPanel> createState() => _ChatPanelState();
@@ -28,24 +38,69 @@ class ChatPanel extends StatefulWidget {
 
 class _ChatPanelState extends State<ChatPanel> {
   final _text = TextEditingController();
-  final _scroll = ScrollController();
-  late final NotificationService _notifications;
+  final _focus = FocusNode();
+  late final ScrollController _scroll = widget.scrollController ?? ScrollController();
   bool _sending = false;
+
+  /// Messaggio a cui si sta rispondendo (anteprima sopra il campo).
+  ChatMessage? _replyTo;
+
+  /// Pannello delle emoji al posto della tastiera.
+  bool _emojiOpen = false;
 
   @override
   void initState() {
     super.initState();
-    // Mentre la chat è aperta i suoi messaggi non generano notifiche.
-    _notifications = context.read<NotificationService>()..activeChatListId = context.read<ChatController>().listId;
     _scroll.addListener(_onScroll);
+    // Aprendo la tastiera si chiude il pannello delle emoji.
+    _focus.addListener(() {
+      if (_focus.hasFocus && _emojiOpen) setState(() => _emojiOpen = false);
+    });
   }
 
   @override
   void dispose() {
-    _notifications.activeChatListId = null;
     _text.dispose();
-    _scroll.dispose();
+    _focus.dispose();
+    _scroll.removeListener(_onScroll);
+    if (widget.scrollController == null) _scroll.dispose();
     super.dispose();
+  }
+
+  void _reply(ChatMessage message) {
+    setState(() => _replyTo = message);
+    _focus.requestFocus();
+  }
+
+  void _toggleEmoji() {
+    if (_emojiOpen) {
+      _focus.requestFocus();
+    } else {
+      _focus.unfocus();
+      setState(() => _emojiOpen = true);
+    }
+  }
+
+  /// Inserisce l'emoji dove c'è il cursore (o in fondo).
+  void _insertEmoji(String emoji) {
+    final value = _text.value;
+    final start = value.selection.isValid ? value.selection.start : value.text.length;
+    final end = value.selection.isValid ? value.selection.end : value.text.length;
+    _text.value = TextEditingValue(
+      text: value.text.replaceRange(start, end, emoji),
+      selection: TextSelection.collapsed(offset: start + emoji.length),
+    );
+  }
+
+  Future<void> _addToList(ChatMessage message) async {
+    final names = chatProductNames(message.body);
+    if (names.isEmpty) return;
+    try {
+      await widget.onAddToList!(names);
+      if (mounted) showMessage(context, context.l10n.addedToList(names.length));
+    } catch (e) {
+      if (mounted) showError(context, e);
+    }
   }
 
   /// La lista è invertita (i più recenti in basso): vicino alla "fine" carica i messaggi precedenti.
@@ -62,9 +117,10 @@ class _ChatPanelState extends State<ChatPanel> {
     setState(() => _sending = true);
     try {
       final chat = context.read<ChatController>();
-      await chat.send(body, imagePath: imagePath);
+      await chat.send(body, imagePath: imagePath, replyTo: _replyTo);
       chat.typing(false);
       _text.clear();
+      if (mounted) setState(() => _replyTo = null);
       if (_scroll.hasClients) _scroll.jumpTo(0);
     } catch (e) {
       if (mounted) showError(context, e);
@@ -95,10 +151,14 @@ class _ChatPanelState extends State<ChatPanel> {
     }
   }
 
-  /// Messaggio di un altro: segnalarlo, bloccare chi l'ha scritto e, per il proprietario della lista, eliminarlo.
-  Future<void> _othersMessageMenu(ChatMessage message) async {
+  /// Tenendo premuto un messaggio: rispondere, copiare, aggiungere alla lista; i propri si eliminano, quelli degli
+  /// altri si segnalano (e il proprietario della lista li può eliminare).
+  Future<void> _messageMenu(ChatMessage message, {required bool mine}) async {
     final l = context.l10n;
+    final error = Theme.of(context).colorScheme.error;
     final name = message.userName ?? '';
+    final canDelete = mine || widget.isOwner;
+    final canAdd = widget.onAddToList != null && chatProductNames(message.body).isNotEmpty;
     final choice = await showModalBottomSheet<String>(
       context: context,
       showDragHandle: true,
@@ -106,20 +166,41 @@ class _ChatPanelState extends State<ChatPanel> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            ListTile(
-              leading: const Icon(Icons.flag_outlined),
-              title: Text(l.reportMessage),
-              onTap: () => Navigator.pop(context, 'report'),
-            ),
-            ListTile(
-              leading: const Icon(Icons.block),
-              title: Text(l.blockUser(name)),
-              onTap: () => Navigator.pop(context, 'block'),
-            ),
-            if (widget.isOwner)
+            if (!message.isEvent)
               ListTile(
-                leading: Icon(Icons.delete_outline, color: Theme.of(context).colorScheme.error),
-                title: Text(l.delete, style: TextStyle(color: Theme.of(context).colorScheme.error)),
+                leading: const Icon(Icons.reply),
+                title: Text(l.reply),
+                onTap: () => Navigator.pop(context, 'reply'),
+              ),
+            if (message.body.isNotEmpty && !message.isEvent)
+              ListTile(
+                leading: const Icon(Icons.copy),
+                title: Text(l.copy),
+                onTap: () => Navigator.pop(context, 'copy'),
+              ),
+            if (canAdd && !message.isEvent)
+              ListTile(
+                leading: const Icon(Icons.playlist_add),
+                title: Text(l.addToList),
+                subtitle: Text(chatProductNames(message.body).join(', '), maxLines: 1, overflow: TextOverflow.ellipsis),
+                onTap: () => Navigator.pop(context, 'add'),
+              ),
+            if (!mine && message.userId != null && !message.isEvent) ...[
+              ListTile(
+                leading: const Icon(Icons.flag_outlined),
+                title: Text(l.reportMessage),
+                onTap: () => Navigator.pop(context, 'report'),
+              ),
+              ListTile(
+                leading: const Icon(Icons.block),
+                title: Text(l.blockUser(name)),
+                onTap: () => Navigator.pop(context, 'block'),
+              ),
+            ],
+            if (canDelete)
+              ListTile(
+                leading: Icon(Icons.delete_outline, color: error),
+                title: Text(l.delete, style: TextStyle(color: error)),
                 onTap: () => Navigator.pop(context, 'delete'),
               ),
           ],
@@ -128,6 +209,13 @@ class _ChatPanelState extends State<ChatPanel> {
     );
     if (!mounted) return;
     switch (choice) {
+      case 'reply':
+        _reply(message);
+      case 'copy':
+        await Clipboard.setData(ClipboardData(text: message.body));
+        if (mounted) showMessage(context, l.copied);
+      case 'add':
+        await _addToList(message);
       case 'report':
         await showReportDialog(
           context,
@@ -176,27 +264,33 @@ class _ChatPanelState extends State<ChatPanel> {
                       children: [
                         if (older == null || !_sameDay(older.createdAt, message.createdAt))
                           _DaySeparator(date: message.createdAt),
-                        _Bubble(
-                          message: message,
-                          imageUrl: message.hasImage
-                              ? context.read<ApiClient>().messageImageUrl(message.listId, message.id)
-                              : null,
-                          mine: mine,
-                          ticks: mine ? chat.ticks(message) : null,
-                          avatar: message.userAvatarVersion == null || message.userId == null
-                              ? null
-                              : NetworkImage(
-                                  context.read<ApiClient>().avatarUrl(message.userId!, message.userAvatarVersion!),
-                                  headers: context.read<ApiClient>().authHeaders,
-                                ),
-                          // Il nome solo sul primo di una serie di messaggi dello stesso autore.
-                          showName: !mine && (older == null || older.userId != message.userId),
-                          onLongPress: mine
-                              ? () => _delete(message)
-                              : message.userId != null
-                              ? () => _othersMessageMenu(message)
-                              : (widget.isOwner ? () => _delete(message) : null),
-                        ),
+                        if (message.isEvent)
+                          _EventLine(
+                            message: message,
+                            onLongPress: widget.isOwner ? () => _messageMenu(message, mine: false) : null,
+                          )
+                        else
+                          _SwipeToReply(
+                            onReply: () => _reply(message),
+                            child: _Bubble(
+                              message: message,
+                              imageUrl: message.hasImage
+                                  ? context.read<ApiClient>().messageImageUrl(message.listId, message.id)
+                                  : null,
+                              mine: mine,
+                              ticks: mine ? chat.ticks(message) : null,
+                              avatar: message.userAvatarVersion == null || message.userId == null
+                                  ? null
+                                  : NetworkImage(
+                                      context.read<ApiClient>().avatarUrl(message.userId!, message.userAvatarVersion!),
+                                      headers: context.read<ApiClient>().authHeaders,
+                                    ),
+                              // Il nome solo sul primo di una serie di messaggi dello stesso autore.
+                              showName: !mine && (older == null || older.userId != message.userId || older.isEvent),
+                              myId: chat.userId,
+                              onLongPress: () => _messageMenu(message, mine: mine),
+                            ),
+                          ),
                       ],
                     );
                   },
@@ -206,43 +300,61 @@ class _ChatPanelState extends State<ChatPanel> {
           elevation: 8,
           child: SafeArea(
             top: false,
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(4, 8, 8, 8),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  IconButton(
-                    onPressed: _sending ? null : _sendPhoto,
-                    icon: const Icon(Icons.photo_outlined),
-                    tooltip: context.l10n.sendPhoto,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (_replyTo != null)
+                  _ReplyPreview(
+                    message: _replyTo!,
+                    mine: _replyTo!.userId == chat.userId,
+                    onClose: () => setState(() => _replyTo = null),
                   ),
-                  Expanded(
-                    child: TextField(
-                      controller: _text,
-                      // Gli altri vedono "sta scrivendo…" accanto al tuo nome in cima alla lista.
-                      onChanged: (v) => context.read<ChatController>().typing(v.trim().isNotEmpty),
-                      minLines: 1,
-                      maxLines: 5,
-                      maxLength: 2000,
-                      textCapitalization: TextCapitalization.sentences,
-                      decoration: InputDecoration(
-                        hintText: context.l10n.writeMessage,
-                        isDense: true,
-                        counterText: '',
-                        suffixIcon: VoiceInputButton(controller: _text, append: true, compact: true),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(4, 8, 8, 8),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      IconButton(
+                        onPressed: _sending ? null : _sendPhoto,
+                        icon: const Icon(Icons.photo_outlined),
+                        tooltip: context.l10n.sendPhoto,
                       ),
-                    ),
+                      IconButton(
+                        onPressed: _toggleEmoji,
+                        icon: Icon(_emojiOpen ? Icons.keyboard_outlined : Icons.emoji_emotions_outlined),
+                        tooltip: _emojiOpen ? context.l10n.keyboard : context.l10n.emoji,
+                      ),
+                      Expanded(
+                        child: TextField(
+                          controller: _text,
+                          focusNode: _focus,
+                          // Gli altri vedono "sta scrivendo…" accanto al tuo nome in cima alla lista.
+                          onChanged: (v) => context.read<ChatController>().typing(v.trim().isNotEmpty),
+                          minLines: 1,
+                          maxLines: 5,
+                          maxLength: 2000,
+                          textCapitalization: TextCapitalization.sentences,
+                          decoration: InputDecoration(
+                            hintText: context.l10n.writeMessage,
+                            isDense: true,
+                            counterText: '',
+                            suffixIcon: VoiceInputButton(controller: _text, append: true, compact: true),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      IconButton.filled(
+                        onPressed: _sending ? null : _send,
+                        icon: _sending
+                            ? const SizedBox.square(dimension: 18, child: CircularProgressIndicator(strokeWidth: 2))
+                            : const Icon(Icons.send),
+                        tooltip: context.l10n.send,
+                      ),
+                    ],
                   ),
-                  const SizedBox(width: 8),
-                  IconButton.filled(
-                    onPressed: _sending ? null : _send,
-                    icon: _sending
-                        ? const SizedBox.square(dimension: 18, child: CircularProgressIndicator(strokeWidth: 2))
-                        : const Icon(Icons.send),
-                    tooltip: context.l10n.send,
-                  ),
-                ],
-              ),
+                ),
+                if (_emojiOpen) EmojiPicker(onPick: _insertEmoji),
+              ],
             ),
           ),
         ),
@@ -262,9 +374,13 @@ class _Bubble extends StatelessWidget {
     this.ticks,
     this.avatar,
     this.onLongPress,
+    this.myId,
   });
 
   final ChatMessage message;
+
+  /// L'utente corrente: nella citazione di un proprio messaggio si legge "Tu".
+  final int? myId;
 
   /// Foto profilo di chi scrive (null = sagoma vuota), accanto al primo messaggio di una serie degli altri.
   final ImageProvider? avatar;
@@ -335,6 +451,7 @@ class _Bubble extends StatelessWidget {
                     message.userName ?? context.l10n.deletedUser,
                     style: text.labelMedium?.copyWith(color: scheme.primary, fontWeight: FontWeight.w600),
                   ),
+                if (message.replyTo != null) _Quote(quoted: message.replyTo!, onColor: onColor),
                 if (imageUrl != null) _photo(context),
                 if (message.body.isNotEmpty) Text(message.body, style: text.bodyMedium?.copyWith(color: onColor)),
                 Align(
@@ -470,6 +587,251 @@ class _EmptyChat extends StatelessWidget {
           ),
         );
       },
+    );
+  }
+}
+
+/// Messaggio citato dentro una risposta: chi l'ha scritto e l'inizio del testo.
+class _Quote extends StatelessWidget {
+  const _Quote({required this.quoted, required this.onColor});
+
+  final QuotedMessage quoted;
+  final Color onColor;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final text = Theme.of(context).textTheme;
+    final body = quoted.body.isNotEmpty ? quoted.body : (quoted.hasImage ? '📷 ${context.l10n.chatPhoto}' : '');
+    return Container(
+      margin: const EdgeInsets.only(top: 2, bottom: 4),
+      padding: const EdgeInsets.fromLTRB(8, 4, 8, 4),
+      decoration: BoxDecoration(
+        color: onColor.withValues(alpha: 0.07),
+        border: Border(left: BorderSide(color: scheme.tertiary, width: 3)),
+        borderRadius: BorderRadius.circular(6),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            quoted.userName ?? context.l10n.deletedUser,
+            style: text.labelSmall?.copyWith(color: scheme.tertiary, fontWeight: FontWeight.w700),
+          ),
+          Text(
+            body,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: text.bodySmall?.copyWith(color: onColor),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Sopra il campo di scrittura: a quale messaggio si sta rispondendo, con la ✕ per annullare.
+class _ReplyPreview extends StatelessWidget {
+  const _ReplyPreview({required this.message, required this.mine, required this.onClose});
+
+  final ChatMessage message;
+  final bool mine;
+  final VoidCallback onClose;
+
+  @override
+  Widget build(BuildContext context) {
+    final l = context.l10n;
+    final scheme = Theme.of(context).colorScheme;
+    final text = Theme.of(context).textTheme;
+    final name = mine ? l.you : (message.userName ?? l.deletedUser);
+    final body = message.body.isNotEmpty ? message.body : (message.hasImage ? '📷 ${l.chatPhoto}' : '');
+    return Container(
+      margin: const EdgeInsets.fromLTRB(12, 8, 8, 0),
+      padding: const EdgeInsets.fromLTRB(10, 4, 0, 4),
+      decoration: BoxDecoration(
+        color: scheme.surfaceContainerHigh,
+        border: Border(left: BorderSide(color: scheme.tertiary, width: 3)),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.reply, size: 18, color: scheme.tertiary),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(l.replyingTo(name), style: text.labelMedium?.copyWith(color: scheme.tertiary)),
+                Text(body, maxLines: 1, overflow: TextOverflow.ellipsis, style: text.bodySmall),
+              ],
+            ),
+          ),
+          IconButton(icon: const Icon(Icons.close, size: 20), tooltip: l.cancel, onPressed: onClose),
+        ],
+      ),
+    );
+  }
+}
+
+/// Scorrendo un messaggio verso destra si risponde (come in WhatsApp): compare la freccia e al rilascio parte.
+class _SwipeToReply extends StatefulWidget {
+  const _SwipeToReply({required this.onReply, required this.child});
+
+  final VoidCallback onReply;
+  final Widget child;
+
+  @override
+  State<_SwipeToReply> createState() => _SwipeToReplyState();
+}
+
+class _SwipeToReplyState extends State<_SwipeToReply> {
+  static const _trigger = 64.0;
+  double _dx = 0;
+  bool _armed = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      behavior: HitTestBehavior.translucent,
+      onHorizontalDragUpdate: (d) {
+        final dx = (_dx + d.delta.dx).clamp(0.0, _trigger * 1.3);
+        final armed = dx >= _trigger;
+        if (armed && !_armed) HapticFeedback.selectionClick();
+        setState(() {
+          _dx = dx;
+          _armed = armed;
+        });
+      },
+      onHorizontalDragEnd: (_) {
+        if (_armed) widget.onReply();
+        setState(() {
+          _dx = 0;
+          _armed = false;
+        });
+      },
+      child: Stack(
+        alignment: Alignment.centerLeft,
+        children: [
+          if (_dx > 8)
+            Opacity(
+              opacity: (_dx / _trigger).clamp(0.0, 1.0),
+              child: Padding(
+                padding: const EdgeInsets.only(left: 4),
+                child: Icon(Icons.reply, color: Theme.of(context).colorScheme.tertiary),
+              ),
+            ),
+          Transform.translate(offset: Offset(_dx, 0), child: widget.child),
+        ],
+      ),
+    );
+  }
+}
+
+/// Evento della lista in grigio tra i messaggi: spesa finita, "Continuo io", chi fa la spesa.
+class _EventLine extends StatelessWidget {
+  const _EventLine({required this.message, this.onLongPress});
+
+  final ChatMessage message;
+  final VoidCallback? onLongPress;
+
+  @override
+  Widget build(BuildContext context) {
+    final l = context.l10n;
+    final name = message.userName ?? l.deletedUser;
+    final params = message.eventParams;
+    final text = switch (message.event) {
+      'finished' => l.eventFinished(name, (params['missing'] as num?)?.toInt() ?? 0),
+      'took_over' => l.eventTookOver(name),
+      'shopper_changed' => l.eventShopperChanged(name, '${params['shopper'] ?? ''}'),
+      _ => message.body,
+    };
+    final muted = Theme.of(context).colorScheme.onSurfaceVariant;
+    return GestureDetector(
+      onLongPress: onLongPress,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 24),
+        child: Text(
+          '$text · ${timeLabel(message.createdAt)}',
+          textAlign: TextAlign.center,
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(color: muted, fontStyle: FontStyle.italic),
+        ),
+      ),
+    );
+  }
+}
+
+/// Emoji più usate, in quattro gruppi: si toccano e finiscono nel messaggio.
+class EmojiPicker extends StatefulWidget {
+  const EmojiPicker({super.key, required this.onPick});
+
+  final ValueChanged<String> onPick;
+
+  static const groups = [
+    (
+      '😀',
+      '😀 😃 😄 😁 😆 😅 😂 🤣 😊 😇 🙂 😉 😍 🥰 😘 😋 😛 😜 🤪 🤗 🤔 🤭 🤫 😐 😑 😶 🙄 😏 😬 😌 😔 😴 🤤 😷 🤒 🥵 🥶 😵 🤯 🥳 😎 🤓 😕 😟 😮 😲 🥺 😢 😭 😱 😤 😡 🤬 😈 💩 🤡 👻 😺 😹 😻',
+    ),
+    (
+      '👍',
+      '👍 👎 👌 🤌 ✌️ 🤞 🤟 🤙 👈 👉 👆 👇 ☝️ ✋ 🤚 👋 👏 🙌 👐 🤲 🙏 🤝 💪 ❤️ 🧡 💛 💚 💙 💜 🖤 🤍 💔 ❣️ 💕 💯 ✅ ❌ ❓ ❗ ⚠️ 🔥 ⭐ ✨ 🎉 🎁 💤',
+    ),
+    (
+      '🍎',
+      '🍎 🍐 🍊 🍋 🍌 🍉 🍇 🍓 🫐 🍒 🍑 🥭 🍍 🥥 🥝 🍅 🥑 🍆 🥔 🥕 🌽 🌶️ 🥒 🥬 🥦 🧄 🧅 🍄 🥜 🍞 🥐 🥖 🧀 🥚 🥓 🥩 🍗 🍖 🍔 🍟 🍕 🌭 🥪 🌮 🍝 🍜 🍣 🍦 🍰 🎂 🍫 🍬 🍪 🍩 ☕ 🍵 🥛 🧃 🍷 🍺 🥂 🧊',
+    ),
+    ('🛒', '🛒 🛍️ 🧺 💶 💳 🧾 🏪 🏬 🚗 🚲 🏠 ⏰ ⌛ 📅 📍 📞 📷 🧴 🧻 🧼 🪥 🧹 🧽 🐶 🐱 🍼 👶 💊 🌸 🎈'),
+  ];
+
+  @override
+  State<EmojiPicker> createState() => _EmojiPickerState();
+}
+
+class _EmojiPickerState extends State<EmojiPicker> {
+  int _group = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final emojis = EmojiPicker.groups[_group].$2.split(' ');
+    return SizedBox(
+      height: 250,
+      child: Column(
+        children: [
+          Row(
+            children: [
+              for (final (i, (icon, _)) in EmojiPicker.groups.indexed)
+                Expanded(
+                  child: InkWell(
+                    onTap: () => setState(() => _group = i),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(vertical: 6),
+                      decoration: BoxDecoration(
+                        border: Border(
+                          bottom: BorderSide(color: i == _group ? scheme.primary : Colors.transparent, width: 2),
+                        ),
+                      ),
+                      child: Text(icon, textAlign: TextAlign.center, style: const TextStyle(fontSize: 20)),
+                    ),
+                  ),
+                ),
+            ],
+          ),
+          Expanded(
+            child: GridView.count(
+              crossAxisCount: 8,
+              padding: const EdgeInsets.all(4),
+              children: [
+                for (final e in emojis)
+                  InkWell(
+                    borderRadius: BorderRadius.circular(8),
+                    onTap: () => widget.onPick(e),
+                    child: Center(child: Text(e, style: const TextStyle(fontSize: 26))),
+                  ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

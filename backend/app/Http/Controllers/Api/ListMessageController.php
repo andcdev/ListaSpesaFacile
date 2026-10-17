@@ -18,6 +18,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**
@@ -39,7 +40,7 @@ class ListMessageController extends Controller
         // I messaggi delle persone bloccate non compaiono.
         $blocked = $request->user()->blockedIds();
         $messages = $list->messages()
-            ->with('user')
+            ->with(['user', 'replyTo.user'])
             ->when($before > 0, fn ($q) => $q->where('id', '<', $before))
             ->when($blocked, fn ($q) => $q->where(fn ($q) => $q->whereNull('user_id')->orWhereNotIn('user_id', $blocked)))
             ->orderByDesc('id')
@@ -60,7 +61,13 @@ class ListMessageController extends Controller
         $data = $request->validate([
             'body' => ['nullable', 'string', 'max:2000', 'required_without:image'],
             'image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:8192'],
+            // Risposta a un messaggio della stessa lista.
+            'reply_to_id' => ['nullable', 'integer'],
         ]);
+        $replyTo = isset($data['reply_to_id']) ? $list->messages()->find($data['reply_to_id']) : null;
+        if (isset($data['reply_to_id']) && ! $replyTo) {
+            throw ValidationException::withMessages(['reply_to_id' => [__('app.errors.message_not_found')]]);
+        }
 
         $sender = $request->user();
         $body = trim($data['body'] ?? '');
@@ -69,6 +76,7 @@ class ListMessageController extends Controller
         }
         $message = new ListMessage(['body' => $body === '' ? null : $body]);
         $message->user()->associate($sender);
+        $message->replyTo()->associate($replyTo);
         if ($file = $request->file('image')) {
             $message->image_path = $file->storeAs(
                 ListMessage::IMAGE_DIR.'/'.$list->id,
@@ -87,7 +95,7 @@ class ListMessageController extends Controller
             $sender,
         );
 
-        return (new ListMessageResource($message->load('user')))->response()->setStatusCode(201);
+        return (new ListMessageResource($message->load(['user', 'replyTo.user'])))->response()->setStatusCode(201);
     }
 
     /**

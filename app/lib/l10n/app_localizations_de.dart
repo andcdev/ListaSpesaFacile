@@ -1532,4 +1532,86 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get allTaken => 'Alles gekauft!';
+
+  @override
+  String get addOrWriteHint => 'Produkt oder Nachricht…';
+
+  @override
+  String get sendToChat => 'In den Chat senden';
+
+  @override
+  String get chatSendHint => '💬 schickt es als Nachricht an die Personen der Liste, + fügt es zu den Produkten hinzu';
+
+  @override
+  String get messageSentToChat => 'Nachricht in den Chat gesendet';
+
+  @override
+  String get openChat => 'Chat öffnen';
+
+  @override
+  String chatPeople(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Chat · $count Personen',
+      one: 'Chat · 1 Person',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get chatInvite => 'Teile die Liste, um mit den Personen zu schreiben, die mit dir einkaufen';
+
+  @override
+  String get reply => 'Antworten';
+
+  @override
+  String replyingTo(String name) {
+    return 'Antwort an $name';
+  }
+
+  @override
+  String get chatPhoto => 'Foto';
+
+  @override
+  String get addToList => 'Zur Liste hinzufügen';
+
+  @override
+  String addedToList(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Produkte zur Liste hinzugefügt',
+      one: '1 Produkt zur Liste hinzugefügt',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get emoji => 'Emojis';
+
+  @override
+  String get keyboard => 'Tastatur';
+
+  @override
+  String eventFinished(String name, int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$name hat den Einkauf beendet: $count Produkte fehlen',
+      one: '$name hat den Einkauf beendet: 1 Produkt fehlt',
+      zero: '$name hat den Einkauf beendet: alles gekauft',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String eventTookOver(String name) {
+    return '$name setzt den Einkauf fort';
+  }
+
+  @override
+  String eventShopperChanged(String name, String shopper) {
+    return '$name hat bestimmt, dass $shopper einkauft';
+  }
 }

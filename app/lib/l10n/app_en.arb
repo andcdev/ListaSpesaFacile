@@ -447,5 +447,22 @@
   "takeOver": "I'll carry on",
   "dismissFinished": "Fine",
   "tookOver": "You're now doing the shopping: the others were notified",
-  "allTaken": "Got everything!"
+  "allTaken": "Got everything!",
+  "addOrWriteHint": "Add product or write…",
+  "sendToChat": "Send to chat",
+  "chatSendHint": "💬 sends it as a message to the people on the list, + adds it to the products",
+  "messageSentToChat": "Message sent to the chat",
+  "openChat": "Open chat",
+  "chatPeople": "{count, plural, =1{Chat · 1 person} other{Chat · {count} people}}",
+  "chatInvite": "Share the list to chat with the people shopping with you",
+  "reply": "Reply",
+  "replyingTo": "Replying to {name}",
+  "chatPhoto": "Photo",
+  "addToList": "Add to the list",
+  "addedToList": "{count, plural, =1{1 product added to the list} other{{count} products added to the list}}",
+  "emoji": "Emoji",
+  "keyboard": "Keyboard",
+  "eventFinished": "{count, plural, =0{{name} finished shopping: got everything} =1{{name} finished shopping: 1 product missing} other{{name} finished shopping: {count} products missing}}",
+  "eventTookOver": "{name} is carrying on with the shopping",
+  "eventShopperChanged": "{name} chose {shopper} to do the shopping"
 }

@@ -490,14 +490,18 @@ class ApiClient {
       _list(await _send('GET', '/products/suggestions'), ProductSuggestion.fromJson);
 
   /// Testo, foto ([imagePath], dalla galleria o dalla fotocamera) o entrambi.
-  Future<ChatMessage> sendMessage(int listId, String body, {String? imagePath}) async {
+  Future<ChatMessage> sendMessage(int listId, String body, {String? imagePath, int? replyToId}) async {
     if (imagePath == null) {
-      return _data(await _send('POST', '/lists/$listId/messages', {'body': body}), ChatMessage.fromJson);
+      return _data(
+        await _send('POST', '/lists/$listId/messages', {'body': body, 'reply_to_id': ?replyToId}),
+        ChatMessage.fromJson,
+      );
     }
     final request = http.MultipartRequest('POST', Uri.parse('$_root/api/lists/$listId/messages'))
       ..headers.addAll(_headers)
       ..files.add(await http.MultipartFile.fromPath('image', imagePath));
     if (body.isNotEmpty) request.fields['body'] = body;
+    if (replyToId != null) request.fields['reply_to_id'] = '$replyToId';
     return _data(await _dispatch(request, timeout: const Duration(seconds: 60)), ChatMessage.fromJson);
   }
 
