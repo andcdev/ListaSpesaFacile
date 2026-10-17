@@ -447,5 +447,22 @@
   "takeOver": "Ich mache weiter",
   "dismissFinished": "Passt so",
   "tookOver": "Jetzt machst du den Einkauf: die anderen wurden benachrichtigt",
-  "allTaken": "Alles gekauft!"
+  "allTaken": "Alles gekauft!",
+  "addOrWriteHint": "Produkt oder Nachricht…",
+  "sendToChat": "In den Chat senden",
+  "chatSendHint": "💬 schickt es als Nachricht an die Personen der Liste, + fügt es zu den Produkten hinzu",
+  "messageSentToChat": "Nachricht in den Chat gesendet",
+  "openChat": "Chat öffnen",
+  "chatPeople": "{count, plural, =1{Chat · 1 Person} other{Chat · {count} Personen}}",
+  "chatInvite": "Teile die Liste, um mit den Personen zu schreiben, die mit dir einkaufen",
+  "reply": "Antworten",
+  "replyingTo": "Antwort an {name}",
+  "chatPhoto": "Foto",
+  "addToList": "Zur Liste hinzufügen",
+  "addedToList": "{count, plural, =1{1 Produkt zur Liste hinzugefügt} other{{count} Produkte zur Liste hinzugefügt}}",
+  "emoji": "Emojis",
+  "keyboard": "Tastatur",
+  "eventFinished": "{count, plural, =0{{name} hat den Einkauf beendet: alles gekauft} =1{{name} hat den Einkauf beendet: 1 Produkt fehlt} other{{name} hat den Einkauf beendet: {count} Produkte fehlen}}",
+  "eventTookOver": "{name} setzt den Einkauf fort",
+  "eventShopperChanged": "{name} hat bestimmt, dass {shopper} einkauft"
 }

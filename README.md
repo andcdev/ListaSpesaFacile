@@ -63,7 +63,10 @@ Sorgente modificabile: [`docs/architettura.svg`](docs/architettura.svg).
   l'ha segnato. Per ogni articolo si può scegliere un'**emoji** diversa da quella riconosciuta e un **link a
   un'immagine esterna**, mostrata come miniatura (toccala per ingrandirla).
 - **Filtro dei prodotti** sotto la barra di avanzamento: *Totale* (predefinito), *Da prendere* e *Presi*, ognuno
-  col suo numero; "Da prendere" e "Presi" compaiono solo se ci sono prodotti in quello stato. Cambia solo cosa vedi tu.
+  col suo numero; i pulsanti compaiono quando almeno un prodotto ha cambiato stato. Cambia solo cosa vedi tu.
+- **Chi fa la spesa**: si sceglie nel modulo della lista (anche dopo); solo lui segna presi e non trovati.
+  **Spesa finita** (anche con prodotti mancanti): i non trovati tornano da prendere e gli altri ricevono una
+  notifica con ciò che manca; chi non faceva la spesa vede l'avviso con **Continuo io** e **Va bene così**.
 - **Foto della lista**: dalla galleria o dalla fotocamera (menu ⋮ → *Aggiungi una foto*), visibile in cima
   alla lista e nell'elenco delle liste. Solo chi può modificare la lista la cambia.
 - **Invia o esporta** (icona di condivisione): testo con spunte e reparti su **WhatsApp** o **Telegram**
@@ -118,11 +121,17 @@ Sorgente modificabile: [`docs/architettura.svg`](docs/architettura.svg).
   *Persone bloccate*.
 - **Promemoria**: alla creazione (o modifica) scegli un avviso *10 minuti prima*, *1 ora prima* o
   *personalizzato* (da 1 minuto a 30 giorni) e chi avvisare: solo il creatore, solo i destinatari o tutti.
-- **Chat** interna per ogni lista: si apre **sotto la lista**, nella stessa schermata (con una barra minima,
-  solo icona e freccia per chiuderla), così mentre chatti puoi spuntare e aggiungere articoli.
+- **Chat** interna per ogni lista, solo con **almeno due persone** (da soli c'è l'invito a condividere). Si scrive
+  anche dalla barra dei prodotti: con del testo scritto compare **💬** (lo manda in chat), mentre **+** e Invio lo
+  aggiungono alla lista. L'ultimo messaggio arrivato compare per qualche secondo **sopra la barra** e l'icona in
+  alto ha il **pallino dei non letti**. La chat si apre in un **foglio a metà schermo** da tirare su a tutto schermo.
+  **Emoji** dal pulsante accanto al campo; si **risponde a un singolo messaggio** scorrendolo verso destra o
+  tenendolo premuto (Rispondi, Copia, *Aggiungi alla lista*: un prodotto per riga o separati da virgole).
+  Gli eventi della lista (spesa finita, *Continuo io*, chi fa la spesa) compaiono **in grigio** tra i messaggi.
   Accanto ai messaggi degli altri c'è la loro **foto profilo** (sagoma vuota se non l'hanno impostata). In tempo reale, anche per chi ha la sola lettura. Si possono inviare
   **foto** dalla galleria o dalla fotocamera (il testo scritto diventa la didascalia) e **dettare** i messaggi
-  con il microfono. L'autore (o il proprietario della lista) può eliminare un messaggio tenendolo premuto.
+  con il microfono. L'autore (o il proprietario della lista) può eliminare un messaggio dal menu che si apre
+  tenendolo premuto.
   **Spunte** sui propri messaggi: ✓ verde = inviato, ✓✓ blu = arrivato sul telefono di tutti gli altri della
   lista (anche se non hanno ancora aperto la chat: basta che la notifica sia arrivata).
 - **Notifiche** (campanella con il numero di non lette): lista condivisa con te, nuova lista di chi ti
@@ -392,7 +401,7 @@ Tutte le rotte sono sotto `/api`. Le rotte protette richiedono `Authorization: B
 | DELETE | `/me/prices/{id}` | Elimina un proprio prezzo |
 | GET | `/supermarkets` | Catene note, per i suggerimenti (`name, description`) |
 | GET | `/products/suggestions` | Prodotti da suggerire: già usati nelle liste accessibili (con `times`), poi i più comuni |
-| POST | `/lists/{id}/messages` | `body` e/o `image` (multipart, max 8 MB): chiunque abbia accesso alla lista |
+| POST | `/lists/{id}/messages` | `body` e/o `image` (multipart, max 8 MB), `reply_to_id?` (risposta a un messaggio della lista): chiunque abbia accesso alla lista. Nei messaggi: `reply_to` (citazione) ed `event`/`event_params` per gli eventi della lista mostrati in grigio |
 | GET | `/lists/{id}/messages/{message}/image` | Foto del messaggio (`has_image`) |
 | DELETE | `/lists/{id}/messages/{message}` | Autore del messaggio o proprietario della lista |
 | GET | `/notifications` | Ultime 50 notifiche + `unread_count` |

@@ -15,6 +15,7 @@ return [
         'share_self_list' => 'Non puoi condividere la lista con te stesso.',
         'already_owner' => 'Sei già il proprietario della lista.',
         'list_full' => 'Questa lista è già condivisa con :max persone, il massimo.',
+        'message_not_found' => 'Il messaggio a cui rispondi non c\'è più.',
         'not_shopper' => 'La spesa la fa :name: solo chi fa la spesa può segnare i prodotti presi o non trovati.',
         'shopper_not_member' => 'Chi fa la spesa deve essere una delle persone della lista.',
         'nothing_to_finish' => 'La lista è vuota.',

@@ -523,7 +523,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get channelDescription => 'Rappels, partages et messages des listes';
 
   @override
-  String get you => 'Vous';
+  String get you => 'Toi';
 
   @override
   String get serviceChannelName => 'Connexion en arrière-plan';
@@ -1539,4 +1539,86 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get allTaken => 'Tout est pris !';
+
+  @override
+  String get addOrWriteHint => 'Ajouter ou écrire…';
+
+  @override
+  String get sendToChat => 'Envoyer dans le chat';
+
+  @override
+  String get chatSendHint => '💬 l’envoie comme message aux personnes de la liste, + l’ajoute aux produits';
+
+  @override
+  String get messageSentToChat => 'Message envoyé dans le chat';
+
+  @override
+  String get openChat => 'Ouvrir le chat';
+
+  @override
+  String chatPeople(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Chat · $count personnes',
+      one: 'Chat · 1 personne',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get chatInvite => 'Partage la liste pour discuter avec les personnes qui font les courses avec toi';
+
+  @override
+  String get reply => 'Répondre';
+
+  @override
+  String replyingTo(String name) {
+    return 'Réponse à $name';
+  }
+
+  @override
+  String get chatPhoto => 'Photo';
+
+  @override
+  String get addToList => 'Ajouter à la liste';
+
+  @override
+  String addedToList(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count produits ajoutés à la liste',
+      one: '1 produit ajouté à la liste',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get emoji => 'Émojis';
+
+  @override
+  String get keyboard => 'Clavier';
+
+  @override
+  String eventFinished(String name, int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$name a fini les courses : il manque $count produits',
+      one: '$name a fini les courses : il manque 1 produit',
+      zero: '$name a fini les courses : tout est pris',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String eventTookOver(String name) {
+    return '$name continue les courses';
+  }
+
+  @override
+  String eventShopperChanged(String name, String shopper) {
+    return '$name a choisi $shopper pour faire les courses';
+  }
 }

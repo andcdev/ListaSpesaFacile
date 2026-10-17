@@ -33,7 +33,7 @@ class ListMessageCreated implements ShouldBroadcastNow
      */
     public function broadcastWith(): array
     {
-        $this->message->loadMissing('user');
+        $this->message->loadMissing(['user', 'replyTo.user']);
 
         return ['message' => (new ListMessageResource($this->message))->resolve()];
     }

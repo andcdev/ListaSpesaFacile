@@ -155,6 +155,11 @@ class ShoppingListController extends Controller
                 default => ListActivity::notify($list, $user, 'list_edited'),
             };
         }
+        if ($shopperChanged && $list->shopper_id !== null) {
+            ListMessage::postEvent($list, $user, 'shopper_changed', __('app.activity.shopper_changed', ['actor' => $user->name, 'shopper' => $list->shopper->name]), [
+                'shopper' => $list->shopper->name,
+            ]);
+        }
         if ($shopperChanged && $list->shopper_id !== null && $list->shopper_id !== $user->id) {
             Notifier::send([$list->shopper_id], new ShoppingAssigned($user->name, $list->id, $list->name), $user);
         }
@@ -194,6 +199,10 @@ class ShoppingListController extends Controller
         $list->finish_message = $message;
         $list->save();
 
+        // In chat, in grigio: la spesa è finita (prima dell'eventuale messaggio di chi l'ha finita).
+        ListMessage::postEvent($list, $user, 'finished', trim(__('app.notifications.shopping_finished_title', ['actor' => $user->name, 'list' => $list->name])), [
+            'missing' => $missing->count(),
+        ]);
         if ($message !== null) {
             $chat = new ListMessage(['body' => $message]);
             $chat->user()->associate($user);
@@ -230,6 +239,7 @@ class ShoppingListController extends Controller
             Realtime::broadcast(new ShoppingListUpdated($list));
             Realtime::broadcast(new ListsChanged($list->audienceIds(), $list->id));
             ListActivity::notify($list, $user, 'took_over');
+            ListMessage::postEvent($list, $user, 'took_over', __('app.activity.took_over', ['actor' => $user->name]));
         }
 
         return $this->detail($list);
