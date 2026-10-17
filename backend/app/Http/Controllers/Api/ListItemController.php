@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Events\ListItemDeleted;
 use App\Events\ListItemSaved;
 use App\Events\ListsChanged;
+use App\Events\ShoppingListUpdated;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ListItemResource;
 use App\Models\ListItem;
@@ -57,6 +58,11 @@ class ListItemController extends Controller
             ...$this->measureRules(),
         ]);
 
+        // Presi e non trovati li segna solo chi fa la spesa, quando è stato scelto qualcuno.
+        if (array_key_exists('status', $data) || array_key_exists('checked', $data)) {
+            ShoppingListController::ensureCanMark($list, $request->user());
+        }
+
         $item->fill($data);
         $item->setRelation('shoppingList', $list);
         // Rinominato senza scegliere un altro prodotto di marca: non è più quel prodotto.
@@ -90,6 +96,12 @@ class ListItemController extends Controller
             default => null,
         };
         $item->save();
+        // Si riprende a segnare i prodotti: la spesa non è più finita.
+        if ($item->wasChanged('status') && $list->finished_at !== null) {
+            $list->clearFinished();
+            $list->save();
+            Realtime::broadcast(new ShoppingListUpdated($list));
+        }
 
         self::broadcastSaved($list, $item);
         if ($action !== null) {

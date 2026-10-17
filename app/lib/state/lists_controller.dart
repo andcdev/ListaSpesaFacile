@@ -74,6 +74,7 @@ class ListsController extends ChangeNotifier {
     bool membersCanRename = false,
     List<ShareRequest> shares = const [],
     int? copyFrom,
+    String? shopperEmail,
   }) async {
     final list = await api.createList(
       name: name,
@@ -85,6 +86,7 @@ class ListsController extends ChangeNotifier {
       membersCanRename: membersCanRename,
       shares: shares,
       copyFrom: copyFrom,
+      shopperEmail: shopperEmail,
     );
     await load();
     return list;
@@ -99,6 +101,7 @@ class ListsController extends ChangeNotifier {
     int? reminderMinutes,
     ReminderTarget reminderTarget = ReminderTarget.all,
     bool? membersCanRename,
+    int? shopperId,
   }) async {
     await api.updateList(
       id,
@@ -109,6 +112,7 @@ class ListsController extends ChangeNotifier {
       reminderMinutes: reminderMinutes,
       reminderTarget: reminderTarget,
       membersCanRename: membersCanRename,
+      shopperId: shopperId,
     );
     await load();
   }

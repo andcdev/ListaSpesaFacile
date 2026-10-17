@@ -8,6 +8,7 @@ import '../l10n/l10n.dart';
 import '../models/shopping_list.dart';
 import '../models/supermarket.dart';
 import '../services/api_client.dart';
+import '../state/auth_controller.dart';
 import '../state/lists_controller.dart';
 import '../widgets/permission_picker.dart';
 import '../widgets/photo_picker.dart';
@@ -50,6 +51,10 @@ class _ListFormScreenState extends State<ListFormScreen> {
     if (widget.copyOf?.isOwner ?? false)
       for (final u in widget.copyOf!.sharedWith) ShareRequest(u.email, canEdit: u.canEdit != false),
   ];
+
+  /// Chi fa la spesa. Alla creazione la sua email (null = chiunque della lista), in modifica il suo id (0 = chiunque).
+  String? _shopperEmail;
+  late int _shopperId = widget.list?.shopper?.id ?? 0;
 
   /// Foto della lista scelta alla creazione: si carica appena la lista esiste.
   String? _photoPath;
@@ -192,6 +197,7 @@ class _ListFormScreenState extends State<ListFormScreen> {
           reminderMinutes: _reminderMinutes,
           reminderTarget: _reminderTarget,
           membersCanRename: _isOwner ? _membersCanRename : null,
+          shopperId: widget.list!.people.isEmpty ? null : _shopperId,
         );
         if (mounted) Navigator.pop(context);
       } else {
@@ -205,6 +211,8 @@ class _ListFormScreenState extends State<ListFormScreen> {
           membersCanRename: _membersCanRename,
           shares: _recipients,
           copyFrom: widget.copyOf?.id,
+          // Una persona tolta dall'elenco nel frattempo non può più fare la spesa.
+          shopperEmail: _shopperChoices().any((c) => c.$1 == _shopperEmail) ? _shopperEmail : null,
         );
         if (_photoPath != null) {
           try {
@@ -222,6 +230,59 @@ class _ListFormScreenState extends State<ListFormScreen> {
     } finally {
       if (mounted) setState(() => _busy = false);
     }
+  }
+
+  /// Alla creazione: chiunque, l'utente o una delle email aggiunte (valore, testo).
+  List<(String?, String)> _shopperChoices() {
+    final l = context.l10n;
+    final me = context.read<AuthController>().user;
+    return [
+      (null, l.shopperAnyone),
+      if (me != null) (me.email.toLowerCase(), l.shopperMe),
+      for (final r in _recipients) (r.email, r.email),
+    ];
+  }
+
+  /// Chi fa la spesa: alla creazione tra le email aggiunte, in modifica tra le persone della lista.
+  Widget _shopperField() {
+    final l = context.l10n;
+    final me = context.read<AuthController>().user;
+    final decoration = InputDecoration(
+      isDense: true,
+      helperText: l.shopperHelper,
+      helperMaxLines: 2,
+      prefixIcon: const Icon(Icons.shopping_cart_outlined),
+    );
+    if (_editing) {
+      final people = widget.list!.people;
+      return DropdownButtonFormField<int>(
+        initialValue: people.any((p) => p.id == _shopperId) ? _shopperId : 0,
+        isExpanded: true,
+        decoration: decoration,
+        items: [
+          DropdownMenuItem(value: 0, child: Text(l.shopperAnyone)),
+          for (final p in people) DropdownMenuItem(value: p.id, child: Text(p.id == me?.id ? l.shopperMe : p.name)),
+        ],
+        onChanged: (v) => setState(() => _shopperId = v ?? 0),
+      );
+    }
+    final choices = _shopperChoices();
+    final selected = choices.any((c) => c.$1 == _shopperEmail) ? _shopperEmail : null;
+    return DropdownButtonFormField<String?>(
+      // Ricreato quando cambiano le email: le voci tolte spariscono anche dalla scelta.
+      key: ValueKey(choices.map((c) => c.$1).join(',')),
+      initialValue: selected,
+      isExpanded: true,
+      decoration: decoration,
+      items: [
+        for (final (value, label) in choices)
+          DropdownMenuItem(
+            value: value,
+            child: Text(label, overflow: TextOverflow.ellipsis),
+          ),
+      ],
+      onChanged: (v) => setState(() => _shopperEmail = v),
+    );
   }
 
   @override
@@ -406,6 +467,11 @@ class _ListFormScreenState extends State<ListFormScreen> {
                       onPressed: () => setState(() => _recipients.removeAt(i)),
                     ),
                   ),
+              ],
+              if (!_editing || widget.list!.people.isNotEmpty) ...[
+                const SizedBox(height: 16),
+                _SectionTitle(icon: Icons.shopping_cart_outlined, title: l.shopperLabel),
+                _shopperField(),
               ],
               if (_isOwner) ...[
                 const SizedBox(height: 16),

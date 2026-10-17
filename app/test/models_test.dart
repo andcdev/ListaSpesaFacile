@@ -160,4 +160,46 @@ void main() {
     final suggestion = ProductSuggestion.fromJson({'name': 'Mele', 'icon': '🍎', 'measure': 'weight_count'});
     expect(suggestion.measure, MeasureMode.weightCount);
   });
+
+  test('chi fa la spesa: solo lui segna i prodotti; "list.updated" porta la spesa finita', () {
+    final list = ShoppingList.fromJson({
+      'id': 1,
+      'name': 'Spesa',
+      'scheduled_at': '2026-10-03T08:30:00+00:00',
+      'permission': 'edit',
+      'shopper': {'id': 5, 'name': 'Giulia'},
+      'people': [
+        {'id': 2, 'name': 'Anna'},
+        {'id': 5, 'name': 'Giulia'},
+      ],
+    });
+    expect(list.canMark(5), isTrue);
+    expect(list.canMark(2), isFalse);
+    expect(list.people, hasLength(2));
+    expect(list.finishedAt, isNull);
+
+    final finished = list.withMeta({
+      'name': 'Spesa',
+      'shopper': {'id': 5, 'name': 'Giulia'},
+      'finished_at': '2026-10-03T17:42:00+00:00',
+      'finished_by': {'id': 5, 'name': 'Giulia'},
+      'finish_message': 'Il pane era finito',
+    });
+    expect(finished.finishedBy?.name, 'Giulia');
+    expect(finished.finishMessage, 'Il pane era finito');
+    expect(finished.finishedAt, DateTime.utc(2026, 10, 3, 17, 42).toLocal());
+    expect(finished.people, hasLength(2));
+
+    // "Continuo io" di Anna: la spesa passa a lei e non è più finita.
+    final takenOver = finished.withMeta({
+      'shopper': {'id': 2, 'name': 'Anna'},
+      'finished_at': null,
+      'finished_by': null,
+    });
+    expect(takenOver.canMark(2), isTrue);
+    expect(takenOver.canMark(5), isFalse);
+    expect(takenOver.finishedAt, isNull);
+    // Senza nessuno scelto segna chiunque possa modificare.
+    expect(takenOver.withMeta({'shopper': null}).canMark(5), isTrue);
+  });
 }

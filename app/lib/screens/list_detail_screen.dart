@@ -298,16 +298,19 @@ class _ListDetailScreenState extends State<ListDetailScreen> {
                 padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
                 child: Text('${item.icon}  ${item.name}', style: Theme.of(context).textTheme.titleMedium),
               ),
-              ListTile(
-                leading: Icon(item.checked ? Icons.check_box : Icons.check_box_outline_blank),
-                title: Text(item.checked ? l.putBackToBuy : l.takenInCart),
-                onTap: () => Navigator.pop(context, 'taken'),
-              ),
-              ListTile(
-                leading: Icon(item.missing ? Icons.cancel : Icons.cancel_outlined),
-                title: Text(item.missing ? l.putBackToBuy : l.notFound),
-                onTap: () => Navigator.pop(context, 'missing'),
-              ),
+              // Presi e non trovati li segna solo chi fa la spesa (se è stato scelto qualcuno).
+              if (detail.canMark) ...[
+                ListTile(
+                  leading: Icon(item.checked ? Icons.check_box : Icons.check_box_outline_blank),
+                  title: Text(item.checked ? l.putBackToBuy : l.takenInCart),
+                  onTap: () => Navigator.pop(context, 'taken'),
+                ),
+                ListTile(
+                  leading: Icon(item.missing ? Icons.cancel : Icons.cancel_outlined),
+                  title: Text(item.missing ? l.putBackToBuy : l.notFound),
+                  onTap: () => Navigator.pop(context, 'missing'),
+                ),
+              ],
               ListTile(
                 leading: const Icon(Icons.edit_outlined),
                 title: Text(l.edit),
@@ -343,7 +346,7 @@ class _ListDetailScreenState extends State<ListDetailScreen> {
     if (!mounted) return;
     switch (action) {
       case 'taken':
-        await _run(() => detail.setStatus(item, ItemStatus.taken));
+        await _markTaken(detail, item);
       case 'missing':
         await _run(() => detail.setStatus(item, ItemStatus.missing));
       case 'edit':
@@ -357,6 +360,119 @@ class _ListDetailScreenState extends State<ListDetailScreen> {
       case 'delete':
         await _deleteItem(detail, item);
     }
+  }
+
+  // ── Chi fa la spesa e "Spesa finita" ────────────────────────────
+
+  /// "Spesa finita" che l'utente ha chiuso con «Va bene così» (per lista e istante), finché l'app resta aperta.
+  static final _dismissedFinishes = <String>{};
+
+  /// Tocco sul cerchio: preso / di nuovo da prendere. Chi non fa la spesa riceve la spiegazione; preso l'ultimo
+  /// prodotto, si propone di avvisare gli altri.
+  Future<void> _markTaken(ListDetailController detail, ListItem item) async {
+    final shopper = detail.list?.shopper;
+    if (!detail.canMark) {
+      if (shopper != null) showMessage(context, context.l10n.onlyShopperCanMark(shopper.name));
+      return;
+    }
+    await _run(() => detail.setStatus(item, ItemStatus.taken));
+    final list = detail.list;
+    if (!mounted || list == null || list.finishedAt != null || !detail.hasOthers) return;
+    if (item.checked || detail.notTakenCount > 0) return;
+    final l = context.l10n;
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(
+          content: Text(l.allTaken),
+          duration: const Duration(seconds: 8),
+          action: SnackBarAction(label: l.finishShoppingComplete, onPressed: () => _finish(detail)),
+        ),
+      );
+  }
+
+  Future<void> _finish(ListDetailController detail) async {
+    final message = await showModalBottomSheet<_FinishResult>(
+      context: context,
+      showDragHandle: true,
+      isScrollControlled: true,
+      builder: (_) => _FinishSheet(items: detail.items, hasOthers: detail.hasOthers),
+    );
+    if (message == null || !mounted) return;
+    await _run(() async {
+      await detail.finishShopping(message: message.text);
+      if (mounted) showMessage(context, detail.hasOthers ? context.l10n.finishedNotified : context.l10n.finishShopping);
+    });
+  }
+
+  Future<void> _takeOver(ListDetailController detail) => _run(() async {
+    await detail.takeOverShopping();
+    if (mounted) showMessage(context, context.l10n.tookOver);
+  });
+
+  /// Sotto la barra di avanzamento: chi fa la spesa, l'avviso "Spesa finita" per gli altri e il pulsante per chi
+  /// fa la spesa (compare quando ha già segnato almeno un prodotto).
+  List<Widget> _shoppingRun(ListDetailController detail) {
+    final list = detail.list!;
+    final l = context.l10n;
+    final scheme = Theme.of(context).colorScheme;
+    final items = detail.items;
+    final notTaken = detail.notTakenCount;
+    final finishedBy = list.finishedBy;
+    final finishedKey = '${list.id}-${list.finishedAt?.toIso8601String()}';
+    return [
+      if (list.shopper != null)
+        ListTile(
+          dense: true,
+          contentPadding: const EdgeInsets.symmetric(horizontal: 20),
+          leading: Icon(Icons.shopping_cart_outlined, color: scheme.onSurfaceVariant),
+          title: Text(list.shopper!.id == detail.userId ? l.shopperIsMe : l.shopperIs(list.shopper!.name)),
+        ),
+      if (list.finishedAt != null && finishedBy != null && finishedBy.id != detail.userId)
+        if (!_dismissedFinishes.contains(finishedKey))
+          _FinishedBanner(
+            name: finishedBy.name,
+            at: list.finishedAt!,
+            missing: notTaken,
+            message: list.finishMessage,
+            onTakeOver: detail.canEdit && notTaken > 0 ? () => _takeOver(detail) : null,
+            onDismiss: () => setState(() => _dismissedFinishes.add(finishedKey)),
+          ),
+      if (detail.canMark && list.finishedAt == null && items.any((i) => i.status != ItemStatus.todo))
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
+          child: FilledButton(
+            style: FilledButton.styleFrom(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+            ),
+            onPressed: () => _finish(detail),
+            child: Row(
+              children: [
+                const Icon(Icons.shopping_cart_checkout),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(notTaken == 0 ? l.finishShoppingComplete : l.finishShopping),
+                      Text(
+                        !detail.hasOthers
+                            ? l.finishAloneInfo(notTaken)
+                            : notTaken == 0
+                            ? l.finishCompleteInfo
+                            : l.finishMissingInfo(notTaken),
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(color: scheme.onPrimary),
+                      ),
+                    ],
+                  ),
+                ),
+                const Icon(Icons.chevron_right),
+              ],
+            ),
+          ),
+        ),
+    ];
   }
 
   // ── Esportazione ────────────────────────────────────────────────
@@ -604,6 +720,7 @@ class _ListDetailScreenState extends State<ListDetailScreen> {
               padding: const EdgeInsets.fromLTRB(20, 0, 20, 8),
               child: ShoppingProgress(done: detail.checkedCount, total: items.length),
             ),
+          if (!_chatOpen) ..._shoppingRun(detail),
           if (list.notes != null && list.notes!.isNotEmpty)
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
@@ -626,7 +743,8 @@ class _ListDetailScreenState extends State<ListDetailScreen> {
               leading: Icon(Icons.visibility_outlined, color: muted),
               title: Text(l.readOnlyAccess),
             ),
-          if (todo > 0 || taken > 0) _filterBar(total: items.length, todo: todo, taken: taken, selected: filter),
+          // I filtri compaiono quando almeno un prodotto ha cambiato stato: prima "Totale" e "Da prendere" coincidono.
+          if (todo < items.length) _filterBar(total: items.length, todo: todo, taken: taken, selected: filter),
           if (items.isEmpty)
             Padding(
               padding: const EdgeInsets.all(32),
@@ -659,7 +777,7 @@ class _ListDetailScreenState extends State<ListDetailScreen> {
   }
 
   /// Pulsanti sopra i prodotti, ognuno col suo conteggio: totale (predefinito), poi "Da prendere" e "Presi" solo
-  /// se ci sono prodotti in quello stato.
+  /// se ci sono prodotti in quello stato. Si mostrano solo quando almeno un prodotto non è più da prendere.
   Widget _filterBar({required int total, required int todo, required int taken, required ItemStatus? selected}) {
     final l = context.l10n;
     return Padding(
@@ -701,7 +819,7 @@ class _ListDetailScreenState extends State<ListDetailScreen> {
       if (item.checked && item.checkedBy != null) l.takenBy(item.checkedBy!),
       if (item.missing) item.checkedBy == null ? l.notFoundLower : l.notFoundBy(item.checkedBy!),
     ].join(' · ');
-    final taken = detail.canEdit ? () => _run(() => detail.setStatus(item, ItemStatus.taken)) : null;
+    final taken = detail.canEdit ? () => _markTaken(detail, item) : null;
 
     final scheme = theme.colorScheme;
     final tile = Card(
@@ -2108,6 +2226,209 @@ class _EditItemDialogState extends State<_EditItemDialog> {
         TextButton(onPressed: () => Navigator.pop(context), child: Text(l.cancel)),
         FilledButton(onPressed: _save, child: Text(l.save)),
       ],
+    );
+  }
+}
+
+/// Conferma di "Spesa finita"; [text] è il messaggio facoltativo per gli altri.
+class _FinishResult {
+  const _FinishResult(this.text);
+
+  final String? text;
+}
+
+/// Foglio di conferma: quanti prodotti sono stati presi, quali restano da prendere e un messaggio per gli altri.
+class _FinishSheet extends StatefulWidget {
+  const _FinishSheet({required this.items, required this.hasOthers});
+
+  final List<ListItem> items;
+  final bool hasOthers;
+
+  @override
+  State<_FinishSheet> createState() => _FinishSheetState();
+}
+
+class _FinishSheetState extends State<_FinishSheet> {
+  final _message = TextEditingController();
+
+  @override
+  void dispose() {
+    _message.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l = context.l10n;
+    final theme = Theme.of(context);
+    final missing = widget.items.where((i) => !i.checked).toList();
+    final taken = widget.items.length - missing.length;
+    return Padding(
+      padding: EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(context).bottom),
+      child: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.fromLTRB(24, 0, 24, 16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(l.finishQuestion, style: theme.textTheme.headlineSmall),
+              const SizedBox(height: 8),
+              Text(
+                [
+                  missing.isEmpty ? l.finishAllTaken : l.finishTakenOf(taken, widget.items.length),
+                  if (missing.isNotEmpty) l.finishStillToBuy,
+                ].join(' '),
+              ),
+              if (missing.isNotEmpty)
+                Card(
+                  margin: const EdgeInsets.symmetric(vertical: 12),
+                  child: Column(
+                    children: [
+                      for (final item in missing.take(8))
+                        ListTile(
+                          dense: true,
+                          leading: Text(item.icon, style: const TextStyle(fontSize: 20)),
+                          title: Text(item.name),
+                          trailing: item.measureLabel == null ? null : Text(item.measureLabel!),
+                        ),
+                      if (missing.length > 8)
+                        ListTile(dense: true, title: Text('+ ${missing.length - 8}', textAlign: TextAlign.center)),
+                    ],
+                  ),
+                ),
+              if (widget.hasOthers) ...[
+                Text(l.finishNotifyOthers, style: theme.textTheme.bodySmall),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: _message,
+                  maxLength: 500,
+                  minLines: 1,
+                  maxLines: 3,
+                  textCapitalization: TextCapitalization.sentences,
+                  decoration: InputDecoration(
+                    labelText: l.finishMessageLabel,
+                    hintText: l.finishMessageHint,
+                    helperText: l.finishMessageInfo,
+                    helperMaxLines: 2,
+                  ),
+                ),
+              ],
+              const SizedBox(height: 12),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  TextButton(onPressed: () => Navigator.pop(context), child: Text(l.cancel)),
+                  const SizedBox(width: 8),
+                  FilledButton.icon(
+                    onPressed: () {
+                      final text = _message.text.trim();
+                      Navigator.pop(context, _FinishResult(text.isEmpty ? null : text));
+                    },
+                    icon: const Icon(Icons.check),
+                    label: Text(missing.isEmpty ? l.finishShoppingComplete : l.finishShopping),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Per chi non faceva la spesa: chi l'ha finita, quando, cosa manca e il suo messaggio, con "Continuo io".
+class _FinishedBanner extends StatelessWidget {
+  const _FinishedBanner({
+    required this.name,
+    required this.at,
+    required this.missing,
+    required this.message,
+    required this.onTakeOver,
+    required this.onDismiss,
+  });
+
+  final String name;
+  final DateTime at;
+  final int missing;
+  final String? message;
+  final VoidCallback? onTakeOver;
+  final VoidCallback onDismiss;
+
+  @override
+  Widget build(BuildContext context) {
+    final l = context.l10n;
+    final theme = Theme.of(context);
+    final scheme = theme.colorScheme;
+    final material = MaterialLocalizations.of(context);
+    final now = DateTime.now();
+    final time = material.formatTimeOfDay(TimeOfDay.fromDateTime(at));
+    final when = DateUtils.isSameDay(at, now) ? time : '${material.formatShortMonthDay(at)} $time';
+    final onBanner = scheme.onSecondaryContainer;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
+      child: Card(
+        color: scheme.secondaryContainer,
+        margin: EdgeInsets.zero,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(14, 12, 14, 8),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  UserAvatar(initials: name.isEmpty ? '?' : name[0].toUpperCase()),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          l.shoppingFinishedBy(name, when),
+                          style: theme.textTheme.titleSmall?.copyWith(color: onBanner),
+                        ),
+                        Text(
+                          l.shoppingFinishedMissing(missing),
+                          style: theme.textTheme.bodySmall?.copyWith(color: onBanner),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              if (message != null) ...[
+                const SizedBox(height: 8),
+                Text(
+                  '«$message»',
+                  style: theme.textTheme.bodyMedium?.copyWith(color: onBanner, fontStyle: FontStyle.italic),
+                ),
+              ],
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  TextButton(
+                    style: TextButton.styleFrom(foregroundColor: onBanner),
+                    onPressed: onDismiss,
+                    child: Text(l.dismissFinished),
+                  ),
+                  if (onTakeOver != null) ...[
+                    const SizedBox(width: 4),
+                    FilledButton(
+                      style: FilledButton.styleFrom(
+                        backgroundColor: scheme.secondary,
+                        foregroundColor: scheme.onSecondary,
+                      ),
+                      onPressed: onTakeOver,
+                      child: Text(l.takeOver),
+                    ),
+                  ],
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

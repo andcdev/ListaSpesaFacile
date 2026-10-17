@@ -2,6 +2,7 @@
 
 namespace App\Events;
 
+use App\Http\Resources\ShoppingListResource;
 use App\Models\ShoppingList;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PresenceChannel;
@@ -43,6 +44,7 @@ class ShoppingListUpdated implements ShouldBroadcastNow
                 'image_version' => $this->list->imageVersion(),
                 'reminder_target' => $this->list->reminder_target,
                 'members_can_rename' => $this->list->members_can_rename,
+                ...ShoppingListResource::shopping($this->list),
             ],
         ];
     }

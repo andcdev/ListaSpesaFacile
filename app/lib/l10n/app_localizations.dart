@@ -2626,6 +2626,168 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Lettura e modifica'**
   String get permissionReadWrite;
+
+  /// No description provided for @shopperLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Chi fa la spesa'**
+  String get shopperLabel;
+
+  /// No description provided for @shopperAnyone.
+  ///
+  /// In it, this message translates to:
+  /// **'Chiunque della lista'**
+  String get shopperAnyone;
+
+  /// No description provided for @shopperMe.
+  ///
+  /// In it, this message translates to:
+  /// **'Io'**
+  String get shopperMe;
+
+  /// No description provided for @shopperHelper.
+  ///
+  /// In it, this message translates to:
+  /// **'Solo chi fa la spesa può segnare i prodotti presi o non trovati'**
+  String get shopperHelper;
+
+  /// No description provided for @shopperIs.
+  ///
+  /// In it, this message translates to:
+  /// **'La spesa la fa {name}'**
+  String shopperIs(String name);
+
+  /// No description provided for @shopperIsMe.
+  ///
+  /// In it, this message translates to:
+  /// **'La spesa la fai tu'**
+  String get shopperIsMe;
+
+  /// No description provided for @onlyShopperCanMark.
+  ///
+  /// In it, this message translates to:
+  /// **'La spesa la fa {name}: solo chi fa la spesa può segnare i prodotti presi o non trovati.'**
+  String onlyShopperCanMark(String name);
+
+  /// No description provided for @finishShopping.
+  ///
+  /// In it, this message translates to:
+  /// **'Spesa finita'**
+  String get finishShopping;
+
+  /// No description provided for @finishShoppingComplete.
+  ///
+  /// In it, this message translates to:
+  /// **'Spesa completata'**
+  String get finishShoppingComplete;
+
+  /// No description provided for @finishMissingInfo.
+  ///
+  /// In it, this message translates to:
+  /// **'{count, plural, =1{Avvisa gli altri: manca 1 prodotto} other{Avvisa gli altri: mancano {count} prodotti}}'**
+  String finishMissingInfo(int count);
+
+  /// No description provided for @finishCompleteInfo.
+  ///
+  /// In it, this message translates to:
+  /// **'Avvisa gli altri che è stato preso tutto'**
+  String get finishCompleteInfo;
+
+  /// No description provided for @finishAloneInfo.
+  ///
+  /// In it, this message translates to:
+  /// **'{count, plural, =0{È stato preso tutto} =1{Manca 1 prodotto: resta da prendere} other{Mancano {count} prodotti: restano da prendere}}'**
+  String finishAloneInfo(int count);
+
+  /// No description provided for @finishQuestion.
+  ///
+  /// In it, this message translates to:
+  /// **'Hai finito la spesa?'**
+  String get finishQuestion;
+
+  /// No description provided for @finishTakenOf.
+  ///
+  /// In it, this message translates to:
+  /// **'Hai preso {taken} prodotti su {total}.'**
+  String finishTakenOf(int taken, int total);
+
+  /// No description provided for @finishStillToBuy.
+  ///
+  /// In it, this message translates to:
+  /// **'Questi restano da prendere:'**
+  String get finishStillToBuy;
+
+  /// No description provided for @finishNotifyOthers.
+  ///
+  /// In it, this message translates to:
+  /// **'Chi condivide la lista riceve una notifica e può continuare la spesa.'**
+  String get finishNotifyOthers;
+
+  /// No description provided for @finishAllTaken.
+  ///
+  /// In it, this message translates to:
+  /// **'Hai preso tutto.'**
+  String get finishAllTaken;
+
+  /// No description provided for @finishMessageLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Messaggio per gli altri (facoltativo)'**
+  String get finishMessageLabel;
+
+  /// No description provided for @finishMessageHint.
+  ///
+  /// In it, this message translates to:
+  /// **'es. Il pane era finito'**
+  String get finishMessageHint;
+
+  /// No description provided for @finishMessageInfo.
+  ///
+  /// In it, this message translates to:
+  /// **'Arriva con la notifica e nella chat della lista.'**
+  String get finishMessageInfo;
+
+  /// No description provided for @finishedNotified.
+  ///
+  /// In it, this message translates to:
+  /// **'Spesa finita: gli altri sono stati avvisati'**
+  String get finishedNotified;
+
+  /// No description provided for @shoppingFinishedBy.
+  ///
+  /// In it, this message translates to:
+  /// **'{name} ha finito la spesa alle {time}'**
+  String shoppingFinishedBy(String name, String time);
+
+  /// No description provided for @shoppingFinishedMissing.
+  ///
+  /// In it, this message translates to:
+  /// **'{count, plural, =0{È stato preso tutto} =1{Manca 1 prodotto} other{Mancano {count} prodotti}}'**
+  String shoppingFinishedMissing(int count);
+
+  /// No description provided for @takeOver.
+  ///
+  /// In it, this message translates to:
+  /// **'Continuo io'**
+  String get takeOver;
+
+  /// No description provided for @dismissFinished.
+  ///
+  /// In it, this message translates to:
+  /// **'Va bene così'**
+  String get dismissFinished;
+
+  /// No description provided for @tookOver.
+  ///
+  /// In it, this message translates to:
+  /// **'Ora la spesa la fai tu: gli altri sono stati avvisati'**
+  String get tookOver;
+
+  /// No description provided for @allTaken.
+  ///
+  /// In it, this message translates to:
+  /// **'Tutto preso!'**
+  String get allTaken;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

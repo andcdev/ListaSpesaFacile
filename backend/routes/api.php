@@ -47,6 +47,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/users/{user}/avatar', [AvatarController::class, 'show']);
 
     Route::apiResource('lists', ShoppingListController::class)->parameters(['lists' => 'list']);
+    // Spesa finita (anche con prodotti mancanti) e "Continuo io" (la spesa passa a chi tocca).
+    Route::post('/lists/{list}/finish', [ShoppingListController::class, 'finish']);
+    Route::post('/lists/{list}/take-over', [ShoppingListController::class, 'takeOver']);
     Route::get('/products/suggestions', ProductSuggestionController::class);
     Route::get('/products/search', ProductSearchController::class)->middleware('throttle:60,1');
     Route::get('/products/measure', ProductMeasureController::class);

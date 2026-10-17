@@ -38,6 +38,7 @@ class ShoppingList extends Model
             'reminder_minutes' => 'integer',
             'remind_at' => 'datetime',
             'members_can_rename' => 'boolean',
+            'finished_at' => 'datetime',
         ];
     }
 
@@ -72,6 +73,57 @@ class ShoppingList extends Model
     public function owner(): BelongsTo
     {
         return $this->belongsTo(User::class, 'owner_id');
+    }
+
+    /**
+     * Chi fa la spesa (null = chiunque possa modificare la lista). Vedi activeShopperId().
+     *
+     * @return BelongsTo<User, $this>
+     */
+    public function shopper(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'shopper_id');
+    }
+
+    /**
+     * Chi ha toccato "Spesa finita".
+     *
+     * @return BelongsTo<User, $this>
+     */
+    public function finisher(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'finished_by');
+    }
+
+    /**
+     * Chi fa la spesa, se vede ancora la lista: una persona tolta dalla lista non blocca più gli altri.
+     */
+    public function activeShopperId(): ?int
+    {
+        return $this->shopper_id !== null && in_array((int) $this->shopper_id, $this->audienceIds(), true)
+            ? (int) $this->shopper_id
+            : null;
+    }
+
+    /**
+     * Può segnare i prodotti presi o non trovati (e finire la spesa): chi può modificare la lista, ma solo chi fa
+     * la spesa quando qualcuno è stato scelto.
+     */
+    public function canMarkItems(User $user): bool
+    {
+        $shopper = $this->activeShopperId();
+
+        return $shopper === null || $shopper === $user->id;
+    }
+
+    /**
+     * Toglie lo stato "Spesa finita" (si è ripreso a segnare i prodotti o la spesa passa a un altro).
+     */
+    public function clearFinished(): void
+    {
+        $this->finished_at = null;
+        $this->finished_by = null;
+        $this->finish_message = null;
     }
 
     /**

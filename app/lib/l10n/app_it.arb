@@ -839,5 +839,87 @@
   "copyInfo": "Prodotti e foto vengono copiati, tutti da prendere. Cambia data, ora e quello che vuoi: la lista originale resta com'è.",
   "permission": "Permesso",
   "permissionRead": "Solo lettura",
-  "permissionReadWrite": "Lettura e modifica"
+  "permissionReadWrite": "Lettura e modifica",
+  "shopperLabel": "Chi fa la spesa",
+  "shopperAnyone": "Chiunque della lista",
+  "shopperMe": "Io",
+  "shopperHelper": "Solo chi fa la spesa può segnare i prodotti presi o non trovati",
+  "shopperIs": "La spesa la fa {name}",
+  "@shopperIs": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "shopperIsMe": "La spesa la fai tu",
+  "onlyShopperCanMark": "La spesa la fa {name}: solo chi fa la spesa può segnare i prodotti presi o non trovati.",
+  "@onlyShopperCanMark": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "finishShopping": "Spesa finita",
+  "finishShoppingComplete": "Spesa completata",
+  "finishMissingInfo": "{count, plural, =1{Avvisa gli altri: manca 1 prodotto} other{Avvisa gli altri: mancano {count} prodotti}}",
+  "@finishMissingInfo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "finishCompleteInfo": "Avvisa gli altri che è stato preso tutto",
+  "finishAloneInfo": "{count, plural, =0{È stato preso tutto} =1{Manca 1 prodotto: resta da prendere} other{Mancano {count} prodotti: restano da prendere}}",
+  "@finishAloneInfo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "finishQuestion": "Hai finito la spesa?",
+  "finishTakenOf": "Hai preso {taken} prodotti su {total}.",
+  "@finishTakenOf": {
+    "placeholders": {
+      "taken": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "finishStillToBuy": "Questi restano da prendere:",
+  "finishNotifyOthers": "Chi condivide la lista riceve una notifica e può continuare la spesa.",
+  "finishAllTaken": "Hai preso tutto.",
+  "finishMessageLabel": "Messaggio per gli altri (facoltativo)",
+  "finishMessageHint": "es. Il pane era finito",
+  "finishMessageInfo": "Arriva con la notifica e nella chat della lista.",
+  "finishedNotified": "Spesa finita: gli altri sono stati avvisati",
+  "shoppingFinishedBy": "{name} ha finito la spesa alle {time}",
+  "@shoppingFinishedBy": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "shoppingFinishedMissing": "{count, plural, =0{È stato preso tutto} =1{Manca 1 prodotto} other{Mancano {count} prodotti}}",
+  "@shoppingFinishedMissing": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "takeOver": "Continuo io",
+  "dismissFinished": "Va bene così",
+  "tookOver": "Ora la spesa la fai tu: gli altri sono stati avvisati",
+  "allTaken": "Tutto preso!"
 }

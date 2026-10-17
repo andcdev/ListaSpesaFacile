@@ -267,9 +267,11 @@ class ApiClient {
     bool membersCanRename = false,
     List<ShareRequest> shares = const [],
     int? copyFrom,
+    String? shopperEmail,
   }) async => _data(
     await _send('POST', '/lists', {
       'copy_from': ?copyFrom,
+      'shopper_email': ?shopperEmail,
       'name': name,
       'scheduled_at': scheduledAt.toUtc().toIso8601String(),
       'notes': notes,
@@ -282,7 +284,7 @@ class ApiClient {
     ShoppingList.fromJson,
   );
 
-  /// [membersCanRename] solo dal proprietario (null = invariato).
+  /// [membersCanRename] solo dal proprietario (null = invariato). [shopperId]: chi fa la spesa, 0 = chiunque.
   Future<ShoppingList> updateList(
     int id, {
     required String name,
@@ -292,8 +294,10 @@ class ApiClient {
     int? reminderMinutes,
     ReminderTarget reminderTarget = ReminderTarget.all,
     bool? membersCanRename,
+    int? shopperId,
   }) async => _data(
     await _send('PATCH', '/lists/$id', {
+      if (shopperId != null) 'shopper_id': shopperId == 0 ? null : shopperId,
       'name': name,
       'scheduled_at': scheduledAt.toUtc().toIso8601String(),
       'notes': notes,
@@ -306,6 +310,14 @@ class ApiClient {
   );
 
   Future<void> deleteList(int id) => _send('DELETE', '/lists/$id');
+
+  /// "Spesa finita", anche con prodotti mancanti: gli altri vengono avvisati.
+  Future<ShoppingList> finishShopping(int id, {String? message}) async =>
+      _data(await _send('POST', '/lists/$id/finish', {'message': ?message}), ShoppingList.fromJson);
+
+  /// "Continuo io": la spesa passa all'utente.
+  Future<ShoppingList> takeOverShopping(int id) async =>
+      _data(await _send('POST', '/lists/$id/take-over'), ShoppingList.fromJson);
 
   // ── Foto della lista ────────────────────────────────────────────
 

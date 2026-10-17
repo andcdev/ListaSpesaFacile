@@ -357,10 +357,12 @@ Tutte le rotte sono sotto `/api`. Le rotte protette richiedono `Authorization: B
 | DELETE | `/me/avatar` | Rimuove la foto profilo |
 | GET | `/users/{id}/avatar?v=` | Foto profilo (te stesso o chi ha una lista in comune con te) |
 | GET | `/lists` | Liste accessibili, ordinate per `scheduled_at` |
-| POST | `/lists` | `name, scheduled_at, notes?, supermarket?, reminder_minutes?, reminder_target?, members_can_rename?, shares?: [{email, can_edit?}]` |
+| POST | `/lists` | `name, scheduled_at, notes?, supermarket?, reminder_minutes?, reminder_target?, members_can_rename?, shares?: [{email, can_edit?}], shopper_email?` (chi fa la spesa: il proprietario o una delle persone) |
 | GET | `/lists/{id}` | Lista con articoli e condivisioni |
-| PATCH | `/lists/{id}` | Modifica (proprietario o permesso di modifica), anche `reminder_minutes` (`null` = nessuno) e `reminder_target` (`owner`, `members`, `all`). Il nome solo se `can_rename`; `members_can_rename` solo il proprietario |
+| PATCH | `/lists/{id}` | Modifica (proprietario o permesso di modifica), anche `reminder_minutes` (`null` = nessuno) e `reminder_target` (`owner`, `members`, `all`). Il nome solo se `can_rename`; `members_can_rename` solo il proprietario. `shopper_id` (una persona della lista, `null` = chiunque) sceglie chi fa la spesa: solo lui segna `taken`/`missing` |
 | DELETE | `/lists/{id}` | Elimina (solo proprietario) |
+| POST | `/lists/{id}/finish` | «Spesa finita» (`message?`, max 500): i prodotti non trovati tornano da prendere, le altre persone della lista ricevono la notifica `shopping_finished` con ciò che manca; il messaggio va anche in chat. Solo chi fa la spesa, se è stato scelto |
+| POST | `/lists/{id}/take-over` | «Continuo io»: chi tocca diventa chi fa la spesa e la spesa non è più finita |
 | GET | `/lists/{id}/image?v=` | Foto della lista (chi ha accesso; `v` = `image_version` della lista) |
 | POST | `/lists/{id}/image` | `image` multipart (jpg, png, webp, max 8 MB; permesso di modifica) |
 | DELETE | `/lists/{id}/image` | Rimuove la foto |

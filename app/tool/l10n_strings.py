@@ -977,6 +977,105 @@ S = {
     'permissionRead': ('Solo lettura', 'Read only', 'Lecture seule', 'Nur lesen', 'Solo lectura'),
     'permissionReadWrite': ('Lettura e modifica', 'Read and edit', 'Lecture et modification', 'Lesen und bearbeiten',
                             'Lectura y edición'),
+
+    # ── Chi fa la spesa e "Spesa finita" ────────────────────────────
+    'shopperLabel': ('Chi fa la spesa', 'Who does the shopping', 'Qui fait les courses', 'Wer kauft ein',
+                     'Quién hace la compra'),
+    'shopperAnyone': ('Chiunque della lista', 'Anyone on the list', "N'importe qui sur la liste",
+                      'Jeder auf der Liste', 'Cualquiera de la lista'),
+    'shopperMe': ('Io', 'Me', 'Moi', 'Ich', 'Yo'),
+    'shopperHelper': ('Solo chi fa la spesa può segnare i prodotti presi o non trovati',
+                      'Only the shopper can mark products as taken or not found',
+                      'Seule la personne qui fait les courses peut marquer les produits pris ou introuvables',
+                      'Nur wer einkauft, kann Produkte als gekauft oder nicht gefunden markieren',
+                      'Solo quien hace la compra puede marcar los productos cogidos o no encontrados'),
+    'shopperIs': ('La spesa la fa {name}', '{name} is doing the shopping', 'Les courses : {name}',
+                  '{name} macht den Einkauf', 'La compra la hace {name}', {'name': 'String'}),
+    'shopperIsMe': ('La spesa la fai tu', "You're doing the shopping", 'C’est toi qui fais les courses',
+                    'Du machst den Einkauf', 'La compra la haces tú'),
+    'onlyShopperCanMark': ('La spesa la fa {name}: solo chi fa la spesa può segnare i prodotti presi o non trovati.',
+                           '{name} is doing the shopping: only the shopper can mark products as taken or not found.',
+                           'Les courses sont faites par {name} : seule cette personne peut marquer les produits pris '
+                           'ou introuvables.',
+                           '{name} macht den Einkauf: nur wer einkauft, kann Produkte als gekauft oder nicht gefunden '
+                           'markieren.',
+                           'La compra la hace {name}: solo quien hace la compra puede marcar los productos cogidos o '
+                           'no encontrados.', {'name': 'String'}),
+    'finishShopping': ('Spesa finita', 'Shopping done', 'Courses finies', 'Einkauf fertig', 'Compra terminada'),
+    'finishShoppingComplete': ('Spesa completata', 'Shopping complete', 'Courses terminées', 'Einkauf erledigt',
+                               'Compra completada'),
+    'finishMissingInfo': ('{count, plural, =1{Avvisa gli altri: manca 1 prodotto} '
+                          'other{Avvisa gli altri: mancano {count} prodotti}}',
+                          '{count, plural, =1{Let the others know: 1 product missing} '
+                          'other{Let the others know: {count} products missing}}',
+                          '{count, plural, =1{Prévenir les autres : il manque 1 produit} '
+                          'other{Prévenir les autres : il manque {count} produits}}',
+                          '{count, plural, =1{Die anderen benachrichtigen: 1 Produkt fehlt} '
+                          'other{Die anderen benachrichtigen: {count} Produkte fehlen}}',
+                          '{count, plural, =1{Avisa a los demás: falta 1 producto} '
+                          'other{Avisa a los demás: faltan {count} productos}}', {'count': 'int'}),
+    'finishCompleteInfo': ('Avvisa gli altri che è stato preso tutto', 'Let the others know everything was bought',
+                           'Prévenir les autres que tout a été pris', 'Den anderen sagen, dass alles gekauft ist',
+                           'Avisa a los demás de que se ha comprado todo'),
+    'finishAloneInfo': ('{count, plural, =0{È stato preso tutto} =1{Manca 1 prodotto: resta da prendere} '
+                        'other{Mancano {count} prodotti: restano da prendere}}',
+                        '{count, plural, =0{Everything was bought} =1{1 product missing: it stays to buy} '
+                        'other{{count} products missing: they stay to buy}}',
+                        '{count, plural, =0{Tout a été pris} =1{Il manque 1 produit : il reste à prendre} '
+                        'other{Il manque {count} produits : ils restent à prendre}}',
+                        '{count, plural, =0{Alles wurde gekauft} =1{1 Produkt fehlt: es bleibt zu kaufen} '
+                        'other{{count} Produkte fehlen: sie bleiben zu kaufen}}',
+                        '{count, plural, =0{Se ha comprado todo} =1{Falta 1 producto: queda por coger} '
+                        'other{Faltan {count} productos: quedan por coger}}', {'count': 'int'}),
+    'finishQuestion': ('Hai finito la spesa?', 'Finished shopping?', 'Tu as fini les courses ?',
+                       'Bist du mit dem Einkauf fertig?', '¿Has terminado la compra?'),
+    'finishTakenOf': ('Hai preso {taken} prodotti su {total}.', 'You took {taken} of {total} products.',
+                      'Tu as pris {taken} produits sur {total}.', 'Du hast {taken} von {total} Produkten.',
+                      'Has cogido {taken} de {total} productos.', {'taken': 'int', 'total': 'int'}),
+    'finishStillToBuy': ('Questi restano da prendere:', 'These stay to buy:', 'Ceux-ci restent à prendre :',
+                         'Diese bleiben zu kaufen:', 'Estos quedan por coger:'),
+    'finishNotifyOthers': ('Chi condivide la lista riceve una notifica e può continuare la spesa.',
+                           'The people on the list get a notification and can carry on shopping.',
+                           'Les personnes de la liste reçoivent une notification et peuvent continuer les courses.',
+                           'Die Personen der Liste werden benachrichtigt und können weiter einkaufen.',
+                           'Las personas de la lista reciben una notificación y pueden seguir con la compra.'),
+    'finishAllTaken': ('Hai preso tutto.', 'You got everything.', 'Tu as tout pris.', 'Du hast alles.',
+                       'Lo has cogido todo.'),
+    'finishMessageLabel': ('Messaggio per gli altri (facoltativo)', 'Message for the others (optional)',
+                           'Message pour les autres (facultatif)', 'Nachricht an die anderen (optional)',
+                           'Mensaje para los demás (opcional)'),
+    'finishMessageHint': ('es. Il pane era finito', 'e.g. The bread was sold out', 'ex. Il n’y avait plus de pain',
+                          'z. B. Das Brot war aus', 'p. ej. Se había acabado el pan'),
+    'finishMessageInfo': ('Arriva con la notifica e nella chat della lista.',
+                          'It comes with the notification and in the list chat.',
+                          'Il arrive avec la notification et dans la discussion de la liste.',
+                          'Sie kommt mit der Benachrichtigung und im Chat der Liste.',
+                          'Llega con la notificación y en el chat de la lista.'),
+    'finishedNotified': ('Spesa finita: gli altri sono stati avvisati', 'Shopping done: the others were notified',
+                         'Courses finies : les autres ont été prévenus',
+                         'Einkauf fertig: die anderen wurden benachrichtigt',
+                         'Compra terminada: se ha avisado a los demás'),
+    'shoppingFinishedBy': ('{name} ha finito la spesa alle {time}', '{name} finished shopping at {time}',
+                           '{name} a fini les courses à {time}', '{name} hat den Einkauf um {time} beendet',
+                           '{name} ha terminado la compra a las {time}', {'name': 'String', 'time': 'String'}),
+    'shoppingFinishedMissing': ('{count, plural, =0{È stato preso tutto} =1{Manca 1 prodotto} '
+                                'other{Mancano {count} prodotti}}',
+                                '{count, plural, =0{Everything was bought} =1{1 product missing} '
+                                'other{{count} products missing}}',
+                                '{count, plural, =0{Tout a été pris} =1{Il manque 1 produit} '
+                                'other{Il manque {count} produits}}',
+                                '{count, plural, =0{Alles wurde gekauft} =1{1 Produkt fehlt} '
+                                'other{{count} Produkte fehlen}}',
+                                '{count, plural, =0{Se ha comprado todo} =1{Falta 1 producto} '
+                                'other{Faltan {count} productos}}', {'count': 'int'}),
+    'takeOver': ('Continuo io', "I'll carry on", 'Je continue', 'Ich mache weiter', 'Sigo yo'),
+    'dismissFinished': ('Va bene così', 'Fine', 'D’accord', 'Passt so', 'Vale así'),
+    'tookOver': ('Ora la spesa la fai tu: gli altri sono stati avvisati',
+                 "You're now doing the shopping: the others were notified",
+                 'C’est maintenant toi qui fais les courses : les autres ont été prévenus',
+                 'Jetzt machst du den Einkauf: die anderen wurden benachrichtigt',
+                 'Ahora la compra la haces tú: se ha avisado a los demás'),
+    'allTaken': ('Tutto preso!', 'Got everything!', 'Tout est pris !', 'Alles gekauft!', '¡Todo cogido!'),
 }
 
 
