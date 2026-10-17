@@ -68,6 +68,15 @@ class ListDetailController extends ChangeNotifier {
 
   bool get canEdit => list?.canEdit ?? false;
 
+  /// Può segnare i prodotti presi o non trovati: solo chi fa la spesa, se è stato scelto qualcuno.
+  bool get canMark => list?.canMark(userId) ?? false;
+
+  /// Prodotti non ancora presi: da prendere e non trovati.
+  int get notTakenCount => _items.values.where((i) => !i.checked).length;
+
+  /// Ci sono altre persone nella lista (da avvisare quando la spesa è finita).
+  bool get hasOthers => (list?.people.length ?? 0) > 1;
+
   /// L'utente può abbandonare la lista se gli è stata condivisa singolarmente.
   bool get canLeave => list != null && !list!.isOwner && list!.sharedWith.any((u) => u.id == userId);
 
@@ -308,6 +317,21 @@ class ListDetailController extends ChangeNotifier {
   }
 
   Future<void> leave() => api.removeShare(listId, userId);
+
+  /// "Spesa finita": i prodotti non trovati tornano da prendere e gli altri vengono avvisati.
+  Future<void> finishShopping({String? message}) => _replaceWith(api.finishShopping(listId, message: message));
+
+  /// "Continuo io": la spesa passa all'utente.
+  Future<void> takeOverShopping() => _replaceWith(api.takeOverShopping(listId));
+
+  Future<void> _replaceWith(Future<ShoppingList> request) async {
+    final fresh = await request;
+    list = fresh;
+    _items
+      ..clear()
+      ..addEntries(fresh.items.map((i) => MapEntry(i.id, i)));
+    _notify();
+  }
 
   void _notify() {
     if (!_disposed) notifyListeners();

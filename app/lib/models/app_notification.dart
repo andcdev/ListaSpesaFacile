@@ -16,7 +16,8 @@ class AppNotification {
 
   final String id;
 
-  /// list_shared, list_created, global_share, reminder, list_deleted, chat_message, list_activity.
+  /// list_shared, list_created, global_share, reminder, list_deleted, chat_message, list_activity,
+  /// shopping_assigned, shopping_finished.
   final String kind;
   final String title;
   final String body;

@@ -25,12 +25,15 @@ class ListActivity extends AppNotification
      * [$action] è una chiave di activity in lang/{lingua}/app.php (es. "added" con ['item' => '🥛 Latte']):
      * il testo si compone nella lingua di chi riceve.
      *
+     * [$except]: altri utenti da non avvisare (es. chi riceve già una notifica più precisa).
+     *
      * @param  array<string, string|int>  $params
+     * @param  array<int, int>  $except
      */
-    public static function notify(ShoppingList $list, User $actor, string $action, array $params = []): void
+    public static function notify(ShoppingList $list, User $actor, string $action, array $params = [], array $except = []): void
     {
         Notifier::send(
-            array_diff($list->audienceIds(), [$actor->id]),
+            array_diff($list->audienceIds(), [$actor->id, ...$except]),
             new self($actor->name, $list->id, $list->name, $action, $params),
             $actor,
         );

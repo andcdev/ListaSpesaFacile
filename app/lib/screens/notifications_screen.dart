@@ -16,6 +16,8 @@ class NotificationsScreen extends StatelessWidget {
   static IconData _icon(String kind) => switch (kind) {
     'reminder' => Icons.alarm,
     'list_shared' || 'list_created' => Icons.playlist_add_check,
+    'shopping_finished' => Icons.shopping_cart_checkout,
+    'shopping_assigned' => Icons.shopping_cart_outlined,
     'global_share' => Icons.group_outlined,
     'list_deleted' => Icons.delete_outline,
     'chat_message' => Icons.chat_bubble_outline,

@@ -1419,4 +1419,119 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get permissionReadWrite => 'Lectura y edición';
+
+  @override
+  String get shopperLabel => 'Quién hace la compra';
+
+  @override
+  String get shopperAnyone => 'Cualquiera de la lista';
+
+  @override
+  String get shopperMe => 'Yo';
+
+  @override
+  String get shopperHelper => 'Solo quien hace la compra puede marcar los productos cogidos o no encontrados';
+
+  @override
+  String shopperIs(String name) {
+    return 'La compra la hace $name';
+  }
+
+  @override
+  String get shopperIsMe => 'La compra la haces tú';
+
+  @override
+  String onlyShopperCanMark(String name) {
+    return 'La compra la hace $name: solo quien hace la compra puede marcar los productos cogidos o no encontrados.';
+  }
+
+  @override
+  String get finishShopping => 'Compra terminada';
+
+  @override
+  String get finishShoppingComplete => 'Compra completada';
+
+  @override
+  String finishMissingInfo(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Avisa a los demás: faltan $count productos',
+      one: 'Avisa a los demás: falta 1 producto',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get finishCompleteInfo => 'Avisa a los demás de que se ha comprado todo';
+
+  @override
+  String finishAloneInfo(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Faltan $count productos: quedan por coger',
+      one: 'Falta 1 producto: queda por coger',
+      zero: 'Se ha comprado todo',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get finishQuestion => '¿Has terminado la compra?';
+
+  @override
+  String finishTakenOf(int taken, int total) {
+    return 'Has cogido $taken de $total productos.';
+  }
+
+  @override
+  String get finishStillToBuy => 'Estos quedan por coger:';
+
+  @override
+  String get finishNotifyOthers => 'Las personas de la lista reciben una notificación y pueden seguir con la compra.';
+
+  @override
+  String get finishAllTaken => 'Lo has cogido todo.';
+
+  @override
+  String get finishMessageLabel => 'Mensaje para los demás (opcional)';
+
+  @override
+  String get finishMessageHint => 'p. ej. Se había acabado el pan';
+
+  @override
+  String get finishMessageInfo => 'Llega con la notificación y en el chat de la lista.';
+
+  @override
+  String get finishedNotified => 'Compra terminada: se ha avisado a los demás';
+
+  @override
+  String shoppingFinishedBy(String name, String time) {
+    return '$name ha terminado la compra a las $time';
+  }
+
+  @override
+  String shoppingFinishedMissing(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Faltan $count productos',
+      one: 'Falta 1 producto',
+      zero: 'Se ha comprado todo',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get takeOver => 'Sigo yo';
+
+  @override
+  String get dismissFinished => 'Vale así';
+
+  @override
+  String get tookOver => 'Ahora la compra la haces tú: se ha avisado a los demás';
+
+  @override
+  String get allTaken => '¡Todo cogido!';
 }

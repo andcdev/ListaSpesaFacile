@@ -33,6 +33,11 @@ class ShoppingList {
     this.checkedCount = 0,
     this.items = const [],
     this.sharedWith = const [],
+    this.shopper,
+    this.finishedAt,
+    this.finishedBy,
+    this.finishMessage,
+    this.people = const [],
   });
 
   final int id;
@@ -62,6 +67,20 @@ class ShoppingList {
   final int checkedCount;
   final List<ListItem> items;
   final List<AppUser> sharedWith;
+
+  /// Chi fa la spesa: solo lui segna i prodotti presi o non trovati. null = chiunque possa modificare.
+  final AppUser? shopper;
+
+  /// "Spesa finita": quando, chi e con quale messaggio (null se la spesa non è finita).
+  final DateTime? finishedAt;
+  final AppUser? finishedBy;
+  final String? finishMessage;
+
+  /// Tutte le persone della lista, proprietario compreso (solo nel dettaglio): tra loro si sceglie chi fa la spesa.
+  final List<AppUser> people;
+
+  /// L'utente può segnare i prodotti presi o non trovati.
+  bool canMark(int userId) => canEdit && (shopper == null || shopper!.id == userId);
 
   bool get isOwner => permission == 'owner';
   bool get canEdit => permission == 'owner' || permission == 'edit';
@@ -98,8 +117,15 @@ class ShoppingList {
       sharedWith: (json['shared_with'] as List<dynamic>? ?? [])
           .map((e) => AppUser.fromJson(e as Map<String, dynamic>))
           .toList(),
+      shopper: _user(json['shopper']),
+      finishedAt: DateTime.tryParse(json['finished_at'] as String? ?? '')?.toLocal(),
+      finishedBy: _user(json['finished_by']),
+      finishMessage: json['finish_message'] as String?,
+      people: (json['people'] as List<dynamic>? ?? []).map((e) => AppUser.fromJson(e as Map<String, dynamic>)).toList(),
     );
   }
+
+  static AppUser? _user(dynamic json) => json is Map<String, dynamic> ? AppUser.fromJson(json) : null;
 
   /// Applica i dati ricevuti con l'evento "list.updated".
   ShoppingList withMeta(Map<String, dynamic> json) => ShoppingList(
@@ -120,5 +146,12 @@ class ShoppingList {
     checkedCount: checkedCount,
     items: items,
     sharedWith: sharedWith,
+    shopper: json.containsKey('shopper') ? _user(json['shopper']) : shopper,
+    finishedAt: json.containsKey('finished_at')
+        ? DateTime.tryParse(json['finished_at'] as String? ?? '')?.toLocal()
+        : finishedAt,
+    finishedBy: json.containsKey('finished_by') ? _user(json['finished_by']) : finishedBy,
+    finishMessage: json.containsKey('finish_message') ? json['finish_message'] as String? : finishMessage,
+    people: people,
   );
 }
