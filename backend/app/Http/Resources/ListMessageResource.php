@@ -35,6 +35,8 @@ class ListMessageResource extends JsonResource
             // Evento della lista (finished, took_over, shopper_changed): testo in grigio composto dall'app.
             'event' => $this->event,
             'event_params' => $this->event_params,
+            // Reazioni: una per persona.
+            'reactions' => $this->reactionList(),
             'created_at' => $this->created_at?->toIso8601String(),
         ];
     }

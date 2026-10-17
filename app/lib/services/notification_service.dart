@@ -12,31 +12,18 @@ import 'package:timezone/timezone.dart' as tz;
 import '../l10n/l10n.dart';
 import '../models/app_notification.dart';
 import '../models/shopping_list.dart';
-import '../state/locale_controller.dart';
 import 'api_client.dart';
-import 'session_storage.dart';
 
 /// Push arrivato con l'app chiusa o in background (Android): Firebase avvia l'app in un isolate separato
-/// e chiama questa funzione, che mostra la notifica e conferma la ricezione dei messaggi della chat.
+/// e chiama questa funzione, che mostra la notifica.
 @pragma('vm:entry-point')
 Future<void> firebaseBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
-  final language = await LocaleController.loadSaved();
   final notification = NotificationService.fromPush(message);
   final service = NotificationService();
   await service.init(background: true);
   await service.showInApp(notification);
-  try {
-    final storage = SessionStorage();
-    final token = await storage.readToken();
-    if (token == null) return;
-    final api = ApiClient(baseUrl: defaultServerUrl)
-      ..token = token
-      ..language = language;
-    await NotificationService.confirmDelivery(api, notification);
-  } catch (e) {
-    debugPrint('Conferma di ricezione non inviata: $e');
-  }
+  // Niente conferma di ricezione: le due spunte blu arrivano solo quando il messaggio viene letto in chat.
 }
 
 /// Cosa aprire quando l'utente tocca una notifica.
@@ -301,12 +288,6 @@ class NotificationService {
     );
   }
 
-  /// Messaggio della chat arrivato sul telefono: chi l'ha scritto vede le due spunte blu.
-  static Future<void> confirmDelivery(ApiClient api, AppNotification n) async {
-    if (n.kind != 'chat_message' || n.listId == null || n.messageId == null) return;
-    await api.markMessagesDelivered(n.listId!, n.messageId!);
-  }
-
   /// Chi sta guardando la lista non riceve le sue modifiche; chi ha la chat aperta nemmeno i messaggi.
   bool _muted(NotificationTarget target, {required bool chat}) =>
       chat ? target.listId == activeChatListId : target.listId == _activeListId;
@@ -372,8 +353,6 @@ class NotificationService {
   void _onForegroundPush(RemoteMessage message) {
     final notification = fromPush(message);
     showInApp(notification);
-    final api = _api;
-    if (api != null) confirmDelivery(api, notification).catchError((Object e) => debugPrint('Conferma: $e'));
   }
 
   Future<void> _show(String id, String title, String body, NotificationTarget? target) async {

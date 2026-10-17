@@ -164,7 +164,7 @@
   "writeMessage": "Écrire un message",
   "send": "Envoyer",
   "deletedUser": "Utilisateur",
-  "messageReceived": "Reçu",
+  "messageReceived": "Lu",
   "messageSent": "Envoyé",
   "emptyChat": "Aucun message.\nÉcrivez, dictez avec le micro ou envoyez une photo à ceux qui partagent la liste : « Je suis au rayon frais, il manque quelque chose ? »",
   "pickFromGallery": "Choisir dans la galerie",

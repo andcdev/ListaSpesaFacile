@@ -164,7 +164,7 @@
   "writeMessage": "Nachricht schreiben",
   "send": "Senden",
   "deletedUser": "Nutzer",
-  "messageReceived": "Empfangen",
+  "messageReceived": "Gelesen",
   "messageSent": "Gesendet",
   "emptyChat": "Keine Nachrichten.\nSchreib, diktiere mit dem Mikrofon oder schick ein Foto an alle, die die Liste teilen: „Bin beim Kühlregal, fehlt noch was?“",
   "pickFromGallery": "Aus Galerie wählen",

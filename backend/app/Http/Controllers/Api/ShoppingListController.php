@@ -207,7 +207,6 @@ class ShoppingListController extends Controller
             $chat = new ListMessage(['body' => $message]);
             $chat->user()->associate($user);
             $list->messages()->save($chat);
-            $list->markChatDelivered($user, $chat->id);
             Realtime::broadcast(new ListMessageCreated($chat));
         }
 

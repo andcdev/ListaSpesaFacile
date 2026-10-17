@@ -399,7 +399,7 @@ S = {
     'send': ('Invia', 'Send', 'Envoyer', 'Senden', 'Enviar'),
     'deletedUser': ('Utente eliminato', 'Deleted user', 'Utilisateur supprimé', 'Gelöschter Nutzer',
                     'Usuario eliminado'),
-    'messageReceived': ('Ricevuto', 'Received', 'Reçu', 'Empfangen', 'Recibido'),
+    'messageReceived': ('Letto', 'Read', 'Lu', 'Gelesen', 'Leído'),
     'messageSent': ('Inviato', 'Sent', 'Envoyé', 'Gesendet', 'Enviado'),
     'emptyChat': ('Nessun messaggio.\nScrivi, detta con il microfono o invia una foto a chi condivide la lista: '
                   '"Sono al banco frigo, manca qualcosa?"',

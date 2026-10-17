@@ -2,9 +2,11 @@
 
 namespace Tests\Feature;
 
+use App\Events\ListMessageReacted;
 use App\Models\ShoppingList;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Notification;
 use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
@@ -75,5 +77,36 @@ class ChatRepliesTest extends TestCase
         );
         // Le app vecchie, che non conoscono gli eventi, mostrano comunque un testo.
         $this->assertSame('Anna continua la spesa', $messages[1]['body']);
+    }
+
+    public function test_one_reaction_per_person_that_can_be_changed_or_removed(): void
+    {
+        Event::fake([ListMessageReacted::class]);
+        $list = ShoppingList::factory()->create();
+        $anna = User::factory()->create(['name' => 'Anna']);
+        $list->sharedWith()->attach($anna->id);
+        $message = $list->messages()->create(['body' => 'Prendo il caffè?']);
+
+        Sanctum::actingAs($anna);
+        $this->putJson("/api/lists/{$list->id}/messages/{$message->id}/reaction", ['emoji' => '👍'])->assertOk();
+        $this->putJson("/api/lists/{$list->id}/messages/{$message->id}/reaction", ['emoji' => '❤️'])
+            ->assertOk()
+            ->assertJsonPath('data.reactions', [['emoji' => '❤️', 'user_id' => $anna->id, 'user_name' => 'Anna']]);
+        $this->putJson("/api/lists/{$list->id}/messages/{$message->id}/reaction", ['emoji' => '🍕'])
+            ->assertJsonValidationErrors('emoji');
+
+        Sanctum::actingAs($list->owner);
+        $this->putJson("/api/lists/{$list->id}/messages/{$message->id}/reaction", ['emoji' => '😂'])->assertOk();
+        $this->getJson("/api/lists/{$list->id}/messages")->assertJsonCount(2, 'data.0.reactions');
+
+        Sanctum::actingAs($anna);
+        $this->deleteJson("/api/lists/{$list->id}/messages/{$message->id}/reaction")
+            ->assertOk()
+            ->assertJsonCount(1, 'data.reactions');
+        Event::assertDispatched(ListMessageReacted::class, 4);
+
+        // Chi non vede la lista non può reagire.
+        Sanctum::actingAs(User::factory()->create());
+        $this->putJson("/api/lists/{$list->id}/messages/{$message->id}/reaction", ['emoji' => '👍'])->assertForbidden();
     }
 }

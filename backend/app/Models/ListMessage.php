@@ -7,6 +7,7 @@ use App\Support\Realtime;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Storage;
 
 /**
@@ -39,7 +40,6 @@ class ListMessage extends Model
         $message->event_params = $params ?: null;
         $message->user()->associate($actor);
         $list->messages()->save($message);
-        $list->markChatDelivered($actor, $message->id);
         Realtime::broadcast(new ListMessageCreated($message));
 
         return $message;
@@ -70,6 +70,28 @@ class ListMessage extends Model
     public function replyTo(): BelongsTo
     {
         return $this->belongsTo(self::class, 'reply_to_id');
+    }
+
+    /**
+     * @return HasMany<MessageReaction, $this>
+     */
+    public function reactions(): HasMany
+    {
+        return $this->hasMany(MessageReaction::class)->orderBy('id');
+    }
+
+    /**
+     * Reazioni come le riceve l'app: emoji e chi l'ha messa.
+     *
+     * @return array<int, array{emoji: string, user_id: int, user_name: ?string}>
+     */
+    public function reactionList(): array
+    {
+        return $this->reactions->map(fn (MessageReaction $r) => [
+            'emoji' => $r->emoji,
+            'user_id' => $r->user_id,
+            'user_name' => $r->user?->name,
+        ])->values()->all();
     }
 
     /**

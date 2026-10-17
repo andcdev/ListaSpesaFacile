@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:lista_spesa_facile/models/app_user.dart';
@@ -50,7 +51,8 @@ void main() {
     });
   });
 
-  test('spunte: una verde finché gli altri non hanno ricevuto, poi due blu', () async {
+  test('spunte: una verde finché gli altri non hanno letto, poi due blu; si legge solo a chat aperta', () async {
+    SharedPreferences.setMockInitialValues({});
     final delivered = <Object?>[];
     final api = ApiClient(
       baseUrl: 'https://spesa.example.com',
@@ -75,9 +77,13 @@ void main() {
     await Future<void>.delayed(Duration.zero); // la conferma parte senza bloccare la chat
 
     final [first, second, _] = chat.messages;
-    expect(chat.ticks(first), MessageTicks.received); // l'utente 2 ha ricevuto fino all'1
+    expect(chat.ticks(first), MessageTicks.received); // l'utente 2 ha letto fino all'1
     expect(chat.ticks(second), MessageTicks.sent);
-    // Il messaggio 3 dell'altro utente è arrivato: si conferma al server.
+    // Chat chiusa: il messaggio 3 dell'altro utente è arrivato ma non è letto.
+    expect(delivered, isEmpty);
+
+    chat.visible = true;
+    await Future<void>.delayed(Duration.zero);
     expect(delivered, [
       {'up_to': 3},
     ]);

@@ -16,8 +16,8 @@ import 'voice_input.dart';
 List<String> chatProductNames(String body) =>
     body.split(RegExp(r'[\n,;]')).map((s) => s.trim()).where((s) => s.isNotEmpty && s.length <= 255).take(20).toList();
 
-/// Chat interna di una lista, in un foglio sopra la lista. Si possono inviare foto (galleria o fotocamera),
-/// emoji e dettare i messaggi a voce; si risponde a un singolo messaggio scorrendolo verso destra o tenendolo
+/// Chat interna di una lista, sotto la lista nella stessa schermata. Si possono inviare foto (galleria o
+/// fotocamera), emoji di base e dettare i messaggi a voce; tenendo premuto un messaggio si mette una reazione; si risponde a un singolo messaggio scorrendolo verso destra o tenendolo
 /// premuto. Tenendo premuto un messaggio: rispondere, copiarlo, aggiungerlo alla lista come prodotti, eliminarlo
 /// (i propri; il proprietario della lista anche quelli degli altri), segnalarlo o bloccare chi l'ha scritto.
 /// Gli eventi della lista (spesa finita, "Continuo io"…) compaiono in grigio tra i messaggi.
@@ -45,17 +45,13 @@ class _ChatPanelState extends State<ChatPanel> {
   /// Messaggio a cui si sta rispondendo (anteprima sopra il campo).
   ChatMessage? _replyTo;
 
-  /// Pannello delle emoji al posto della tastiera.
+  /// Riga con le emoji di base sotto il campo.
   bool _emojiOpen = false;
 
   @override
   void initState() {
     super.initState();
     _scroll.addListener(_onScroll);
-    // Aprendo la tastiera si chiude il pannello delle emoji.
-    _focus.addListener(() {
-      if (_focus.hasFocus && _emojiOpen) setState(() => _emojiOpen = false);
-    });
   }
 
   @override
@@ -72,14 +68,7 @@ class _ChatPanelState extends State<ChatPanel> {
     _focus.requestFocus();
   }
 
-  void _toggleEmoji() {
-    if (_emojiOpen) {
-      _focus.requestFocus();
-    } else {
-      _focus.unfocus();
-      setState(() => _emojiOpen = true);
-    }
-  }
+  void _toggleEmoji() => setState(() => _emojiOpen = !_emojiOpen);
 
   /// Inserisce l'emoji dove c'è il cursore (o in fondo).
   void _insertEmoji(String emoji) {
@@ -151,6 +140,14 @@ class _ChatPanelState extends State<ChatPanel> {
     }
   }
 
+  Future<void> _react(ChatMessage message, String emoji) async {
+    try {
+      await context.read<ChatController>().react(message, emoji);
+    } catch (e) {
+      if (mounted) showError(context, e);
+    }
+  }
+
   /// Tenendo premuto un messaggio: rispondere, copiare, aggiungere alla lista; i propri si eliminano, quelli degli
   /// altri si segnalano (e il proprietario della lista li può eliminare).
   Future<void> _messageMenu(ChatMessage message, {required bool mine}) async {
@@ -159,6 +156,7 @@ class _ChatPanelState extends State<ChatPanel> {
     final name = message.userName ?? '';
     final canDelete = mine || widget.isOwner;
     final canAdd = widget.onAddToList != null && chatProductNames(message.body).isNotEmpty;
+    final myId = context.read<ChatController>().userId;
     final choice = await showModalBottomSheet<String>(
       context: context,
       showDragHandle: true,
@@ -166,6 +164,22 @@ class _ChatPanelState extends State<ChatPanel> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
+            // Reazioni: una per persona; quella già messa è evidenziata (toccala di nuovo per toglierla).
+            if (!message.isEvent)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    for (final emoji in Reaction.emojis)
+                      _ReactionButton(
+                        emoji: emoji,
+                        selected: message.reactions.any((r) => r.userId == myId && r.emoji == emoji),
+                        onTap: () => Navigator.pop(context, 'react:$emoji'),
+                      ),
+                  ],
+                ),
+              ),
             if (!message.isEvent)
               ListTile(
                 leading: const Icon(Icons.reply),
@@ -207,7 +221,11 @@ class _ChatPanelState extends State<ChatPanel> {
         ),
       ),
     );
-    if (!mounted) return;
+    if (!mounted || choice == null) return;
+    if (choice.startsWith('react:')) {
+      await _react(message, choice.substring(6));
+      return;
+    }
     switch (choice) {
       case 'reply':
         _reply(message);
@@ -289,6 +307,7 @@ class _ChatPanelState extends State<ChatPanel> {
                               showName: !mine && (older == null || older.userId != message.userId || older.isEvent),
                               myId: chat.userId,
                               onLongPress: () => _messageMenu(message, mine: mine),
+                              onReact: (emoji) => _react(message, emoji),
                             ),
                           ),
                       ],
@@ -353,7 +372,7 @@ class _ChatPanelState extends State<ChatPanel> {
                     ],
                   ),
                 ),
-                if (_emojiOpen) EmojiPicker(onPick: _insertEmoji),
+                if (_emojiOpen) BasicEmojiRow(onPick: _insertEmoji),
               ],
             ),
           ),
@@ -375,7 +394,11 @@ class _Bubble extends StatelessWidget {
     this.avatar,
     this.onLongPress,
     this.myId,
+    this.onReact,
   });
+
+  /// Tocco su una reazione già presente: la propria si toglie, un'altra emoji diventa la propria.
+  final ValueChanged<String>? onReact;
 
   final ChatMessage message;
 
@@ -467,6 +490,7 @@ class _Bubble extends StatelessWidget {
                     ],
                   ),
                 ),
+                if (message.reactions.isNotEmpty) _Reactions(message: message, myId: myId, onReact: onReact),
               ],
             ),
           ),
@@ -760,76 +784,109 @@ class _EventLine extends StatelessWidget {
   }
 }
 
-/// Emoji più usate, in quattro gruppi: si toccano e finiscono nel messaggio.
-class EmojiPicker extends StatefulWidget {
-  const EmojiPicker({super.key, required this.onPick});
+/// Emoji di base, in una riga che scorre sotto il campo: si toccano e finiscono nel messaggio.
+class BasicEmojiRow extends StatelessWidget {
+  const BasicEmojiRow({super.key, required this.onPick});
 
   final ValueChanged<String> onPick;
 
-  static const groups = [
-    (
-      '😀',
-      '😀 😃 😄 😁 😆 😅 😂 🤣 😊 😇 🙂 😉 😍 🥰 😘 😋 😛 😜 🤪 🤗 🤔 🤭 🤫 😐 😑 😶 🙄 😏 😬 😌 😔 😴 🤤 😷 🤒 🥵 🥶 😵 🤯 🥳 😎 🤓 😕 😟 😮 😲 🥺 😢 😭 😱 😤 😡 🤬 😈 💩 🤡 👻 😺 😹 😻',
-    ),
-    (
-      '👍',
-      '👍 👎 👌 🤌 ✌️ 🤞 🤟 🤙 👈 👉 👆 👇 ☝️ ✋ 🤚 👋 👏 🙌 👐 🤲 🙏 🤝 💪 ❤️ 🧡 💛 💚 💙 💜 🖤 🤍 💔 ❣️ 💕 💯 ✅ ❌ ❓ ❗ ⚠️ 🔥 ⭐ ✨ 🎉 🎁 💤',
-    ),
-    (
-      '🍎',
-      '🍎 🍐 🍊 🍋 🍌 🍉 🍇 🍓 🫐 🍒 🍑 🥭 🍍 🥥 🥝 🍅 🥑 🍆 🥔 🥕 🌽 🌶️ 🥒 🥬 🥦 🧄 🧅 🍄 🥜 🍞 🥐 🥖 🧀 🥚 🥓 🥩 🍗 🍖 🍔 🍟 🍕 🌭 🥪 🌮 🍝 🍜 🍣 🍦 🍰 🎂 🍫 🍬 🍪 🍩 ☕ 🍵 🥛 🧃 🍷 🍺 🥂 🧊',
-    ),
-    ('🛒', '🛒 🛍️ 🧺 💶 💳 🧾 🏪 🏬 🚗 🚲 🏠 ⏰ ⌛ 📅 📍 📞 📷 🧴 🧻 🧼 🪥 🧹 🧽 🐶 🐱 🍼 👶 💊 🌸 🎈'),
-  ];
+  static const emojis = ['😀', '😂', '😊', '😍', '😉', '😢', '😮', '😡', '👍', '👎', '👏', '🙏', '❤️', '🔥', '✅', '🛒'];
 
   @override
-  State<EmojiPicker> createState() => _EmojiPickerState();
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 48,
+      child: ListView(
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.symmetric(horizontal: 8),
+        children: [
+          for (final e in emojis)
+            InkWell(
+              borderRadius: BorderRadius.circular(8),
+              onTap: () => onPick(e),
+              child: SizedBox(
+                width: 44,
+                child: Center(child: Text(e, style: const TextStyle(fontSize: 26))),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
 }
 
-class _EmojiPickerState extends State<EmojiPicker> {
-  int _group = 0;
+/// Una delle sei reazioni nel menu del messaggio.
+class _ReactionButton extends StatelessWidget {
+  const _ReactionButton({required this.emoji, required this.selected, required this.onTap});
+
+  final String emoji;
+  final bool selected;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    final emojis = EmojiPicker.groups[_group].$2.split(' ');
-    return SizedBox(
-      height: 250,
-      child: Column(
+    return InkWell(
+      customBorder: const CircleBorder(),
+      onTap: onTap,
+      child: Container(
+        width: 48,
+        height: 48,
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: selected ? scheme.primaryContainer : scheme.surfaceContainerHigh,
+          border: selected ? Border.all(color: scheme.primary, width: 2) : null,
+        ),
+        child: Text(emoji, style: const TextStyle(fontSize: 24)),
+      ),
+    );
+  }
+}
+
+/// Sotto il messaggio: le reazioni raggruppate per emoji con quante sono (tieni premuto per vedere chi).
+class _Reactions extends StatelessWidget {
+  const _Reactions({required this.message, required this.myId, this.onReact});
+
+  final ChatMessage message;
+  final int? myId;
+  final ValueChanged<String>? onReact;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final groups = <String, List<Reaction>>{};
+    for (final r in message.reactions) {
+      groups.putIfAbsent(r.emoji, () => []).add(r);
+    }
+    return Padding(
+      padding: const EdgeInsets.only(top: 4),
+      child: Wrap(
+        spacing: 4,
+        runSpacing: 4,
         children: [
-          Row(
-            children: [
-              for (final (i, (icon, _)) in EmojiPicker.groups.indexed)
-                Expanded(
-                  child: InkWell(
-                    onTap: () => setState(() => _group = i),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 6),
-                      decoration: BoxDecoration(
-                        border: Border(
-                          bottom: BorderSide(color: i == _group ? scheme.primary : Colors.transparent, width: 2),
-                        ),
-                      ),
-                      child: Text(icon, textAlign: TextAlign.center, style: const TextStyle(fontSize: 20)),
+          for (final MapEntry(key: emoji, value: people) in groups.entries)
+            Tooltip(
+              message: people.map((r) => r.userId == myId ? context.l10n.you : (r.userName ?? '')).join(', '),
+              child: InkWell(
+                borderRadius: BorderRadius.circular(12),
+                onTap: onReact == null ? null : () => onReact!(emoji),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: scheme.surface,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: people.any((r) => r.userId == myId) ? scheme.primary : scheme.outlineVariant,
                     ),
                   ),
-                ),
-            ],
-          ),
-          Expanded(
-            child: GridView.count(
-              crossAxisCount: 8,
-              padding: const EdgeInsets.all(4),
-              children: [
-                for (final e in emojis)
-                  InkWell(
-                    borderRadius: BorderRadius.circular(8),
-                    onTap: () => widget.onPick(e),
-                    child: Center(child: Text(e, style: const TextStyle(fontSize: 26))),
+                  child: Text(
+                    people.length > 1 ? '$emoji ${people.length}' : emoji,
+                    style: const TextStyle(fontSize: 14),
                   ),
-              ],
+                ),
+              ),
             ),
-          ),
         ],
       ),
     );

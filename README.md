@@ -121,19 +121,21 @@ Sorgente modificabile: [`docs/architettura.svg`](docs/architettura.svg).
   *Persone bloccate*.
 - **Promemoria**: alla creazione (o modifica) scegli un avviso *10 minuti prima*, *1 ora prima* o
   *personalizzato* (da 1 minuto a 30 giorni) e chi avvisare: solo il creatore, solo i destinatari o tutti.
-- **Chat** interna per ogni lista, solo con **almeno due persone** (da soli c'è l'invito a condividere). Si scrive
-  anche dalla barra dei prodotti: con del testo scritto compare **💬** (lo manda in chat), mentre **+** e Invio lo
-  aggiungono alla lista. L'ultimo messaggio arrivato compare per qualche secondo **sopra la barra** e l'icona in
-  alto ha il **pallino dei non letti**. La chat si apre in un **foglio a metà schermo** da tirare su a tutto schermo.
-  **Emoji** dal pulsante accanto al campo; si **risponde a un singolo messaggio** scorrendolo verso destra o
-  tenendolo premuto (Rispondi, Copia, *Aggiungi alla lista*: un prodotto per riga o separati da virgole).
-  Gli eventi della lista (spesa finita, *Continuo io*, chi fa la spesa) compaiono **in grigio** tra i messaggi.
+- **Chat** interna per ogni lista, solo con **almeno due persone** (da soli c'è l'invito a condividere). Si apre
+  **sotto la lista**, nella stessa schermata (barra minima con la freccia per chiuderla), così mentre chatti puoi
+  spuntare e aggiungere articoli. Si scrive anche dalla barra dei prodotti: con del testo scritto compare **💬**
+  (lo manda in chat), mentre **+** e Invio lo aggiungono alla lista. A chat chiusa l'ultimo messaggio arrivato
+  compare per qualche secondo **sopra la barra** e l'icona in alto ha il **pallino dei non letti**.
+  **Emoji di base** dal pulsante accanto al campo; **reazioni** (👍 ❤️ 😂 😮 😢 🙏, una per persona) e **risposta a un
+  singolo messaggio** scorrendolo verso destra o tenendolo premuto (anche Copia e *Aggiungi alla lista*: un prodotto
+  per riga o separati da virgole). Gli eventi della lista (spesa finita, *Continuo io*, chi fa la spesa) compaiono
+  **in grigio** tra i messaggi.
   Accanto ai messaggi degli altri c'è la loro **foto profilo** (sagoma vuota se non l'hanno impostata). In tempo reale, anche per chi ha la sola lettura. Si possono inviare
   **foto** dalla galleria o dalla fotocamera (il testo scritto diventa la didascalia) e **dettare** i messaggi
   con il microfono. L'autore (o il proprietario della lista) può eliminare un messaggio dal menu che si apre
   tenendolo premuto.
-  **Spunte** sui propri messaggi: ✓ verde = inviato, ✓✓ blu = arrivato sul telefono di tutti gli altri della
-  lista (anche se non hanno ancora aperto la chat: basta che la notifica sia arrivata).
+  **Spunte** sui propri messaggi: ✓ verde = inviato, ✓✓ blu = **letto** da tutti gli altri della lista (cioè
+  visto con la chat aperta: l'arrivo della notifica non basta).
 - **Notifiche** (campanella con il numero di non lette): lista condivisa con te, nuova lista di chi ti
   condivide tutto, condivisione globale ricevuta, promemoria, lista eliminata. Toccando una notifica si apre la
   lista (o la chat).
@@ -392,7 +394,8 @@ Tutte le rotte sono sotto `/api`. Le rotte protette richiedono `Authorization: B
 | DELETE | `/global-shares/{user}` | Smetti di condividere con `user` |
 | DELETE | `/global-shares/received/{user}` | Rinuncia alle liste di `user` |
 | GET | `/lists/{id}/messages?before=` | Chat: 50 messaggi dal più recente + `has_more` + `delivered` (`{user_id: ultimo messaggio ricevuto}`) |
-| POST | `/lists/{id}/messages/delivered` | `up_to`: il telefono ha ricevuto i messaggi fino a questo id (spunte blu) |
+| POST | `/lists/{id}/messages/delivered` | `up_to`: l'utente ha letto i messaggi fino a questo id, con la chat aperta (spunte blu) |
+| PUT | `/lists/{id}/messages/{message}/reaction` | `emoji` (👍 ❤️ 😂 😮 😢 🙏): la propria reazione, una per persona; DELETE la toglie |
 | GET | `/products/search?q=&country=` | Prodotti di marca da Open Food Facts: `barcode, name, brand, quantity, amount, unit, image_url` |
 | GET | `/lists/{id}/items/{item}/info` | Info del prodotto da Open Food Facts (`null` se non si trova) |
 | GET | `/me/prices?q=` | I miei prezzi (solo i propri) |
