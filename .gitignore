@@ -5,3 +5,12 @@
 # Build artifacts
 *.apk
 *.aab
+
+# Appunti e immagini di lavoro, solo in locale
+/docs/DAFARE/
+/docs/anteprima-chat-1.jpg
+/docs/anteprima-chat-2.jpg
+/docs/anteprima-spesa-finita.jpg
+/docs/architettura-vps.jpg
+/docs/schema-coesistenza-vps.jpg
+/docs/schema-proxy-edge.jpg
