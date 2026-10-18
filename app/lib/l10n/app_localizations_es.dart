@@ -1542,21 +1542,6 @@ class AppLocalizationsEs extends AppLocalizations {
   String get noUnreadMessages => 'No hay mensajes sin leer';
 
   @override
-  String get addOrWriteHint => 'Añadir o escribir…';
-
-  @override
-  String get sendToChat => 'Enviar al chat';
-
-  @override
-  String get chatSendHint => '💬 lo envía como mensaje a las personas de la lista, + lo añade a los productos';
-
-  @override
-  String get messageSentToChat => 'Mensaje enviado al chat';
-
-  @override
-  String get openChat => 'Abrir chat';
-
-  @override
   String chatPeople(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,

@@ -924,11 +924,6 @@
   "allTaken": "Tutto preso!",
   "unreadMessages": "Messaggi da leggere",
   "noUnreadMessages": "Nessun messaggio da leggere",
-  "addOrWriteHint": "Agg. prodotto o scrivi…",
-  "sendToChat": "Invia in chat",
-  "chatSendHint": "💬 lo manda come messaggio a chi condivide la lista, + lo aggiunge ai prodotti",
-  "messageSentToChat": "Messaggio inviato in chat",
-  "openChat": "Apri chat",
   "chatPeople": "{count, plural, =1{Chat · 1 persona} other{Chat · {count} persone}}",
   "@chatPeople": {
     "placeholders": {
