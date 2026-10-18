@@ -123,9 +123,10 @@ Sorgente modificabile: [`docs/architettura.svg`](docs/architettura.svg).
   *personalizzato* (da 1 minuto a 30 giorni) e chi avvisare: solo il creatore, solo i destinatari o tutti.
 - **Chat** interna per ogni lista, solo con **almeno due persone** (da soli c'è l'invito a condividere). Si apre
   **sotto la lista**, nella stessa schermata (barra minima con la freccia per chiuderla), così mentre chatti puoi
-  spuntare e aggiungere articoli. Si scrive anche dalla barra dei prodotti: con del testo scritto compare **💬**
-  (lo manda in chat), mentre **+** e Invio lo aggiungono alla lista. A chat chiusa l'ultimo messaggio arrivato
-  compare per qualche secondo **sopra la barra** e l'icona in alto ha il **pallino dei non letti**.
+  spuntare e aggiungere articoli. La barra dei prodotti serve solo ad aggiungere prodotti: in chat si scrive dal
+  campo della chat. A chat chiusa l'ultimo messaggio arrivato compare per 15 secondi **sopra la barra**, su sfondo
+  trasparente, con la ✕ per chiuderlo e in dissolvenza; toccandolo si apre la chat con il messaggio evidenziato.
+  L'icona in alto ha il **pallino dei non letti**, come ogni lista nell'elenco e il 💬 in alto nella home.
   **Emoji di base** dal pulsante accanto al campo; **reazioni** (👍 ❤️ 😂 😮 😢 🙏, una per persona) e **risposta a un
   singolo messaggio** scorrendolo verso destra o tenendolo premuto (anche Copia e *Aggiungi alla lista*: un prodotto
   per riga o separati da virgole). Gli eventi della lista (spesa finita, *Continuo io*, chi fa la spesa) compaiono

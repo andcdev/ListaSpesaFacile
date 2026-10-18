@@ -4,7 +4,6 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../l10n/l10n.dart';
 import '../models/branded_product.dart';
@@ -64,10 +63,6 @@ class _ListDetailScreenState extends State<ListDetailScreen> {
 
   /// Messaggio da evidenziare aprendo la chat (toccando l'anteprima sopra la barra).
   int? _highlightId;
-
-  /// Una volta sola: cosa fanno 💬 e + nella barra.
-  bool _showSendHint = false;
-  static const _sendHintKey = 'hint-chat-send-seen';
 
   /// Prodotti mostrati: tutti (null), solo da prendere o solo presi.
   ItemStatus? _filter;
@@ -134,11 +129,6 @@ class _ListDetailScreenState extends State<ListDetailScreen> {
       // Con la lista aperta i messaggi si vedono sopra la barra: niente notifica sul telefono.
       _notifications.activeChatListId = _listId;
       _incomingSub = chat.incoming.listen(_onIncoming);
-      SharedPreferences.getInstance()
-          .then((prefs) {
-            if (mounted && prefs.getBool(_sendHintKey) != true) setState(() => _showSendHint = true);
-          })
-          .catchError((Object _) {});
       if (_openChatPending) {
         _openChatPending = false;
         WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -161,30 +151,6 @@ class _ListDetailScreenState extends State<ListDetailScreen> {
   void _onIncoming(ChatMessage message) {
     if (_chatOpen || !mounted) return;
     setState(() => _incoming = message);
-  }
-
-  void _hideSendHint() {
-    if (!_showSendHint) return;
-    setState(() => _showSendHint = false);
-    SharedPreferences.getInstance().then((prefs) => prefs.setBool(_sendHintKey, true)).catchError((Object _) => false);
-  }
-
-  /// Testo scritto nella barra e mandato con 💬.
-  Future<void> _sendFromBar(String text) async {
-    _hideSendHint();
-    await _chat!.send(text);
-    if (!mounted) return;
-    ScaffoldMessenger.of(context)
-      ..hideCurrentSnackBar()
-      ..showSnackBar(
-        SnackBar(
-          content: Text(context.l10n.messageSentToChat),
-          action: SnackBarAction(
-            label: context.l10n.openChat,
-            onPressed: () => _openChat(context.read<ListDetailController>()),
-          ),
-        ),
-      );
   }
 
   /// Chat aperta sotto la lista, come prima: da quel momento i messaggi degli altri risultano letti. Con [highlight]
@@ -811,7 +777,7 @@ class _ListDetailScreenState extends State<ListDetailScreen> {
                 ],
               ),
       ),
-      // In basso: la barra per aggiungere prodotti (o scrivere in chat).
+      // In basso: la barra per aggiungere prodotti.
       bottomNavigationBar: _chatOpen && chat != null ? null : (detail.canEdit ? _addBar(detail) : null),
     );
   }
@@ -827,9 +793,6 @@ class _ListDetailScreenState extends State<ListDetailScreen> {
     measureOf: detail.api.productMeasure,
     onAdd: (name, qty, amount, unit, imagePath, product) =>
         detail.addItem(name, quantity: qty, amount: amount, unit: unit, imagePath: imagePath, product: product),
-    onSendMessage: _chat == null ? null : _sendFromBar,
-    showSendHint: _showSendHint,
-    onHint: _hideSendHint,
   );
 
   Widget _body(ListDetailController detail) {
@@ -1579,20 +1542,10 @@ class _AddItemBar extends StatefulWidget {
     this.compact = false,
     this.suggestions = const [],
     this.existing = const [],
-    this.onSendMessage,
-    this.showSendHint = false,
-    this.onHint,
   });
 
   /// Più sottile, con la chat aperta sotto.
   final bool compact;
-
-  /// Manda il testo scritto in chat (pulsante 💬, solo se nella lista ci sono almeno due persone).
-  final Future<void> Function(String text)? onSendMessage;
-
-  /// La prima volta che compare 💬: cosa fanno i due pulsanti. [onHint] quando lo si è visto.
-  final bool showSendHint;
-  final VoidCallback? onHint;
 
   /// Proposti sotto il campo mentre si scrive; [existing] (già in lista) non vengono proposti.
   final List<ProductSuggestion> suggestions;
@@ -1807,27 +1760,6 @@ class _AddItemBarState extends State<_AddItemBar> {
     }
   }
 
-  /// 💬: il testo scritto va in chat come messaggio, non nella lista.
-  Future<void> _sendMessage() async {
-    final text = _name.text.trim();
-    if (text.isEmpty || _busy || widget.onSendMessage == null) return;
-    setState(() => _busy = true);
-    try {
-      await widget.onSendMessage!(text);
-      _name.clear();
-      setState(() {
-        _photoPath = null;
-        _chosen = null;
-        _branded = const [];
-        _measure = const _Measure();
-      });
-    } catch (e) {
-      if (mounted) showError(context, e);
-    } finally {
-      if (mounted) setState(() => _busy = false);
-    }
-  }
-
   /// Chip con i prodotti suggeriti, sotto il nome: tocca per scriverlo.
   Widget _suggestionsRow() {
     final matches = suggestProducts(widget.suggestions, _name.text, exclude: widget.existing);
@@ -1938,8 +1870,6 @@ class _AddItemBarState extends State<_AddItemBar> {
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     final onBar = scheme.onInverseSurface;
-    // 💬 compare solo con del testo scritto e almeno due persone nella lista.
-    final canChat = widget.onSendMessage != null && _name.text.trim().isNotEmpty && _photoPath == null;
     // Barra scura arrotondata, sospesa sopra la pagina: foto, nome, voce, quantità e "+" arancio.
     final bar = Material(
       color: scheme.inverseSurface,
@@ -1970,21 +1900,12 @@ class _AddItemBarState extends State<_AddItemBar> {
                     border: InputBorder.none,
                     enabledBorder: InputBorder.none,
                     focusedBorder: InputBorder.none,
-                    hintText: widget.onSendMessage == null ? context.l10n.addProductHint : context.l10n.addOrWriteHint,
+                    hintText: context.l10n.addProductHint,
                     hintStyle: TextStyle(color: onBar.withValues(alpha: 0.65)),
                   ),
                 ),
               ),
               VoiceInputButton(controller: _name, onResult: _onDictated, compact: true),
-              if (canChat) ...[
-                const SizedBox(width: 2),
-                IconButton.filled(
-                  style: IconButton.styleFrom(backgroundColor: scheme.tertiary, foregroundColor: scheme.onTertiary),
-                  onPressed: _busy ? null : _sendMessage,
-                  icon: const Icon(Icons.chat_bubble_outline, size: 20),
-                  tooltip: context.l10n.sendToChat,
-                ),
-              ],
               const SizedBox(width: 4),
               // "+": prima il popup di quantità e peso/volume, poi "Fatto" aggiunge.
               IconButton.filled(
@@ -2013,26 +1934,6 @@ class _AddItemBarState extends State<_AddItemBar> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            if (canChat && widget.showSendHint)
-              GestureDetector(
-                onTap: widget.onHint,
-                child: Container(
-                  margin: const EdgeInsets.only(bottom: 6),
-                  padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
-                  decoration: BoxDecoration(color: scheme.inverseSurface, borderRadius: BorderRadius.circular(12)),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          context.l10n.chatSendHint,
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(color: onBar),
-                        ),
-                      ),
-                      Icon(Icons.close, size: 16, color: onBar),
-                    ],
-                  ),
-                ),
-              ),
             if (_focus.hasFocus) _brandedRow(),
             if (_focus.hasFocus) _suggestionsRow(),
             const SizedBox(height: 6),

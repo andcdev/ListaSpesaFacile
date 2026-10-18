@@ -2801,36 +2801,6 @@ abstract class AppLocalizations {
   /// **'Nessun messaggio da leggere'**
   String get noUnreadMessages;
 
-  /// No description provided for @addOrWriteHint.
-  ///
-  /// In it, this message translates to:
-  /// **'Agg. prodotto o scrivi…'**
-  String get addOrWriteHint;
-
-  /// No description provided for @sendToChat.
-  ///
-  /// In it, this message translates to:
-  /// **'Invia in chat'**
-  String get sendToChat;
-
-  /// No description provided for @chatSendHint.
-  ///
-  /// In it, this message translates to:
-  /// **'💬 lo manda come messaggio a chi condivide la lista, + lo aggiunge ai prodotti'**
-  String get chatSendHint;
-
-  /// No description provided for @messageSentToChat.
-  ///
-  /// In it, this message translates to:
-  /// **'Messaggio inviato in chat'**
-  String get messageSentToChat;
-
-  /// No description provided for @openChat.
-  ///
-  /// In it, this message translates to:
-  /// **'Apri chat'**
-  String get openChat;
-
   /// No description provided for @chatPeople.
   ///
   /// In it, this message translates to:

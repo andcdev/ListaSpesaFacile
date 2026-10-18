@@ -1081,18 +1081,7 @@ S = {
     'noUnreadMessages': ('Nessun messaggio da leggere', 'No unread messages', 'Aucun message non lu',
                          'Keine ungelesenen Nachrichten', 'No hay mensajes sin leer'),
 
-    # ── Chat: barra, striscia, risposte, emoji, eventi ─────────────
-    'addOrWriteHint': ('Agg. prodotto o scrivi…', 'Add product or write…', 'Ajouter ou écrire…',
-                       'Produkt oder Nachricht…', 'Añadir o escribir…'),
-    'sendToChat': ('Invia in chat', 'Send to chat', 'Envoyer dans le chat', 'In den Chat senden', 'Enviar al chat'),
-    'chatSendHint': ('💬 lo manda come messaggio a chi condivide la lista, + lo aggiunge ai prodotti',
-                     '💬 sends it as a message to the people on the list, + adds it to the products',
-                     '💬 l’envoie comme message aux personnes de la liste, + l’ajoute aux produits',
-                     '💬 schickt es als Nachricht an die Personen der Liste, + fügt es zu den Produkten hinzu',
-                     '💬 lo envía como mensaje a las personas de la lista, + lo añade a los productos'),
-    'messageSentToChat': ('Messaggio inviato in chat', 'Message sent to the chat', 'Message envoyé dans le chat',
-                          'Nachricht in den Chat gesendet', 'Mensaje enviado al chat'),
-    'openChat': ('Apri chat', 'Open chat', 'Ouvrir le chat', 'Chat öffnen', 'Abrir chat'),
+    # ── Chat: striscia, risposte, emoji, eventi ─────────────
     'chatPeople': ('{count, plural, =1{Chat · 1 persona} other{Chat · {count} persone}}',
                    '{count, plural, =1{Chat · 1 person} other{Chat · {count} people}}',
                    '{count, plural, =1{Chat · 1 personne} other{Chat · {count} personnes}}',
