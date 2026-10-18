@@ -59,9 +59,11 @@ class _ListDetailScreenState extends State<ListDetailScreen> {
   /// Da aprire appena la chat esiste (notifica di un messaggio toccata).
   late bool _openChatPending = widget.openChat;
 
-  /// Ultimo messaggio arrivato, mostrato per qualche secondo sopra la barra.
+  /// Ultimo messaggio arrivato, mostrato per 15 secondi sopra la barra (compare e svanisce in dissolvenza).
   ChatMessage? _incoming;
-  Timer? _incomingTimer;
+
+  /// Messaggio da evidenziare aprendo la chat (toccando l'anteprima sopra la barra).
+  int? _highlightId;
 
   /// Una volta sola: cosa fanno 💬 e + nella barra.
   bool _showSendHint = false;
@@ -149,7 +151,6 @@ class _ListDetailScreenState extends State<ListDetailScreen> {
   }
 
   void _disposeChat() {
-    _incomingTimer?.cancel();
     _incomingSub?.cancel();
     _chat?.dispose();
     _chat = null;
@@ -159,11 +160,7 @@ class _ListDetailScreenState extends State<ListDetailScreen> {
 
   void _onIncoming(ChatMessage message) {
     if (_chatOpen || !mounted) return;
-    _incomingTimer?.cancel();
     setState(() => _incoming = message);
-    _incomingTimer = Timer(const Duration(seconds: 8), () {
-      if (mounted) setState(() => _incoming = null);
-    });
   }
 
   void _hideSendHint() {
@@ -190,21 +187,25 @@ class _ListDetailScreenState extends State<ListDetailScreen> {
       );
   }
 
-  /// Chat aperta sotto la lista, come prima: da quel momento i messaggi degli altri risultano letti.
-  void _openChat(ListDetailController detail) {
+  /// Chat aperta sotto la lista, come prima: da quel momento i messaggi degli altri risultano letti. Con [highlight]
+  /// la chat scorre fino a quel messaggio e lo evidenzia.
+  void _openChat(ListDetailController detail, {ChatMessage? highlight}) {
     final chat = _chat;
     if (chat == null || detail.list == null || _chatOpen) return;
-    _incomingTimer?.cancel();
     setState(() {
       _chatOpen = true;
       _incoming = null;
+      _highlightId = highlight?.id;
     });
     chat.visible = true;
   }
 
   void _closeChat() {
     _chat?.visible = false;
-    setState(() => _chatOpen = false);
+    setState(() {
+      _chatOpen = false;
+      _highlightId = null;
+    });
   }
 
   /// Prodotti presi da un messaggio della chat, aggiunti uno dopo l'altro.
@@ -212,56 +213,6 @@ class _ListDetailScreenState extends State<ListDetailScreen> {
     for (final name in names) {
       await detail.addItem(name);
     }
-  }
-
-  /// Sopra la barra: l'ultimo messaggio arrivato (tocca per aprire la chat).
-  Widget _incomingStrip(ListDetailController detail) {
-    final message = _incoming!;
-    final chat = _chat!;
-    final scheme = Theme.of(context).colorScheme;
-    final text = Theme.of(context).textTheme;
-    final l = context.l10n;
-    final body = message.body.isNotEmpty ? message.body : (message.hasImage ? '📷 ${l.chatPhoto}' : '');
-    final name = message.userName ?? l.deletedUser;
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(12, 6, 12, 0),
-      child: Material(
-        color: scheme.surfaceContainerLowest,
-        elevation: 4,
-        borderRadius: BorderRadius.circular(18),
-        child: InkWell(
-          borderRadius: BorderRadius.circular(18),
-          onTap: () => _openChat(detail),
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(10, 8, 6, 8),
-            child: Row(
-              children: [
-                UserAvatar(initials: name.isEmpty ? '?' : name[0].toUpperCase()),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(name, style: text.labelMedium?.copyWith(color: scheme.tertiary)),
-                      Text(body, maxLines: 2, overflow: TextOverflow.ellipsis, style: text.bodyMedium),
-                    ],
-                  ),
-                ),
-                if (chat.unreadCount > 0) Badge.count(count: chat.unreadCount),
-                IconButton(
-                  icon: const Icon(Icons.close, size: 18),
-                  tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
-                  onPressed: () {
-                    _incomingTimer?.cancel();
-                    setState(() => _incoming = null);
-                  },
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
   }
 
   /// Da soli nella lista: invito a condividerla per poter usare la chat (solo il proprietario può condividere).
@@ -827,6 +778,7 @@ class _ListDetailScreenState extends State<ListDetailScreen> {
                         value: chat,
                         child: ChatPanel(
                           isOwner: list.isOwner,
+                          highlightId: _highlightId,
                           onAddToList: detail.canEdit ? (names) => _addNames(detail, names) : null,
                         ),
                       ),
@@ -834,21 +786,33 @@ class _ListDetailScreenState extends State<ListDetailScreen> {
                   ),
                 ],
               )
-            : _body(detail),
+            : Stack(
+                children: [
+                  Positioned.fill(child: _body(detail)),
+                  // Sopra la barra, sui prodotti: l'ultimo messaggio arrivato (tocca per aprirlo in chat).
+                  if (_incoming != null && chat != null)
+                    Positioned(
+                      left: 0,
+                      right: 0,
+                      bottom: detail.canEdit ? 0 : MediaQuery.paddingOf(context).bottom,
+                      child: ListenableBuilder(
+                        listenable: chat,
+                        builder: (_, _) => _IncomingStrip(
+                          key: ValueKey(_incoming!.id),
+                          message: _incoming!,
+                          unread: chat.unreadCount,
+                          onOpen: () => _openChat(detail, highlight: _incoming),
+                          onDone: () {
+                            if (mounted) setState(() => _incoming = null);
+                          },
+                        ),
+                      ),
+                    ),
+                ],
+              ),
       ),
-      // In basso: l'ultimo messaggio arrivato e la barra per aggiungere prodotti (o scrivere in chat).
-      bottomNavigationBar: _chatOpen && chat != null
-          ? null
-          : (detail.canEdit || (_incoming != null && chat != null))
-          ? Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                if (_incoming != null && chat != null)
-                  ListenableBuilder(listenable: chat, builder: (_, _) => _incomingStrip(detail)),
-                if (detail.canEdit) _addBar(detail) else const SafeArea(top: false, child: SizedBox(height: 8)),
-              ],
-            )
-          : null,
+      // In basso: la barra per aggiungere prodotti (o scrivere in chat).
+      bottomNavigationBar: _chatOpen && chat != null ? null : (detail.canEdit ? _addBar(detail) : null),
     );
   }
 
@@ -1147,6 +1111,114 @@ class _ListDetailScreenState extends State<ListDetailScreen> {
 }
 
 /// Chat aperta sotto la lista: un foglio con gli angoli arrotondati e l'ombra verso l'alto, appoggiato sulla lista.
+/// Anteprima dell'ultimo messaggio arrivato, su sfondo trasparente sopra la barra: compare in dissolvenza, resta 15
+/// secondi e svanisce. Toccandola si apre la chat sul messaggio; la x la chiude subito.
+class _IncomingStrip extends StatefulWidget {
+  const _IncomingStrip({
+    super.key,
+    required this.message,
+    required this.unread,
+    required this.onOpen,
+    required this.onDone,
+  });
+
+  final ChatMessage message;
+
+  /// Messaggi degli altri ancora da leggere.
+  final int unread;
+  final VoidCallback onOpen;
+
+  /// Anteprima svanita (tempo scaduto o x).
+  final VoidCallback onDone;
+
+  static const visibleFor = Duration(seconds: 15);
+
+  @override
+  State<_IncomingStrip> createState() => _IncomingStripState();
+}
+
+class _IncomingStripState extends State<_IncomingStrip> with SingleTickerProviderStateMixin {
+  late final _fade = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 400),
+    reverseDuration: const Duration(milliseconds: 900),
+  )..forward();
+  Timer? _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    _timer = Timer(_IncomingStrip.visibleFor, _hide);
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    _fade.dispose();
+    super.dispose();
+  }
+
+  Future<void> _hide() async {
+    _timer?.cancel();
+    await _fade.reverse();
+    if (mounted) widget.onDone();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final message = widget.message;
+    final scheme = Theme.of(context).colorScheme;
+    final text = Theme.of(context).textTheme;
+    final l = context.l10n;
+    final body = message.body.isNotEmpty ? message.body : (message.hasImage ? '📷 ${l.chatPhoto}' : '');
+    final name = message.userName ?? l.deletedUser;
+    return FadeTransition(
+      opacity: CurvedAnimation(parent: _fade, curve: Curves.easeOut),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(12, 6, 12, 6),
+        child: Material(
+          color: scheme.surface.withValues(alpha: 0.6),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(18),
+            side: BorderSide(color: scheme.outlineVariant.withValues(alpha: 0.6)),
+          ),
+          child: InkWell(
+            borderRadius: BorderRadius.circular(18),
+            onTap: () {
+              _timer?.cancel();
+              widget.onOpen();
+            },
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(10, 8, 6, 8),
+              child: Row(
+                children: [
+                  UserAvatar(initials: name.isEmpty ? '?' : name[0].toUpperCase()),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(name, style: text.labelMedium?.copyWith(color: scheme.tertiary)),
+                        Text(body, maxLines: 2, overflow: TextOverflow.ellipsis, style: text.bodyMedium),
+                      ],
+                    ),
+                  ),
+                  if (widget.unread > 0) Badge.count(count: widget.unread),
+                  IconButton(
+                    icon: const Icon(Icons.close, size: 18),
+                    tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
+                    onPressed: _hide,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class _ChatSheet extends StatelessWidget {
   const _ChatSheet({required this.onClose, required this.child});
 

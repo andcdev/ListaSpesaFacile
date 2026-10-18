@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -22,9 +24,12 @@ List<String> chatProductNames(String body) =>
 /// (i propri; il proprietario della lista anche quelli degli altri), segnalarlo o bloccare chi l'ha scritto.
 /// Gli eventi della lista (spesa finita, "Continuo io"…) compaiono in grigio tra i messaggi.
 class ChatPanel extends StatefulWidget {
-  const ChatPanel({super.key, required this.isOwner, this.scrollController, this.onAddToList});
+  const ChatPanel({super.key, required this.isOwner, this.scrollController, this.onAddToList, this.highlightId});
 
   final bool isOwner;
+
+  /// Messaggio da mostrare evidenziato all'apertura (toccando l'anteprima sopra la barra): la chat scorre fin lì.
+  final int? highlightId;
 
   /// Quello del foglio trascinabile: tirando i messaggi il foglio si allarga.
   final ScrollController? scrollController;
@@ -48,14 +53,49 @@ class _ChatPanelState extends State<ChatPanel> {
   /// Riga con le emoji di base sotto il campo.
   bool _emojiOpen = false;
 
+  /// Messaggio evidenziato per qualche secondo e la sua posizione nella chat.
+  int? _highlightId;
+  final _highlightKey = GlobalKey();
+  Timer? _highlightTimer;
+
   @override
   void initState() {
     super.initState();
     _scroll.addListener(_onScroll);
+    _highlightId = widget.highlightId;
+    if (_highlightId != null) WidgetsBinding.instance.addPostFrameCallback((_) => _revealHighlight());
+  }
+
+  /// Scorre fino al messaggio evidenziato (se non è ancora tra quelli costruiti, risale un po' alla volta) e dopo
+  /// qualche secondo toglie l'evidenziazione.
+  Future<void> _revealHighlight({int attempts = 0}) async {
+    if (!mounted || _highlightId == null) return;
+    final chat = context.read<ChatController>();
+    final target = _highlightKey.currentContext;
+    if (target != null) {
+      await Scrollable.ensureVisible(target, alignment: 0.5, duration: const Duration(milliseconds: 300));
+      _highlightTimer = Timer(const Duration(milliseconds: 2500), () {
+        if (mounted) setState(() => _highlightId = null);
+      });
+      return;
+    }
+    // Messaggio sparito (eliminato) o mai trovato: niente evidenziazione.
+    if (attempts >= 60 || (!chat.loading && !chat.messages.any((m) => m.id == _highlightId))) {
+      setState(() => _highlightId = null);
+      return;
+    }
+    // Ancora in caricamento, o il messaggio è più in alto: si risale e si riprova al prossimo fotogramma.
+    if (!chat.loading && _scroll.hasClients) {
+      _scroll.jumpTo((_scroll.position.pixels + 400).clamp(0.0, _scroll.position.maxScrollExtent));
+    }
+    WidgetsBinding.instance
+      ..addPostFrameCallback((_) => _revealHighlight(attempts: attempts + 1))
+      ..scheduleFrame();
   }
 
   @override
   void dispose() {
+    _highlightTimer?.cancel();
     _text.dispose();
     _focus.dispose();
     _scroll.removeListener(_onScroll);
@@ -278,7 +318,9 @@ class _ChatPanelState extends State<ChatPanel> {
                     final message = messages[i];
                     final older = i + 1 < messages.length ? messages[i + 1] : null;
                     final mine = message.userId == chat.userId;
+                    final highlighted = message.id == _highlightId;
                     return Column(
+                      key: highlighted ? _highlightKey : null,
                       children: [
                         if (older == null || !_sameDay(older.createdAt, message.createdAt))
                           _DaySeparator(date: message.createdAt),
@@ -290,24 +332,30 @@ class _ChatPanelState extends State<ChatPanel> {
                         else
                           _SwipeToReply(
                             onReply: () => _reply(message),
-                            child: _Bubble(
-                              message: message,
-                              imageUrl: message.hasImage
-                                  ? context.read<ApiClient>().messageImageUrl(message.listId, message.id)
-                                  : null,
-                              mine: mine,
-                              ticks: mine ? chat.ticks(message) : null,
-                              avatar: message.userAvatarVersion == null || message.userId == null
-                                  ? null
-                                  : NetworkImage(
-                                      context.read<ApiClient>().avatarUrl(message.userId!, message.userAvatarVersion!),
-                                      headers: context.read<ApiClient>().authHeaders,
-                                    ),
-                              // Il nome solo sul primo di una serie di messaggi dello stesso autore.
-                              showName: !mine && (older == null || older.userId != message.userId || older.isEvent),
-                              myId: chat.userId,
-                              onLongPress: () => _messageMenu(message, mine: mine),
-                              onReact: (emoji) => _react(message, emoji),
+                            child: _Highlight(
+                              on: highlighted,
+                              child: _Bubble(
+                                message: message,
+                                imageUrl: message.hasImage
+                                    ? context.read<ApiClient>().messageImageUrl(message.listId, message.id)
+                                    : null,
+                                mine: mine,
+                                ticks: mine ? chat.ticks(message) : null,
+                                avatar: message.userAvatarVersion == null || message.userId == null
+                                    ? null
+                                    : NetworkImage(
+                                        context.read<ApiClient>().avatarUrl(
+                                          message.userId!,
+                                          message.userAvatarVersion!,
+                                        ),
+                                        headers: context.read<ApiClient>().authHeaders,
+                                      ),
+                                // Il nome solo sul primo di una serie di messaggi dello stesso autore.
+                                showName: !mine && (older == null || older.userId != message.userId || older.isEvent),
+                                myId: chat.userId,
+                                onLongPress: () => _messageMenu(message, mine: mine),
+                                onReact: (emoji) => _react(message, emoji),
+                              ),
                             ),
                           ),
                       ],
@@ -382,6 +430,26 @@ class _ChatPanelState extends State<ChatPanel> {
   }
 
   static bool _sameDay(DateTime a, DateTime b) => a.year == b.year && a.month == b.month && a.day == b.day;
+}
+
+/// Sfondo colorato dietro un messaggio, che si spegne in dissolvenza.
+class _Highlight extends StatelessWidget {
+  const _Highlight({required this.on, required this.child});
+
+  final bool on;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) => AnimatedContainer(
+    duration: const Duration(milliseconds: 800),
+    curve: Curves.easeOut,
+    padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+    decoration: BoxDecoration(
+      color: on ? Theme.of(context).colorScheme.tertiaryContainer.withValues(alpha: 0.8) : Colors.transparent,
+      borderRadius: BorderRadius.circular(20),
+    ),
+    child: child,
+  );
 }
 
 class _Bubble extends StatelessWidget {
