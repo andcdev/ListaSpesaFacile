@@ -38,6 +38,7 @@ class ShoppingList {
     this.finishedBy,
     this.finishMessage,
     this.people = const [],
+    this.unreadMessages = 0,
   });
 
   final int id;
@@ -78,6 +79,9 @@ class ShoppingList {
 
   /// Tutte le persone della lista, proprietario compreso (solo nel dettaglio): tra loro si sceglie chi fa la spesa.
   final List<AppUser> people;
+
+  /// Messaggi degli altri in chat non ancora letti (solo nell'elenco delle liste).
+  final int unreadMessages;
 
   /// L'utente può segnare i prodotti presi o non trovati.
   bool canMark(int userId) => canEdit && (shopper == null || shopper!.id == userId);
@@ -122,6 +126,7 @@ class ShoppingList {
       finishedBy: _user(json['finished_by']),
       finishMessage: json['finish_message'] as String?,
       people: (json['people'] as List<dynamic>? ?? []).map((e) => AppUser.fromJson(e as Map<String, dynamic>)).toList(),
+      unreadMessages: json['unread_messages'] as int? ?? 0,
     );
   }
 
@@ -153,5 +158,6 @@ class ShoppingList {
     finishedBy: json.containsKey('finished_by') ? _user(json['finished_by']) : finishedBy,
     finishMessage: json.containsKey('finish_message') ? json['finish_message'] as String? : finishMessage,
     people: people,
+    unreadMessages: unreadMessages,
   );
 }

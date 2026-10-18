@@ -1076,6 +1076,10 @@ S = {
                  'Jetzt machst du den Einkauf: die anderen wurden benachrichtigt',
                  'Ahora la compra la haces tú: se ha avisado a los demás'),
     'allTaken': ('Tutto preso!', 'Got everything!', 'Tout est pris !', 'Alles gekauft!', '¡Todo cogido!'),
+    'unreadMessages': ('Messaggi da leggere', 'Unread messages', 'Messages non lus', 'Ungelesene Nachrichten',
+                       'Mensajes sin leer'),
+    'noUnreadMessages': ('Nessun messaggio da leggere', 'No unread messages', 'Aucun message non lu',
+                         'Keine ungelesenen Nachrichten', 'No hay mensajes sin leer'),
 
     # ── Chat: barra, striscia, risposte, emoji, eventi ─────────────
     'addOrWriteHint': ('Agg. prodotto o scrivi…', 'Add product or write…', 'Ajouter ou écrire…',

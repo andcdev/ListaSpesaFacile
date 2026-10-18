@@ -1536,6 +1536,12 @@ class AppLocalizationsEs extends AppLocalizations {
   String get allTaken => '¡Todo cogido!';
 
   @override
+  String get unreadMessages => 'Mensajes sin leer';
+
+  @override
+  String get noUnreadMessages => 'No hay mensajes sin leer';
+
+  @override
   String get addOrWriteHint => 'Añadir o escribir…';
 
   @override

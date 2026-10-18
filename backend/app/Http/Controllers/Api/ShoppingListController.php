@@ -43,11 +43,23 @@ class ShoppingListController extends Controller
         $data = $request->validate(['product' => ['sometimes', 'nullable', 'string', 'max:100']]);
         $words = preg_split('/\s+/', trim((string) ($data['product'] ?? '')), -1, PREG_SPLIT_NO_EMPTY);
 
+        $user = $request->user();
+        $blocked = $user->blockedIds();
         $lists = ShoppingList::query()
-            ->accessibleBy($request->user())
+            ->accessibleBy($user)
             // Con chi è condivisa: l'app filtra l'elenco per persona.
             ->with(['owner', 'sharedWith'])
-            ->withCount(['items', 'items as checked_items_count' => fn (Builder $q) => $q->where('checked', true)])
+            ->withCount([
+                'items',
+                'items as checked_items_count' => fn (Builder $q) => $q->where('checked', true),
+                // Messaggi degli altri in chat non ancora letti (dopo l'ultimo letto con la chat aperta), senza gli
+                // eventi della lista e senza le persone bloccate: il pallino nell'elenco e in alto nella home.
+                'messages as unread_messages_count' => fn (Builder $q) => $q
+                    ->whereNull('event')
+                    ->where('user_id', '!=', $user->id)
+                    ->when($blocked, fn (Builder $q) => $q->whereNotIn('user_id', $blocked))
+                    ->whereRaw('list_messages.id > COALESCE((SELECT delivered_up_to FROM chat_deliveries WHERE chat_deliveries.shopping_list_id = list_messages.shopping_list_id AND chat_deliveries.user_id = ?), 0)', [$user->id]),
+            ])
             ->when($words, fn (Builder $q) => $q->whereHas('items', function (Builder $items) use ($words) {
                 foreach ($words as $word) {
                     $items->whereRaw('LOWER(name) LIKE ?', ['%'.mb_strtolower(addcslashes($word, '%_\\')).'%']);

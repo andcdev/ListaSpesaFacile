@@ -448,6 +448,8 @@
   "dismissFinished": "D’accord",
   "tookOver": "C’est maintenant toi qui fais les courses : les autres ont été prévenus",
   "allTaken": "Tout est pris !",
+  "unreadMessages": "Messages non lus",
+  "noUnreadMessages": "Aucun message non lu",
   "addOrWriteHint": "Ajouter ou écrire…",
   "sendToChat": "Envoyer dans le chat",
   "chatSendHint": "💬 l’envoie comme message aux personnes de la liste, + l’ajoute aux produits",
