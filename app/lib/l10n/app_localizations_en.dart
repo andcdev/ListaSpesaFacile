@@ -1528,6 +1528,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get allTaken => 'Got everything!';
 
   @override
+  String get unreadMessages => 'Unread messages';
+
+  @override
+  String get noUnreadMessages => 'No unread messages';
+
+  @override
   String get addOrWriteHint => 'Add product or write…';
 
   @override

@@ -109,4 +109,32 @@ class ChatRepliesTest extends TestCase
         Sanctum::actingAs(User::factory()->create());
         $this->putJson("/api/lists/{$list->id}/messages/{$message->id}/reaction", ['emoji' => '👍'])->assertForbidden();
     }
+
+    public function test_the_list_index_counts_the_unread_messages_of_the_others(): void
+    {
+        $list = ShoppingList::factory()->create();
+        $anna = User::factory()->create();
+        $marco = User::factory()->create();
+        $list->sharedWith()->attach([$anna->id, $marco->id]);
+
+        Sanctum::actingAs($anna);
+        $this->postJson("/api/lists/{$list->id}/messages", ['body' => 'Uno'])->assertCreated();
+        $second = $this->postJson("/api/lists/{$list->id}/messages", ['body' => 'Due'])->json('data.id');
+        Sanctum::actingAs($marco);
+        $this->postJson("/api/lists/{$list->id}/messages", ['body' => 'Tre'])->assertCreated();
+        $list->messages()->create(['body' => 'evento'])->forceFill(['event' => 'took_over', 'user_id' => $anna->id])->save();
+
+        // I propri messaggi non contano: per Anna resta solo quello di Marco.
+        Sanctum::actingAs($anna);
+        $this->getJson('/api/lists')->assertJsonPath('data.0.unread_messages', 1);
+
+        Sanctum::actingAs($list->owner);
+        $this->getJson('/api/lists')->assertJsonPath('data.0.unread_messages', 3);
+        // Letti fino al secondo con la chat aperta: resta quello di Marco.
+        $this->postJson("/api/lists/{$list->id}/messages/delivered", ['up_to' => $second])->assertNoContent();
+        $this->getJson('/api/lists')->assertJsonPath('data.0.unread_messages', 1);
+        // Chi ha bloccato Marco non conta i suoi messaggi.
+        $this->postJson('/api/blocks', ['user_id' => $marco->id]);
+        $this->getJson('/api/lists')->assertJsonPath('data.0.unread_messages', 0);
+    }
 }

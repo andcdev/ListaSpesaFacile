@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/chat_message.dart';
 import '../services/api_client.dart';
@@ -26,28 +25,15 @@ class ChatController extends ChangeNotifier {
   /// Per ogni utente della lista, fino a quale messaggio ha letto (chat aperta sul suo telefono).
   final Map<int, int> _delivered = {};
 
-  /// Ultimo messaggio letto (chat aperta), salvato sul telefono: quelli degli altri dopo questo sono da leggere.
-  int _readUpTo = 0;
-  String get _readKey => 'chat-read-$listId';
-
   /// Messaggi nuovi degli altri arrivati in tempo reale (la schermata della lista li mostra sopra la barra).
   final _incoming = StreamController<ChatMessage>.broadcast();
   Stream<ChatMessage> get incoming => _incoming.stream;
 
-  /// Messaggi degli altri non ancora letti (gli eventi della lista non contano).
-  int get unreadCount => _messages.values.where((m) => m.id > _readUpTo && m.userId != userId && !m.isEvent).length;
-
-  /// La chat è aperta: tutto quello che c'è è letto.
-  Future<void> markRead() async {
-    final latest = _messages.keys.fold(0, (max, id) => id > max ? id : max);
-    if (latest <= _readUpTo) return;
-    _readUpTo = latest;
-    _notify();
-    try {
-      (await SharedPreferences.getInstance()).setInt(_readKey, latest);
-    } catch (_) {
-      // Senza memoria sul telefono il contatore ricomincia alla prossima apertura.
-    }
+  /// Messaggi degli altri non ancora letti, dopo l'ultimo letto con la chat aperta (lo stesso conto del server
+  /// per il pallino nell'elenco delle liste; gli eventi della lista non contano).
+  int get unreadCount {
+    final readUpTo = _delivered[userId] ?? 0;
+    return _messages.values.where((m) => m.id > readUpTo && m.userId != userId && !m.isEvent).length;
   }
 
   /// La chat è aperta sullo schermo: solo allora i messaggi degli altri risultano letti.
@@ -55,10 +41,8 @@ class ChatController extends ChangeNotifier {
 
   set visible(bool value) {
     _visible = value;
-    if (value) {
-      _acknowledge();
-      markRead();
-    }
+    if (value) _acknowledge();
+    _notify();
   }
 
   /// La propria reazione al messaggio: toccando la stessa la si toglie, un'altra la sostituisce.
@@ -96,18 +80,7 @@ class ChatController extends ChangeNotifier {
     _subs
       ..add(realtime.on(_channel).listen(_onEvent))
       ..add(realtime.reconnected.listen((_) => load()));
-    _loadRead().then((_) => load());
-  }
-
-  /// Mai aperta su questo telefono: i messaggi che ci sono già non contano come nuovi.
-  bool _readUnknown = false;
-
-  Future<void> _loadRead() async {
-    try {
-      final saved = (await SharedPreferences.getInstance()).getInt(_readKey);
-      _readUpTo = saved ?? 0;
-      _readUnknown = saved == null;
-    } catch (_) {}
+    load();
   }
 
   /// Carica gli ultimi messaggi (anche dopo una riconnessione, per recuperare quelli persi).
@@ -123,10 +96,6 @@ class ChatController extends ChangeNotifier {
       hasMore = page.hasMore;
       error = null;
       _acknowledge();
-      if (_readUnknown) {
-        _readUnknown = false;
-        await markRead();
-      }
     } on ApiException catch (e) {
       error = e.message;
     } finally {
@@ -154,7 +123,6 @@ class ChatController extends ChangeNotifier {
   Future<void> send(String body, {String? imagePath, ChatMessage? replyTo}) async {
     final message = await api.sendMessage(listId, body, imagePath: imagePath, replyToId: replyTo?.id);
     _messages[message.id] = message;
-    _delivered[userId] = message.id;
     _notify();
   }
 
@@ -177,7 +145,6 @@ class ChatController extends ChangeNotifier {
         final isNew = !_messages.containsKey(message.id);
         _messages[message.id] = message;
         _acknowledge();
-        if (_visible) markRead();
         if (isNew && message.userId != userId && !message.isEvent) _incoming.add(message);
       case 'message.deleted':
         _messages.remove(e.data['id']);

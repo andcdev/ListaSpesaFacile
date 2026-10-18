@@ -448,6 +448,8 @@
   "dismissFinished": "Fine",
   "tookOver": "You're now doing the shopping: the others were notified",
   "allTaken": "Got everything!",
+  "unreadMessages": "Unread messages",
+  "noUnreadMessages": "No unread messages",
   "addOrWriteHint": "Add product or write…",
   "sendToChat": "Send to chat",
   "chatSendHint": "💬 sends it as a message to the people on the list, + adds it to the products",

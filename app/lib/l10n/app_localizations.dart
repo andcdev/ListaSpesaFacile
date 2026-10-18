@@ -2789,6 +2789,18 @@ abstract class AppLocalizations {
   /// **'Tutto preso!'**
   String get allTaken;
 
+  /// No description provided for @unreadMessages.
+  ///
+  /// In it, this message translates to:
+  /// **'Messaggi da leggere'**
+  String get unreadMessages;
+
+  /// No description provided for @noUnreadMessages.
+  ///
+  /// In it, this message translates to:
+  /// **'Nessun messaggio da leggere'**
+  String get noUnreadMessages;
+
   /// No description provided for @addOrWriteHint.
   ///
   /// In it, this message translates to:

@@ -6,6 +6,7 @@ use App\Events\ListMessageCreated;
 use App\Events\ListMessageDeleted;
 use App\Events\ListMessageReacted;
 use App\Events\ListMessagesDelivered;
+use App\Events\ListsChanged;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ListMessageResource;
 use App\Models\ListMessage;
@@ -91,6 +92,8 @@ class ListMessageController extends Controller
         // le decide solo /delivered, che l'app manda con la chat aperta.
 
         Realtime::broadcast(new ListMessageCreated($message));
+        // L'elenco delle liste degli altri aggiorna il pallino dei messaggi da leggere.
+        Realtime::broadcast(new ListsChanged(array_values(array_diff($list->audienceIds(), [$sender->id])), $list->id));
 
         Notifier::send(
             array_diff($list->audienceIds(), [$sender->id]),
@@ -144,6 +147,8 @@ class ListMessageController extends Controller
 
         if ($upTo = $list->markChatDelivered($user, $data['up_to'])) {
             Realtime::broadcast(new ListMessagesDelivered($list->id, $user->id, $upTo));
+            // Letti: il pallino sparisce anche dall'elenco delle liste di chi li ha letti.
+            Realtime::broadcast(new ListsChanged([$user->id], $list->id));
         }
 
         return response()->json(status: 204);

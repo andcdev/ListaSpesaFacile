@@ -146,6 +146,41 @@ class _ListsScreenState extends State<ListsScreen> {
     );
   }
 
+  /// 💬 in alto: apre la chat della lista con messaggi da leggere; se sono più di una, si sceglie quale.
+  Future<void> _openUnreadChat() async {
+    final l = context.l10n;
+    final unread = context.read<ListsController>().lists.where((list) => list.unreadMessages > 0).toList();
+    if (unread.isEmpty) {
+      showMessage(context, l.noUnreadMessages);
+      return;
+    }
+    final listId = unread.length == 1
+        ? unread.single.id
+        : await showModalBottomSheet<int>(
+            context: context,
+            showDragHandle: true,
+            builder: (context) => SafeArea(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+                    child: Text(l.unreadMessages, style: Theme.of(context).textTheme.titleMedium),
+                  ),
+                  for (final list in unread)
+                    ListTile(
+                      leading: const Icon(Icons.chat_bubble_outline),
+                      title: Text(list.name),
+                      trailing: Badge.count(count: list.unreadMessages),
+                      onTap: () => Navigator.pop(context, list.id),
+                    ),
+                ],
+              ),
+            ),
+          );
+    if (listId != null && mounted) await _openList(listId, openChat: true);
+  }
+
   Future<void> _openList(int listId, {bool openChat = false}) async {
     final auth = context.read<AuthController>();
     // Le route aperte con push non discendono da questa schermata: il ListsController va ripassato.
@@ -315,6 +350,7 @@ class _ListsScreenState extends State<ListsScreen> {
         title: const AppName(),
         actions: [
           const _ConnectionIndicator(),
+          _MessagesButton(onPressed: _openUnreadChat),
           _NotificationsButton(onPressed: _openNotifications),
           IconButton(
             tooltip: l.globalSharing,
@@ -460,6 +496,7 @@ class _ListsScreenState extends State<ListsScreen> {
                         child: _ListCard(
                           list: list,
                           onTap: () => _openList(list.id),
+                          onOpenChat: () => _openList(list.id, openChat: true),
                           onCopy: () => _copyList(list),
                           onDelete: list.isOwner ? () => _deleteList(list) : null,
                         ),
@@ -474,10 +511,19 @@ class _ListsScreenState extends State<ListsScreen> {
 
 /// Una lista: nome, giorno e ora, quanti articoli mancano e barra di avanzamento.
 class _ListCard extends StatelessWidget {
-  const _ListCard({required this.list, required this.onTap, required this.onCopy, this.onDelete});
+  const _ListCard({
+    required this.list,
+    required this.onTap,
+    required this.onOpenChat,
+    required this.onCopy,
+    this.onDelete,
+  });
 
   final ShoppingList list;
   final VoidCallback onTap;
+
+  /// Tocco sul pallino dei messaggi da leggere: apre la lista con la chat.
+  final VoidCallback onOpenChat;
   final VoidCallback onCopy;
   final VoidCallback? onDelete;
 
@@ -550,6 +596,16 @@ class _ListCard extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: 8),
+                  if (list.unreadMessages > 0)
+                    IconButton(
+                      tooltip: l.unreadMessages,
+                      visualDensity: VisualDensity.compact,
+                      onPressed: onOpenChat,
+                      icon: Badge.count(
+                        count: list.unreadMessages,
+                        child: Icon(Icons.chat_bubble_outline, color: scheme.primary),
+                      ),
+                    ),
                   _Badge(
                     text: list.itemsCount == 0
                         ? l.listEmptyBadge
@@ -654,6 +710,29 @@ class _ConnectionIndicator extends StatelessWidget {
           // Arancio quando manca la connessione.
           color: connected ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.secondary,
         ),
+      ),
+    );
+  }
+}
+
+/// 💬 con il totale dei messaggi da leggere in tutte le liste.
+class _MessagesButton extends StatelessWidget {
+  const _MessagesButton({required this.onPressed});
+
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    final unread = context.select<ListsController, int>(
+      (c) => c.lists.fold(0, (sum, list) => sum + list.unreadMessages),
+    );
+    return IconButton(
+      tooltip: context.l10n.unreadMessages,
+      onPressed: onPressed,
+      icon: Badge(
+        isLabelVisible: unread > 0,
+        label: Text(unread > 99 ? '99+' : '$unread'),
+        child: Icon(unread > 0 ? Icons.chat_bubble : Icons.chat_bubble_outline),
       ),
     );
   }

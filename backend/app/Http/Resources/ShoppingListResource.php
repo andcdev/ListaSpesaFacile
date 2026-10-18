@@ -37,6 +37,7 @@ class ShoppingListResource extends JsonResource
             'permission' => $user ? $this->permissionFor($user) : null,
             'items_count' => $this->whenCounted('items'),
             'checked_count' => $this->whenCounted('checked_items'),
+            'unread_messages' => $this->whenCounted('unread_messages'),
             'items' => ListItemResource::collection($this->whenLoaded('items')),
             'shared_with' => UserResource::collection($this->whenLoaded('sharedWith')),
             ...$this->when($this->relationLoaded('items'), fn () => [
