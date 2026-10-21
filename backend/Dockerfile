@@ -1,5 +1,7 @@
 # Immagine unica usata sia da PHP-FPM (API) sia dal server WebSocket Reverb.
-FROM php:8.5-fpm-alpine
+# Versione esatta di PHP: una patch di sicurezza e' un commit che cambia il
+# numero, e la build scarica il tag nuovo anche senza --pull. 8.5.12: PHP2Shell.
+FROM php:8.5.12-fpm-alpine
 
 ADD --chmod=0755 https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions /usr/local/bin/
 RUN install-php-extensions pdo_mysql pcntl opcache intl zip bcmath
